@@ -1,0 +1,167 @@
+<%# ####################################
+    Setup
+  # #################################### -%>
+
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(warning=FALSE, message=FALSE, echo=FALSE)
+opts_knit$set(base.dir="<%=normalizePath(baseDir, winslash="/")%>")
+```
+
+<%# ####################################
+    General Information
+  # #################################### -%>
+
+# General Information
+## Relocations
+The following table gives an overview of all data retrived from the provided data source.
+
+```{r, results="asis"}
+kable(relocTable)
+```
+
+## Used data
+The following table gives an overview of all data that was used for the analysis.
+
+```{r, results="asis"}
+kable(subsetTable)
+```
+
+
+
+
+## Spatial Reference System
+The input SRS was: <%=epsgs$input %>. The output SRS was: <%=epsgs$output %>.
+
+## Plot of relocation
+
+```{r}
+plot(data2[, c("lon", "lat")], col=adjustcolor("black", 0.1), pch=19, asp=1)
+points(data3[ , c("lon", "lat")], col="red")
+```
+
+
+<%# ####################################
+    Estimators
+  # #################################### -%>
+
+<%# -------------------------- START CYCLE OVER ALL ESTIMATORS -%>
+<% for (step in methodLookup$short) { %>
+
+# <%=methodLookup[methodLookup$short == step, 'long']%>
+
+<% if (step %in% names(res$est)) { %>
+
+<% if (!is.null(res$est[[step]]$parameters)) { %>
+## Parameter values used
+
+```{r, results="asis"}
+kable(readRDS("<%=normalizePath(res$est[[step]]$parameters, winslash="/")%>"))
+```
+
+<%}%>
+
+
+<%# -------------------------- START CYCLE OVER ALL ANIMALS -%>
+<% for (animal in unique(dat$id)) { %>
+
+## Results for <%=animal%>
+
+
+<%# -------------------------- START CYCLE OVER ALL SCENARIOS OF AN ANIMAL -%>
+<% for (scenario in 1:length(res$est[[step]]$res[[animal]])) { %>
+
+<% if (length(res$est[[step]]$res[[animal]]) > 1) { %>
+### Scenario: <%=res$est[[step]]$scenarios$name[scenario]%>
+<%}%>
+
+<%# ========================== Check if I can continue, that means no error occured during calculation %>
+<% if (is(readRDS(normalizePath(res$est[[step]]$res[[animal]][[scenario]]$rds)), "error")) { %>
+Terminated with error: <%=readRDS(normalizePath(res$est[[step]]$res[[animal]][[scenario]]$rds))$message %>
+<% } else { %>
+
+<%# -------------------------- plots -%>
+<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$plots)) { %>
+
+<% for (plt in seq_along(res$est[[step]]$res[[animal]][[scenario]]$plots)) { %>
+
+#### <%=res$est[[step]]$res[[animal]][[scenario]]$plots[[plt]]$name%>
+
+![header](<%=normalizePath(res$est[[step]]$res[[animal]][[scenario]]$plots[[plt]]$plotPNG, winslash="/")%>)
+
+<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$plots[[plt]]$legend)) { %>
+<%=res$est[[step]]$res[[animal]][[scenario]]$plots[[plt]]$legend %>
+<%}%>
+
+<% } %>
+<% } %>
+
+<%# -------------------------- table -%>
+<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$tables)) { %>
+
+<% for (tbl in seq_along(res$est[[step]]$res[[animal]][[scenario]]$tables)) { %>
+
+#### <%=res$est[[step]]$res[[animal]][[scenario]]$tables[[tbl]]$name%>
+
+```{r, results="asis"}
+kable(readRDS("<%=normalizePath(res$est[[step]]$res[[animal]][[scenario]]$tables[[tbl]]$path, winslash="/")%>"), row.names=FALSE)
+```
+
+<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$table[[tbl]]$legend)) { %>
+<%=res$est[[step]]$res[[animal]][[scenario]]$tables[[tbl]]$legend %>
+<%}%>
+
+<% } %>
+<% } %>
+
+<%# -------------------------- message -%>
+<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$messages)) { %>
+
+<% for (msg in seq_along(res$est[[step]]$res[[animal]][[scenario]]$messages)) { %>
+
+#### <%=res$est[[step]]$res[[animal]][[scenario]]$messages[[msg]]$name%>
+
+```{r, results="asis"}
+cat(readRDS("<%=normalizePath(res$est[[step]]$res[[animal]][[scenario]]$messages[[msg]]$message, winslash="/")%>"))
+```
+
+<% } %>
+<% } %>
+
+
+<% } %>
+
+<%# END CYCLE OVER ALL SCENARIOS %>
+<% } %>
+
+<%# END CYCLE OVER ALL ANIMALS %>
+<% } %>
+
+<%} else { %>
+Method was not requested
+<% } %>
+
+
+<%}%>
+<%# END CYCLE OVER ALL METHODS %>
+
+# Summary
+The analysis started at and took <%=runtime[1]%> seconds to run.
+
+## Run configurations
+
+```{r, results="asis"}
+kable(data.frame(Parameter=names(config$general$content), value=unlist(config$general$content)), row.names=FALSE)
+```
+## Fields
+
+```{r, results="asis"}
+kable(data.frame(Parameter=names(config$fields$content), value=unlist(config$fields$content)), row.names=FALSE)
+```
+
+# Session info
+For the sake of reproducibility, you should always include your session info. This shows which version of R and different packages you were using. 
+
+```{r}
+sessionInfo()
+```

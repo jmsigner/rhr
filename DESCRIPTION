@@ -1,0 +1,39 @@
+Package: rhr
+Type: Package
+Title: Reproducible Home Ranges with R
+Version: 1.1.010
+Date: 2014-05-08
+Author: Johannes Signer
+Maintainer: Johannes Signer <jsigner@gwdg.de>
+Description: More about what it does (maybe more than one line)
+License: GPL-3
+Depends:
+    Rcpp,
+    ggplot2,
+    grid,
+    sp,
+    KernSmooth,
+    raster,
+    rgeos,
+    shiny,
+    knitr,
+    markdown,
+    ascii,
+    adehabitatHR,
+    xtable,
+    lubridate,
+    brew,
+    gridExtra,
+    shinyBS,
+    rgdal,
+    mvtnorm,
+    mixtools,
+    maptools,
+    methods,
+    knitr,
+    reshape2
+LinkingTo: Rcpp
+Suggests:
+    testthat
+NeedsCompilation: yes
+Roxygen: list(wrap = TRUE)

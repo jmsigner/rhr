@@ -1,0 +1,9 @@
+## Site fidelity
+### Sub scenario 
+#### AnimaResults for {{i}}
+
+```{r}
+plot(rnorm(1000, {{i}}), main="Plot {{i}}")
+```
+
+This was a plot
