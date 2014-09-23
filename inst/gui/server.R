@@ -6,6 +6,10 @@
 ## clean everything 
 rm(list=ls())
 debug <- FALSE
+if (debug) {
+  .datFromR <- NULL
+  outDir <- "/temp"
+}
 #####
 
 require(shiny)
@@ -664,9 +668,42 @@ shinyServer(function(input, output, session) {
                         trast=trast())))
     }
   })
-                   
 
+  ## ------------------------------------------------------------------------------ ##  
+  ## locoh
 
+  output$configLOCOHtypeKField <- renderUI({
+    if (input$configLOCOHtypeK == "inclm") {
+      list(
+        numericInput("configLOCOHtypeKmanN", "Manual n", value=10)
+       ## helpText("Several values are possible with '10,40,20', a range of values is possible with '10:40:10' to evaluate LoCoH at 10, 20, 30 and 40.")
+        )
+    } else {
+        NULL
+    }
+  })
+                                          
+  output$configLOCOHtypeAField <- renderUI({
+    if (input$configLOCOHtypeA == "inclm") {
+      list(
+        numericInput("configLOCOHtypeAmanN", "Manual n", value=10)
+       ## helpText("Several values are possible with '10,40,20', a range of values is possible with '10:40:10' to evaluate LoCoH at 10, 20, 30 and 40.")
+        )
+    } else {
+        NULL
+    }
+  })
+
+  output$configLOCOHtypeRField <- renderUI({
+    if (input$configLOCOHtypeR == "inclm") {
+      list(
+        numericInput("configLOCOHtypeRmanN", "Manual n", value=10)
+       ## helpText("Several values are possible with '10,40,20', a range of values is possible with '10:40:10' to evaluate LoCoH at 10, 20, 30 and 40.")
+        )
+    } else {
+        NULL
+    }
+  })
 
   ## ============================================================================= ##
   ## Analzye
@@ -747,11 +784,19 @@ shinyServer(function(input, output, session) {
             ),
           rhrLoCoH=list(
             levels=rhrCorrectLevels(input$configGlobalLevel),
+            n=do.call(c, list(
+              switch(input$configLOCOHtypeK, "inclm" = input$configLOCOHtypeKmanN),
+              switch(input$configLOCOHtypeA, "inclm" = input$configLOCOHtypeAmanN),
+              switch(input$configLOCOHtypeR, "inclm" = input$configLOCOHtypeRmanN))), 
+            autoN=do.call(c, list(
+              switch(input$configLOCOHtypeK, "incla" = TRUE, "inclm" = FALSE),
+              switch(input$configLOCOHtypeA, "incla" = TRUE, "inclm" = FALSE),
+              switch(input$configLOCOHtypeR, "incla" = TRUE, "inclm" = FALSE))),
             type=do.call(c, list(
               switch(input$configLOCOHtypeK, "incla" = "k", "not" = NULL),
               switch(input$configLOCOHtypeA, "incla" = "a", "not" = NULL),
               switch(input$configLOCOHtypeR, "incla" = "r", "not" = NULL)))
-            ),
+            ), 
           rhrAsymptote=list(
             estimators=input$configAsymptoteEstimators,
             minNP=input$configAsymptoteMinNP,

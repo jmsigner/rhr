@@ -12,7 +12,7 @@ shinyUI(
                           selectInput("readFileSepDec", "Decimal Separator",
                                       choices = c("Point (.)" = "point", "Comma (,)" = "comma")), 
                           numericInput("readFileSkipLines", "Skip Lines", value=0, min=0, max=NA),
-                          checkboxInput("readFileHasHeader", "First line is a header"), 
+                          checkboxInput("readFileHasHeader", "First line is a header", value=TRUE), 
                           fileInput("readFileFile", "Relocations", multiple = FALSE,
                                     accept = NULL), 
                           hr(),  
@@ -169,19 +169,24 @@ shinyUI(
 
                                                          selectInput("configLOCOHtypeK", "Type k",
                                                                      choices=c("Include (automatic)" = "incla",
+                                                                       "Include (manual)" = "inclm", 
                                                                        "Do not include" = "not"),
-                                                                     selected="incla", selectize=FALSE), 
-
+                                                                     selected="incla", selectize=FALSE),
+                                                         uiOutput("configLOCOHtypeKField"),
                                                          selectInput("configLOCOHtypeA", "Type a",
                                                                      choices=c(
                                                                        "Include (automatic)" = "incla",
+                                                                       "Include (manual)" = "inclm", 
                                                                        "Do not include" = "not"),
                                                                      selected="not", selectize=FALSE), 
+                                                         uiOutput("configLOCOHtypeAField"),
 
                                                          selectInput("configLOCOHtypeR", "Type r",
                                                                      choices=c("Include (automatic)" = "incla",
+                                                                       "Include (manual)" = "inclm", 
                                                                        "Do not include" = "not"),
                                                                      selectize=FALSE, selected="not"), 
+                                                         uiOutput("configLOCOHtypeRField"),
                                                          hr()
                                                          ), 
 

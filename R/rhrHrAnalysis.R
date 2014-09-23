@@ -168,6 +168,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
   defaultArgs$rhrLoCoH <- list()
   defaultArgs$rhrLoCoH$levels <- 95
   defaultArgs$rhrLoCoH$type <- c("k", "a")
+  defaultArgs$rhrLoCoH$n <- c(10, 10)
+  defaultArgs$rhrLoCoH$autoN <- c(TRUE, TRUE)
 
   ## Asymptote
   defaultArgs$rhrAsymptote <- list()
@@ -1245,7 +1247,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
         args[[thisEst]]$type <- defaultArgs[[thisEst]]$type
       }
       if (is.null(args[[thisEst]]$ns)) {
-        args[[thisEst]]$ns <- defaultArgs[[thisEst]]$ns
+        args[[thisEst]]$n <- defaultArgs[[thisEst]]$n
+      }
+      if (is.null(args[[thisEst]]$autoN)) {
+        args[[thisEst]]$autoN <- defaultArgs[[thisEst]]$autoN
       }
     } else {
       ## No args provided, take default
@@ -1254,7 +1259,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
-    scenarios <- expand.grid(type=args[[thisEst]]$type)
+    scenarios <- data.frame(type=args[[thisEst]]$type, n=args[[thisEst]]$n, autoN=args[[thisEst]]$autoN)
     scenarios$name <- paste0("LoCoH (type: ", scenarios$type, ")")
     scenarios$basename <- paste0(thisEst, scenarios$type)
     resList$est[[thisEst]]$scenarios <- scenarios 
@@ -1267,7 +1272,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
 
-        locoh <- tryCatch(rhrLoCoH(animal[, c("lon", "lat")], type=scn$type, autoN=TRUE,
+        locoh <- tryCatch(rhrLoCoH(animal[, c("lon", "lat")], type=scn$type, autoN=scn$autoN, n=scn$n,
                                proj4string=projString),
                           error=function(e) e)
 
