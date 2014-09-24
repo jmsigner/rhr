@@ -167,9 +167,9 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
   ## LoCoH
   defaultArgs$rhrLoCoH <- list()
   defaultArgs$rhrLoCoH$levels <- 95
-  defaultArgs$rhrLoCoH$type <- c("k", "a")
-  defaultArgs$rhrLoCoH$n <- c(10, 10)
-  defaultArgs$rhrLoCoH$autoN <- c(TRUE, TRUE)
+  defaultArgs$rhrLoCoH$type <- c("k")
+  defaultArgs$rhrLoCoH$n <- c(10)
+  defaultArgs$rhrLoCoH$autoN <- c(TRUE)
 
   ## Asymptote
   defaultArgs$rhrAsymptote <- list()
@@ -1272,7 +1272,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
 
-        locoh <- tryCatch(rhrLoCoH(animal[, c("lon", "lat")], type=scn$type, autoN=scn$autoN, n=scn$n,
+        locoh <- tryCatch(rhrLoCoH(animal[, c("lon", "lat")], type=scn$type, autoN=scn$autoN, n=scn$n, levels=args[[thisEst]]$levels,
                                proj4string=projString),
                           error=function(e) e)
 
@@ -1311,7 +1311,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           fnTbl2 <- normalizePath(file.path(outDirData,
                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")), winslash="/")
-          t2 <- data.frame(rhrArea(locoh, args[[thisEst]]$levels)[, 1:2])
+          t2 <- data.frame(rhrArea(locoh)[, 1:2])
           names(t2) <- c("Level", "Area")
           t2$Area <- rhrConvertUnit(t2$Area, inUnit, outUnit)
           saveRDS(t2, file=fnTbl2)

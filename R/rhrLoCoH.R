@@ -104,7 +104,7 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, proj4string=NA, au
   
   ## calculation
   bb <- tryCatch(
-    expr=list(msg=NULL, exitStatus=0, res=.rhrLoCoH(xy, type, n, minPts)),
+    expr=list(msg=NULL, exitStatus=0, res=.rhrLoCoH(xy=xy, type=type, n=n, minPts=minPts, level=levels)),
     error=function(e) list(msg=e, exitStatus=1))
 
   if (bb$exitStatus == 0) {
@@ -124,8 +124,8 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, proj4string=NA, au
 
 }
 
-##' @export
-.rhrLoCoH <- function(xy, type, n, minPts) {
+.rhrLoCoH <- function(xy, type, n, minPts=minPts, level=levels, allLevels=FALSE) {
+  ## All levels is set to FALSE, it can only be changed by actually calling rhr:::.rhrLoCoH
   no <- 1:nrow(xy)
   if (type == "k") {
     if (n > nrow(xy)) {
@@ -171,26 +171,48 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, proj4string=NA, au
   seen <- c()
   ## this is still slow
   for (i in 1:length(ff)) {
-    seen <- c(seen, ff[[i]]$id)
+    seen <- union(seen, ff[[i]]$id)
     pp[i] <- length(unique(seen))
   }
 
   qq <- list()
   qq[[1]] <- mm[[1]]
-  for (i in 2:length(mm)) {
-    ## buffer is necessary, to overcome some topology errors if the polygon is quasi a line
-    qq[[i]] <- gBuffer(gUnaryUnion(gUnion(qq[[i-1]], mm[[i]])), width=0, id=i)
-  }
-
-  rr <- do.call(rbind, qq)
-  pp <- pp/nrow(xy) 
-  areas <- sapply(qq, gArea)
-
-  qq2 <- SpatialPolygonsDataFrame(rr, data=data.frame(level=round(pp * 100, 2), area=areas), match.ID=FALSE)
-  qq2 <- qq2[!duplicated(cbind(qq2$level, qq2$area)), ]
-  qq2
+  pp <- pp/nrow(xy) * 100
   
+  if (!allLevels) {
+    wlevel <- sapply(level, function(l) which.min(abs(pp - l)))
+    for (i in seq_along(wlevel)) {
+      ## buffer is necessary, to overcome some topology errors if the polygon is quasi a line
+      p1 <- lapply(1:wlevel[i], function(i) Polygon(mm[[i]]@polygons[[1]]@Polygons[[1]]@coords))
+      ff <- SpatialPolygons(list(Polygons(p1, ID=1)))
+
+      qq[[i]] <- gBuffer(gUnaryUnion(ff), width=0, id=i)
+    }
+
+    rr <- do.call(rbind, qq)
+    areas <- sapply(qq, gArea)
+
+    qq2 <- SpatialPolygonsDataFrame(rr, data=data.frame(level=round(pp[wlevel], 2),
+                                        area=areas), match.ID=FALSE)
+  } else {
+
+    qq[[1]] <- mm[[1]]
+    for (i in 2:length(mm)) {
+      ## buffer is necessary, to overcome some topology errors if the polygon is quasi a line
+      qq[[i]] <- gBuffer(gUnaryUnion(gUnion(qq[[i-1]], mm[[i]])), width=0, id=i)
+    }
+    
+    rr <- do.call(rbind, qq)
+    areas <- sapply(qq, gArea)
+
+    qq2 <- SpatialPolygonsDataFrame(rr, data=data.frame(level=round(pp, 2),
+                                          area=areas), match.ID=FALSE)
+    qq2 <- qq2[!duplicated(cbind(qq2$level, qq2$area)), ]
+  }
+  
+  qq2
 }
+
 
 
 ##' @export
@@ -202,13 +224,9 @@ print.RhrLoCoH <- function(x, ...) {
 }
 
 ##' @export
-rhrIsopleths.RhrLoCoH <- function(x, levels=95, ...) {
+rhrIsopleths.RhrLoCoH <- function(x, ...) {
   ## Levels
-  ll <- sapply(levels, function(l) which.min(abs(x$res$hr$level-l)))
-  names(x$res$hr) <- c("level.actual", "area")
-  xx <- x$res$hr[ll, ]
-  xx$level <- levels
-  xx
+  x$res$hr
 }
 
 ##' @export
