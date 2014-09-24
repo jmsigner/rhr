@@ -230,7 +230,7 @@ plot.RhrLoCoH <- function(x, title=NULL, ...) {
   ggplot(tempolDF, aes(x=long, y=lat, group=group, color=factor(level))) + 
     geom_point(data=points, aes(x=lon, y=lat, group=NULL, color=NULL), alpha=0.1) +
       geom_path(size=3, alpha=0.4) + 
-        labs(colour=("MCP levels"), x="lon", y="lat", title=title) +
+        labs(colour=("LoCoH levels"), x="lon", y="lat", title=title) +
           geom_path(size=0.2, colour="black") +
             scale_color_manual(values=terrain.colors(10)) + theme_bw() 
 }

@@ -785,17 +785,17 @@ shinyServer(function(input, output, session) {
           rhrLoCoH=list(
             levels=rhrCorrectLevels(input$configGlobalLevel),
             n=do.call(c, list(
-              switch(input$configLOCOHtypeK, "inclm" = input$configLOCOHtypeKmanN),
-              switch(input$configLOCOHtypeA, "inclm" = input$configLOCOHtypeAmanN),
-              switch(input$configLOCOHtypeR, "inclm" = input$configLOCOHtypeRmanN))), 
+              switch(input$configLOCOHtypeK, "inclm" = input$configLOCOHtypeKmanN, "incla" = 10),
+              switch(input$configLOCOHtypeA, "inclm" = input$configLOCOHtypeAmanN, "incla" = 10),
+              switch(input$configLOCOHtypeR, "inclm" = input$configLOCOHtypeRmanN, "incla" = 10))), 
             autoN=do.call(c, list(
               switch(input$configLOCOHtypeK, "incla" = TRUE, "inclm" = FALSE),
               switch(input$configLOCOHtypeA, "incla" = TRUE, "inclm" = FALSE),
               switch(input$configLOCOHtypeR, "incla" = TRUE, "inclm" = FALSE))),
             type=do.call(c, list(
-              switch(input$configLOCOHtypeK, "incla" = "k", "not" = NULL),
-              switch(input$configLOCOHtypeA, "incla" = "a", "not" = NULL),
-              switch(input$configLOCOHtypeR, "incla" = "r", "not" = NULL)))
+              switch(input$configLOCOHtypeK, "incla" = "k", "inclm" = "k", "not" = NULL),
+              switch(input$configLOCOHtypeA, "incla" = "a", "inclm" = "a", "not" = NULL),
+              switch(input$configLOCOHtypeR, "incla" = "r", "inclm" = "r", "not" = NULL)))
             ), 
           rhrAsymptote=list(
             estimators=input$configAsymptoteEstimators,
