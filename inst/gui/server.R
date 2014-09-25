@@ -705,8 +705,23 @@ shinyServer(function(input, output, session) {
     }
   })
 
+  ## ------------------------------------------------------------------------------ ##  
+  ## KDE
+
+  output$configKDEbandwidthUserInput <- renderUI({
+    if ("user" %in% input$configKDEbandwidth) {
+      list(
+        numericInput("configKDEbandwithUser", "Bandwidth (manual)", value=100)
+      )
+    } else {
+      NULL
+    }
+  }) 
+
   ## ============================================================================= ##
   ## Analzye
+
+  ## Check we have date+time for the estimators that need it
 
   observe({
     if (!is.null(data4())) {

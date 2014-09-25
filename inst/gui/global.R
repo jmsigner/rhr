@@ -20,9 +20,9 @@ config <- list(
       levels="90",
       bandwidthOptions=c("Reference Bandwidth" = "href",
         "Least Square Cross Validation" = "hlscv",
-        "Plugin the equation" = "hpi"), 
+        "Plugin the equation" = "hpi",
+        "User defined" = "user"), 
         ## "Scaling" = "hscale",
-        ## "User defined" = "user"), 
       bandwidth="href",
       buffer=50,
       resolution=50

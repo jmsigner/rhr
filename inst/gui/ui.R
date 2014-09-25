@@ -157,11 +157,8 @@ shinyUI(
                                                          selectInput("configKDEbandwidth", "Bandwidth", choices=config$homeRange$kde$bandwidthOptions,
                                                                      multiple=TRUE, selectize=FALSE),
                                                          helpText("Use CTRL to select several options"), 
-                                                         conditionalPanel(
-                                                           ## http://stackoverflow.com/questions/12623272/how-to-check-if-a-string-array-contains-one-string-in-javascript
-                                                           condition="input.configKDEbandwidth.indexOf('user') > -1",
-                                                           numericInput("configKDEbandwithUser", "Bandwidth (manual)", value=100))
-                                                         ), 
+                                                         uiOutput("configKDEbandwidthUserInput")
+                                                         ),
                                                 tabPanel("Local Convex Polygon",
                                                          h2("Local Convex Polygon"),
                                                          hr(),
