@@ -114,7 +114,6 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   ## trast overrides everything else
   defaultArgs$rhrKDE$trast <- NULL
-
   defaultArgs$rhrKDE$h <- as.list("href", "hlscv", "hpi", c(100, 100))
 
   ## BBMM
@@ -356,7 +355,6 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   ## ------------------------------------------------------------------------------ ##  
   ## rhrTTSI
-  ## Site TTSI
 
   if ("rhrTTSI" %in% what) {
     thisEst <- "rhrTTSI"
