@@ -782,7 +782,7 @@ shinyServer(function(input, output, session) {
             levels=rhrCorrectLevels(input$configGlobalLevel),
             trast=trast(), 
             h=input$configKDEbandwidth,
-            userh=input$configKDEbandwidthUser), 
+            userh=input$configKDEbandwithUser), 
           rhrBBMM=list(
             levels=rhrCorrectLevels(input$configGlobalLevel),
             trast=trast(), 
