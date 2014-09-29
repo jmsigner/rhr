@@ -1,4 +1,5 @@
 #' Initialize progress
+#' This function is copied from shinyIncubator and will be removed as soon as the progress function moved to shiny
 #'
 #' Call this function in your \code{shinyUI} definition if you intend
 #' to use progress in \code{server.R}.

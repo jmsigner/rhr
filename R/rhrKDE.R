@@ -107,7 +107,7 @@ rhrKDE <- function(xy,
     call=call,
     args=args,
     res=list(hr=res$res)),
-    class=c("RhrKDE", "RhrEst", "list"))
+    class=c("RhrKDE", "RhrProbEst", "RhrEst", "list"))
   return(invisible(res))
 }
 
@@ -211,7 +211,7 @@ rhrIsopleths.RhrKDE <- function(x, levels=95, ...) {
 ######
   ## proj4string(con) <- proj4string(cud)  
 
-  df <- data.frame(area=gArea(con, byid=TRUE), level=levels)
+  df <- data.frame(level=levels, area=gArea(con, byid=TRUE))
   row.names(df) <- 1:length(levels)
   con <- sp::SpatialPolygonsDataFrame(con, df)
   return(con)

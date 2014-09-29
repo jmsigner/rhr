@@ -20,18 +20,18 @@ Depends:
     lubridate,
     gridExtra,
     rgdal,
-    mvtnorm,
-    mixtools,
     maptools,
     methods,
-    reshape2
 Imports:
-	adehabitatHR,
-	brew,
-	knitr,
-	markdown,
-	shiny,
-	shinyBS
+    adehabitatHR,
+    brew,
+    knitr,
+    markdown,
+    mixtools,
+    mvtnorm,
+    reshape2,
+    shiny,
+    shinyBS
 LinkingTo: Rcpp
 Suggests:
     testthat

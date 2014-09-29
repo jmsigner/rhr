@@ -1,8 +1,10 @@
 ##' @export
-rhrBiNorm <- function(xy, trast=NULL, proj4string=NA) {
+rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL), proj4string=NA) {
 
   if (FALSE) {
-    foo <- rhrBiNorm(datSH[1:1500, 2:3])
+      library(rhr)
+      data(datSH)
+    foo <- rhrBiNorm(datSH[1:250, 2:3])
     plot(rhrUD(foo))
     plot(rhrCUD(foo))
     plot(rhrIsopleths(foo, levels=c(10, 30, 50, 90, 99)), add=T)
@@ -17,11 +19,7 @@ rhrBiNorm <- function(xy, trast=NULL, proj4string=NA) {
   projString <- rhrProjString(xy, projString=proj4string)
 
 
-  hats <- mvnormalmixEM(xy[, 1:2], k=2)
-
-  if (is.null(trast)) {
-    trast <- rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)
-  }
+  hats <- mixtools::mvnormalmixEM(xy[, 1:2], k=2)
 
   r1 <- data.frame(rasterToPoints(trast))
   r1$density <- d2mvnorm(r1[, 1:2], m=hats$lambda[1], 

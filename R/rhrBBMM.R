@@ -33,7 +33,7 @@
 rhrBBMM <- function(xyt,
                     rangesigma1=c(0, 10000), 
                     sigma2=123,
-                    trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL),
+                    trast=rhrRasterFromExt(rhrExtFromPoints(xyt, extendRange=0.2), nrow=100, res=NULL),
                     proj4string=NA) {
 
   ## ------------------------------------------------------------------------------ ##  
@@ -52,7 +52,7 @@ rhrBBMM <- function(xyt,
 
   
   ## check input 
-  xyt <- as.ltraj(xyt[, 1:2], xyt[, 3], id=1)
+  xyt <- adehabitatLT::as.ltraj(xyt[, 1:2], xyt[, 3], id=1)
   projString <- rhrProjString(xyt, projString=proj4string)
 
   sigma1 <- adehabitatHR::liker(xyt, rangesig1=c(0, 10000), sig2=sigma2, plotit=FALSE)[[1]]$sig1

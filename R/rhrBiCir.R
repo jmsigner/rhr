@@ -98,14 +98,20 @@ rhrUD.RhrBiCirc <- function(x, trast, ...) {
 }
 
 ##' @export
-rhrCUD.RhrBiCirc <- function(x, trast=NULL, ...) {
-  rhrUD2CUD(rhrUD(x, trast, ...))
+rhrCUD.RhrBiCirc <- function(x, ...) {
+  rhrUD2CUD(rhrUD(x, ...))
 }
+
 
 ##' @export
 rhrIsopleths.RhrBiCirc <- function(x, levels=95, ...) {
   cud <- rhrCUD(x)
   rhrCUD2Isopleths(cud, levels)
+}
+
+##' @export
+rhrArea.RhrBiCirc <- function(x, levels=95, ...) {
+  as.data.frame(rhrIsopleths(x, levels))
 }
 
 ##' @export

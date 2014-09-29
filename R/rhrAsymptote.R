@@ -202,7 +202,7 @@ plot.RhrHRAsymptote <- function(x, ...) {
 
   ## Input checks
   ## to be completed
-  cc <- melt(x$confints, id=c("level", "ns"))
+  cc <- reshape2::melt(x$confints, id=c("level", "ns"))
 
   ## totalA
   totalA <- x$totalA

@@ -77,7 +77,7 @@ rhrMCP <- function(xy, levels=95, proj4string=NA) {
     call=call,
     args=args,
     res=list(hr=bb$res)),
-    class=c("RhrMCP", "RhrEst", "list"))
+    class=c("RhrMCP", "RhrGeoEst", "RhrEst", "list"))
   return(invisible(res))
 }
 
