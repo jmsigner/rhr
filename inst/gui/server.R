@@ -12,10 +12,12 @@ if (debug) {
 }
 #####
 
-require(shiny)
-require(lubridate)
-require(knitr)
-require(shinyBS)
+library(brew)
+library(lubridate)
+library(knitr)
+library(markdown)
+library(shinyBS)
+library(shiny)
 
 shinyServer(function(input, output, session) {
   ## ============================================================================== ##  

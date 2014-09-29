@@ -55,7 +55,7 @@ rhrBBMM <- function(xyt,
   xyt <- as.ltraj(xyt[, 1:2], xyt[, 3], id=1)
   projString <- rhrProjString(xyt, projString=proj4string)
 
-  sigma1 <- liker(xyt, rangesig1=c(0, 10000), sig2=sigma2, plotit=FALSE)[[1]]$sig1
+  sigma1 <- adehabitatHR::liker(xyt, rangesig1=c(0, 10000), sig2=sigma2, plotit=FALSE)[[1]]$sig1
 
   res(trast) <- rep(min(res(trast)), 2)
   
@@ -64,7 +64,7 @@ rhrBBMM <- function(xyt,
   res <- tryCatch(
     expr=list(
       exitStatus=0,
-      res=raster(as(kernelbb(xyt, sig1=sigma1, sig2=sigma2, grid=as(trast, "SpatialPixels")), "SpatialGridDataFrame"))),
+      res=raster(as(adehabitatHR::kernelbb(xyt, sig1=sigma1, sig2=sigma2, grid=as(trast, "SpatialPixels")), "SpatialGridDataFrame"))),
     error=function(e) list(msg=e, exitStatus=1))
 
   if (res$exitStatus == 0) {

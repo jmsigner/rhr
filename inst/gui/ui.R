@@ -1,3 +1,5 @@
+library(shinyBS)
+library(shiny)
 
 shinyUI(
   navbarPage("Reproducible Home Range Analysis with R",

@@ -15,23 +15,23 @@ Depends:
     KernSmooth,
     raster,
     rgeos,
-    shiny,
-    knitr,
-    markdown,
     ascii,
-    adehabitatHR,
     xtable,
     lubridate,
-    brew,
     gridExtra,
-    shinyBS,
     rgdal,
     mvtnorm,
     mixtools,
     maptools,
     methods,
-    knitr,
     reshape2
+Imports:
+	adehabitatHR,
+	brew,
+	knitr,
+	markdown,
+	shiny,
+	shinyBS
 LinkingTo: Rcpp
 Suggests:
     testthat
