@@ -14,7 +14,7 @@
 ##' @author Johannes Signer
 ##' @export
 rhrHrefScaled <- function(xy,
-                          range=rhrHref(xy)$h * c(0.01, 100), 
+                          range=rhrHref(xy)$h * c(0.01, 2), 
                           trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.4), nrow=100, res=NULL),
                           numOfParts=1, level=95,
                           tol=0.1,
