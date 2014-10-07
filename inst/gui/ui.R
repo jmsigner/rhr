@@ -245,7 +245,6 @@ shinyUI(
                       fluidRow(
                         column(width=5, 
 ### FLuid 2 sides, one with steps, one with warnings, etc
-                               progressInit(),
                                h2("Select analytical steps"),
                                helpText("..."), 
                                h3("Home range analysis"), 

@@ -832,7 +832,7 @@ shinyServer(function(input, output, session) {
                     dismiss=FALSE,
                     append=FALSE)
 
-        withProgress(session, {
+        withProgress(message="starting analysis", {
 
           setProgress(message="Preparing calculations", detail="creating output files .....")
 
@@ -894,32 +894,32 @@ shinyServer(function(input, output, session) {
             ))
 
           setProgress(message="Creating html file")
-          src <- capture.output(brew(file=normalizePath(file.path(files, "body.brew"), winslash="/"), output=stdout(),
+          src <- capture.output(brew(file=normalizePath(file.path(files, "body.brew"), winslash="/", mustWork=FALSE), output=stdout(),
                                      envir=brewEnv))
           
 
           if (debug) cat(str(input$selectStep))
 
 
-          foo <- knit(text=src, output=normalizePath(file.path(outDir, "rhrReport.Rmd"), winslash="/"), quiet=TRUE,
+          foo <- knit(text=src, output=normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"), quiet=TRUE,
                       envir=knitEnv)
           
           setProgress(message="Just opening files", detail="new tab :) .....")
           markdownToHTML(
-            output=normalizePath(file.path(outDir, "rhrReport.html"), winslash="/"), 
-            file=normalizePath(file.path(outDir, "rhrReport.Rmd"), winslash="/"), 
-            stylesheet=normalizePath(file.path(files, "style.css"), winslash="/"),
-            template=normalizePath(file.path(files, "index.html"), winslash="/"))
+            output=normalizePath(file.path(outDir, "rhrReport.html"), mustWork=FALSE, winslash="/"), 
+            file=normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"), 
+            stylesheet=normalizePath(file.path(files, "style.css"), mustWork=FALSE, winslash="/"),
+            template=normalizePath(file.path(files, "index.html"), mustWork=FALSE, winslash="/"))
 
           ### pdf
           if (config()$general$content$doPdf) {
             setProgress(message="Generating PDF", detail="may take a some time")
-            brew(file=normalizePath(file.path(files, "report_brew.tex"), winslash="/"),
-                 output=normalizePath(file.path(outDir, "rhrReport.Rnw"), winslash="/"),
+            brew(file=normalizePath(file.path(files, "report_brew.tex"), mustWork=FALSE, winslash="/"),
+                 output=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
                  envir=brewEnv)
 
-            knit(input=normalizePath(file.path(outDir, "rhrReport.Rnw"), winslash="/"),
-                 output=normalizePath(file.path(outDir, "rhrReport.tex"), winslash="/"), 
+            knit(input=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
+                 output=normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"), 
                  quiet=TRUE,
                  envir=knitEnv)
             
@@ -930,9 +930,9 @@ shinyServer(function(input, output, session) {
 
           ## ------------------------------------------------------------------------------ ##  
           ## Clean up
-          file.remove(normalizePath(file.path(outDir, "rhrReport.Rnw"), winslash="/"))
-          file.remove(normalizePath(file.path(outDir, "rhrReport.Rmd"), winslash="/"))
-          file.remove(normalizePath(file.path(outDir, "rhrReport.tex"), winslash="/"))
+          file.remove(normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"))
+          file.remove(normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"))
+          file.remove(normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"))
           unlink(normalizePath(file.path(outDir, "figure"), winslash="/"), recursive=TRUE)
 
 

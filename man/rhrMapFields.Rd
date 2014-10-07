@@ -5,7 +5,7 @@
 \usage{
 rhrMapFields(dat, fields = list(lon = NA, lat = NA, id = NA, date = NA, time =
   NA), proj4string = NULL, dateFormat = "ymd", timeFormat = "hms",
-  defaultId = "Animal_1", duplicates)
+  defaultId = "Animal_1")
 }
 \arguments{
   \item{dat}{}
