@@ -324,8 +324,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           fnPlotPNG <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
           fnPlotPDF <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
           suppressMessages(p1 <- plot(sf, plotit=FALSE))
-          suppressMessages(ggsave(file=fnPlotPNG, p1))
-          suppressMessages(ggsave(file=fnPlotPDF, p1))
+          suppressMessages(ggsave(filename=fnPlotPNG, p1))
+          suppressMessages(ggsave(filename=fnPlotPDF, p1))
 
           plts <- list(
             list(name="Distribution of bootstrap results",
@@ -503,8 +503,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           fnPlotPNG <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
           fnPlotPDF <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
           suppressMessages(p1 <- plot(mcp))
-          suppressMessages(ggsave(file=fnPlotPNG, p1))
-          suppressMessages(ggsave(file=fnPlotPDF, p1))
+          suppressMessages(ggsave(filename=fnPlotPNG, p1))
+          suppressMessages(ggsave(filename=fnPlotPDF, p1))
 
           plts <- list(
             list(name="Isopleths",
@@ -1292,8 +1292,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                                  paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
 
           suppressMessages(p1 <- plot(locoh))
-          suppressMessages(ggsave(file=fnPlotPNG, p1))
-          suppressMessages(ggsave(file=fnPlotPDF, p1))
+          suppressMessages(ggsave(filename=fnPlotPNG, p1))
+          suppressMessages(ggsave(filename=fnPlotPDF, p1))
 
           plts <- list(
             list(name="Isopleths",
@@ -1417,8 +1417,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                                      paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".pdf")),mustWork=FALSE, winslash="/")
 
               suppressMessages(p1 <- plot(ca))
-              suppressMessages(ggsave(file=fnPlotPNG, p1))
-              suppressMessages(ggsave(file=fnPlotPDF, p1))
+              suppressMessages(ggsave(filename=fnPlotPNG, p1))
+              suppressMessages(ggsave(filename=fnPlotPDF, p1))
               
               fnPlotPNG1 <- normalizePath(file.path(outDirPlots,
                                      paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_extend.png")),mustWork=FALSE, winslash="/")
@@ -1435,8 +1435,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
               
 
               suppressMessages(p1 <- plot(ca))
-              suppressMessages(ggsave(file=fnPlotPNG, p1))
-              suppressMessages(ggsave(file=fnPlotPDF, p1))
+              suppressMessages(ggsave(filename=fnPlotPNG, p1))
+              suppressMessages(ggsave(filename=fnPlotPDF, p1))
 
               plts <- list(
                 list(name="Plot to determine core area",
@@ -1610,8 +1610,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                                      paste0("animal_", animalId, "_", scenariosKDE[scn, "basename"], ".pdf")),mustWork=FALSE, winslash="/")
 
               suppressMessages(p1 <- plot(asym))
-              suppressMessages(ggsave(file=fnPlotPNG, p1))
-              suppressMessages(ggsave(file=fnPlotPDF, p1))
+              suppressMessages(ggsave(filename=fnPlotPNG, p1))
+              suppressMessages(ggsave(filename=fnPlotPDF, p1))
 
               plts <- list(
                 list(name="Home range asymptote",
@@ -1656,8 +1656,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                                      paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".pdf")),mustWork=FALSE, winslash="/")
 
               suppressMessages(p1 <- plot(asym))
-              suppressMessages(ggsave(file=fnPlotPNG, p1))
-              suppressMessages(ggsave(file=fnPlotPDF, p1))
+              suppressMessages(ggsave(filename=fnPlotPNG, p1))
+              suppressMessages(ggsave(filename=fnPlotPDF, p1))
 
               plts <- list(
                 list(name="Home range asymptote",

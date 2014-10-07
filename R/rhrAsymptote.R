@@ -230,7 +230,7 @@ plot.RhrHRAsymptote <- function(x, ...) {
     p <- p + geom_vline(aes(xintercept=ns), linetype="solid", colour="red", data=asymR) 
   }
 
-  p <- p + facet_wrap(~level, ncol=2, scale="free_y") +
+  p <- p + facet_wrap(~level, ncol=2, scales="free_y") +
     theme_bw() +
       theme(legend.position="none") +
         labs(x="Number of points", y="Area")

@@ -20,6 +20,7 @@ Depends:
 Imports:
     ascii,
     adehabitatHR,
+    adehabitatLT,
     brew,
     gridExtra,
     KernSmooth,

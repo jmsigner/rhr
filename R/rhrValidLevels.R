@@ -22,7 +22,7 @@ rhrCorrectLevels <- function(str, low=1, upper=100, defaultLevel=95) {
     s <- s[s >= low & s <= upper]
 
     if (length(s) == 0) {
-      s <- default.level
+      s <- defaultLevel
     }
 
     # order and remove duplicates
@@ -33,7 +33,7 @@ rhrCorrectLevels <- function(str, low=1, upper=100, defaultLevel=95) {
     if (str >= low & str <= upper) {
       s <- str # retrun str, if its between acceptable levels
     } else {
-      s <- default.level # return default level
+      s <- defaultLevel # return default level
     }  
   }
   return(s)

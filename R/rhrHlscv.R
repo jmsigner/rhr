@@ -52,7 +52,7 @@ rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
   }
 
   if (ncol(xy) > 2) {
-    warning("rhrHlscv: xyz: using only the first two columns")
+    warning("rhrHlscv: xy: using only the first two columns")
   }
 
   if (!rescale %in% c("unitvar", "xvar", "none")) {
@@ -106,7 +106,7 @@ rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
 
   ## prepare return
   if (rescale == "unitvar") {
-    h <- h * c(sd(xyz[, 1]), sd(xyz[, 2]))
+    h <- h * c(sd(xy[, 1]), sd(xy[, 2]))
   } else {
     h <- c(h, h)
   }

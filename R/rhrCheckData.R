@@ -1,3 +1,10 @@
+##' Check if valid data were provided
+##'
+##' Check if the provided data meets certain criteria
+##' @param dat A data object.
+##' @param returnSP A logical value indicating whether or not a \code{SpatialPoints} should be returned.
+##' @return \code{data.frame} or \code{SpatialPoints}
+##' @author Johannes Signer
 rhrCheckData <- function(dat, returnSP=FALSE) {
   
   if (!returnSP) {
