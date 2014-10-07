@@ -224,7 +224,7 @@ plot.RhrHRAsymptote <- function(x, ...) {
     geom_point(alpha=0.5) +  
       geom_ribbon(data=dd, aes(x=xx, ymin=ymin, ymax=ymax, group=NULL, y=NULL, alpha=0.4)) +
         geom_hline(aes(yintercept=area), linetype="dashed", data=totalA)  +
-          geom_line(aes(x=ns, y=value, group=variable), alpha=0.5, data=melt(x$confints, id.vars=c("level", "ns"))) 
+          geom_line(aes(x=ns, y=value, group=variable), alpha=0.5, data=reshape2::melt(x$confints, id.vars=c("level", "ns"))) 
 
   if (nrow(asymR) >= 1) {
     p <- p + geom_vline(aes(xintercept=ns), linetype="solid", colour="red", data=asymR) 

@@ -57,8 +57,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     timeFormat <- "hms"
     inGUI <- FALSE
 
-    outDir <- normalizePath(file.path(tempdir(), paste0("rhr", format(Sys.time(), "%Y%m%d%H%M%S"))), winslash="/")
-    outDir <- normalizePath(file.path(tempdir(), paste0("rhr", format(Sys.time(), "rumba"))), winslash="/")
+    outDir <- normalizePath(file.path(tempdir(), paste0("rhr", format(Sys.time(), "%Y%m%d%H%M%S"))), mustWork=FALSE, winslash="/")
+    outDir <- normalizePath(file.path(tempdir(), paste0("rhr", format(Sys.time(), "rumba"))), mustWork=FALSE, winslash="/")
     dat <- rhrMapFields(dat, fields, dateFormat=dateFormat, timeFormat=timeFormat)$dat
     dat1 <- rhrMapFields(dat, fields, dateFormat=dateFormat, timeFormat=timeFormat)
     names(dat)[1:3] <- c("id", "lon", "lat")
@@ -189,10 +189,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     dir.create(outDir, recursive=TRUE)
   }
 
-  outDirData  <- normalizePath(file.path(outDir, "results", "data"), winslash="/")
-  outDirPlots <- normalizePath(file.path(outDir, "results", "plots"), winslash="/")
-  outDirVect  <- normalizePath(file.path(outDir, "results", "vector"), winslash="/")
-  outDirRast  <- normalizePath(file.path(outDir, "results", "raster"), winslash="/")
+  outDirData  <- normalizePath(file.path(outDir, "results", "data"),mustWork=FALSE, winslash="/")
+  outDirPlots <- normalizePath(file.path(outDir, "results", "plots"),mustWork=FALSE, winslash="/")
+  outDirVect  <- normalizePath(file.path(outDir, "results", "vector"),mustWork=FALSE, winslash="/")
+  outDirRast  <- normalizePath(file.path(outDir, "results", "raster"),mustWork=FALSE, winslash="/")
 
   if (!file.exists(outDirData)) {
     dir.create(outDirData, recursive=TRUE)
@@ -312,17 +312,17 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                        error=function(e) e)
 
         if (inherits(sf, "error")) {
-          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(sf, file=fnRDS)
           list(rds=fnRDS)
         } else {
           ## Write the results
-          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(sf, file=fnRDS)
 
           ## Plot results
-          fnPlotPNG <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")), winslash="/")
-          fnPlotPDF <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")), winslash="/")
+          fnPlotPNG <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
+          fnPlotPDF <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
           suppressMessages(p1 <- plot(sf, plotit=FALSE))
           suppressMessages(ggsave(file=fnPlotPNG, p1))
           suppressMessages(ggsave(file=fnPlotPDF, p1))
@@ -343,7 +343,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), winslash="/")
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
                       Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
 
@@ -393,18 +393,18 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                        error=function(e) e)
 
         if (inherits(ttsi, "error")) {
-          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(ttsi, file=fnRDS)
           list(rds=fnRDS)
         } else {
 
           ## Write the results
-          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(ttsi, file=fnRDS)
 
           ## Plot results
-          fnPlotPNG <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")), winslash="/")
-          fnPlotPDF <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")), winslash="/")
+          fnPlotPNG <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
+          fnPlotPDF <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
 
           png(fnPlotPNG)
           print(plot(ttsi))
@@ -421,7 +421,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
             )
 
           ## Write the message
-          messageRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, "_message.Rds")), winslash="/")
+          messageRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, "_message.Rds")),mustWork=FALSE, winslash="/")
           msg1 <- paste0("Time to statistical independence was ", if (ttsi$cvReached) paste0("reached after ", ttsi$cvReachedAt, " seconds.") else "not reached.")
 
           saveRDS(msg1, file=messageRDS)
@@ -441,7 +441,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), winslash="/")
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
                       Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
 
@@ -496,12 +496,12 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           ## Write the results
 
           ## Write the results
-          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(mcp, file=fnRDS)
 
           ## Plot results
-          fnPlotPNG <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")), winslash="/")
-          fnPlotPDF <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")), winslash="/")
+          fnPlotPNG <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
+          fnPlotPDF <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
           suppressMessages(p1 <- plot(mcp))
           suppressMessages(ggsave(file=fnPlotPNG, p1))
           suppressMessages(ggsave(file=fnPlotPDF, p1))
@@ -514,7 +514,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")),mustWork=FALSE, winslash="/")
           t1 <- data.frame(rhrArea(mcp, args[[thisEst]]$levels))
           names(t1) <- c("Level", "Area")
           t1$Area <- rhrConvertUnit(t1$Area, inUnit, outUnit)
@@ -527,7 +527,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## Spatial Data
           fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
           writeOGR(rhrIsopleths(mcp), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                    overwrite_layer=TRUE)
 
@@ -559,7 +559,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
       ## Spatial Data
       fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")), winslash="/")
+                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
       writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                overwrite_layer=TRUE)
 
@@ -572,7 +572,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), winslash="/")
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
                       Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
 
@@ -639,19 +639,19 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
         if (inherits(kde, "error")) {
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(kde, file=fnRDS)
           return(kde)
         } else {
           ## Write the results
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(kde, file=fnRDS)
           ## Plot results
           fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
           fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
           png(fnPlotPNG)
           plot(kde)
           dev.off()
@@ -668,12 +668,12 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")),mustWork=FALSE, winslash="/")
           t1 <- data.frame(Parameter="Value for bandwidth", Value=paste0(round(hres$h, 2), collapse=","))
           saveRDS(t1, file=fnTbl1)
 
           fnTbl2 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")),mustWork=FALSE, winslash="/")
           t2 <- data.frame(rhrArea(kde, args[[thisEst]]$levels))
           names(t2) <- c("Area", "Level")
           t2$Area <- rhrConvertUnit(t2$Area, inUnit, outUnit)
@@ -689,7 +689,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## Spatial Data
           fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
           writeOGR(rhrIsopleths(kde), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                    overwrite_layer=TRUE)
 
@@ -698,7 +698,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## raster
           fnRast <- normalizePath(file.path(outDirRast,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")),mustWork=FALSE, winslash="/")
           writeRaster(rhrUD(kde), dsn=fnVect, filename=fnRast, overwrite=TRUE)
 
           rsts <- list(
@@ -707,7 +707,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           ## Write the message
           if (!is.null(hres$converged)) {
             if (!hres$converged) {
-              messageRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, "_message.Rds")), winslash="/")
+              messageRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, "_message.Rds")),mustWork=FALSE, winslash="/")
               msg1 <- paste0("Caution, bandwidth with least square cross validation did not converge, defaulted back to the smallest value in search range")
 
               saveRDS(msg1, file=messageRDS)
@@ -744,7 +744,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
       ## Spatial Data
       fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")), winslash="/")
+                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
       writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                overwrite_layer=TRUE)
 
@@ -755,7 +755,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     }
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), winslash="/")
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
                    Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
     saveRDS(sfp, file=fnRDS)
@@ -813,19 +813,19 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
         if (inherits(bbmm, "error")) {
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(bbmm, file=fnRDS)
           return(bbmm)
         } else {
           ## Write the results
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(bbmm, file=fnRDS)
           ## Plot results
           fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
           fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
           png(fnPlotPNG)
           plot(rhrUD(bbmm))
           dev.off()
@@ -842,12 +842,12 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")),mustWork=FALSE, winslash="/")
           t1 <- data.frame(Parameter="Value for Sigma 1", Value=paste0(round(bbmm$sigma1, 2), collapse=","))
           saveRDS(t1, file=fnTbl1)
 
           fnTbl2 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")),mustWork=FALSE, winslash="/")
           t2 <- data.frame(rhrArea(bbmm, args[[thisEst]]$levels))
           names(t2) <- c("Area", "Level")
           t2$Area <- rhrConvertUnit(t2$Area, inUnit, outUnit)
@@ -861,7 +861,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## Spatial Data
           fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
           writeOGR(rhrIsopleths(bbmm, levels=args[[thisEst]]$levels), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                    overwrite_layer=TRUE)
 
@@ -870,7 +870,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## raster
           fnRast <- normalizePath(file.path(outDirRast,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")),mustWork=FALSE, winslash="/")
           writeRaster(rhrUD(bbmm), dsn=fnVect, filename=fnRast, overwrite=TRUE)
 
           rsts <- list(
@@ -899,7 +899,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
       ## Spatial Data
       fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")), winslash="/")
+                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
       writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                overwrite_layer=TRUE)
 
@@ -910,7 +910,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     }
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), winslash="/")
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
                       Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
 
@@ -961,19 +961,19 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
         if (inherits(est, "error")) {
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(est, file=fnRDS)
           return(est)
         } else {
           ## Write the results
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(est, file=fnRDS)
           ## Plot results
           fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
           fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
           png(fnPlotPNG)
           print(plot(est, levels=args[[thisEst]]$levels))
           dev.off()
@@ -990,7 +990,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")),mustWork=FALSE, winslash="/")
           t1 <- data.frame(Parameter=c("Mu", "Sigma", "AIC", "AICc"),
                            Value=c(paste0(round(est$parameters$mean, 2), collapse=", "),
                              paste0(round(est$parameters$sigma, 2), collapse=", "),
@@ -1000,7 +1000,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           saveRDS(t1, file=fnTbl1)
 
           fnTbl2 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")),mustWork=FALSE, winslash="/")
           t2 <- data.frame(rhrArea(est, args[[thisEst]]$levels))
           names(t2) <- c("Area", "Level")
           t2$Area <- rhrConvertUnit(t2$Area, inUnit, outUnit)
@@ -1014,7 +1014,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## Spatial Data
           fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
           writeOGR(rhrIsopleths(est, levels=args[[thisEst]]$levels), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                    overwrite_layer=TRUE)
 
@@ -1023,7 +1023,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## raster
           fnRast <- normalizePath(file.path(outDirRast,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")),mustWork=FALSE, winslash="/")
           writeRaster(rhrUD(est), dsn=fnVect, filename=fnRast, overwrite=TRUE)
 
           rsts <- list(
@@ -1052,7 +1052,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
       ## Spatial Data
       fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")), winslash="/")
+                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
       writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                overwrite_layer=TRUE)
 
@@ -1063,7 +1063,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     }
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), winslash="/")
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
                       Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
 
@@ -1114,19 +1114,19 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
         if (inherits(est, "error")) {
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(est, file=fnRDS)
           return(est)
         } else {
           ## Write the results
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(est, file=fnRDS)
           ## Plot results
           fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
           fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
           png(fnPlotPNG)
           print(plot(est, levels=args[[thisEst]]$levels))
           dev.off()
@@ -1143,7 +1143,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")),mustWork=FALSE, winslash="/")
           t1 <- data.frame(Parameter=c("Mu1", "Sigma1", "Mu2", "Sigma2", "AIC", "AICc"),
                            Value=c(
                              paste0(round(est$parameters$mean1, 2), collapse=", "),
@@ -1156,7 +1156,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           saveRDS(t1, file=fnTbl1)
 
           fnTbl2 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")),mustWork=FALSE, winslash="/")
           t2 <- data.frame(rhrArea(est, args[[thisEst]]$levels))
           names(t2) <- c("Area", "Level")
           t2$Area <- rhrConvertUnit(t2$Area, inUnit, outUnit)
@@ -1170,7 +1170,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## Spatial Data
           fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
           writeOGR(rhrIsopleths(est, levels=args[[thisEst]]$levels), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                    overwrite_layer=TRUE)
 
@@ -1179,7 +1179,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## raster
           fnRast <- normalizePath(file.path(outDirRast,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")),mustWork=FALSE, winslash="/")
           writeRaster(rhrUD(est), dsn=fnVect, filename=fnRast, overwrite=TRUE)
 
           rsts <- list(
@@ -1208,7 +1208,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
       ## Spatial Data
       fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")), winslash="/")
+                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
       writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                overwrite_layer=TRUE)
 
@@ -1219,7 +1219,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     }
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), winslash="/")
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
                       Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
 
@@ -1276,20 +1276,20 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
         if (inherits(locoh, "error")) {
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_rhrLoCoH_type_", paste0(scn, collapse="_"), ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_rhrLoCoH_type_", paste0(scn, collapse="_"), ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(locoh, file=fnRDS)
           return(locoh)
         } else {
           ## Write the results
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(locoh, file=fnRDS)
 
           ## Plot results
           fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
           fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")), winslash="/")
+                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
 
           suppressMessages(p1 <- plot(locoh))
           suppressMessages(ggsave(file=fnPlotPNG, p1))
@@ -1303,12 +1303,12 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")),mustWork=FALSE, winslash="/")
           t1 <- data.frame(Parameter="n", Value=locoh$res$n)
           saveRDS(t1, file=fnTbl1)
 
           fnTbl2 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")), winslash="/")
+                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")),mustWork=FALSE, winslash="/")
           t2 <- data.frame(rhrArea(locoh)[, 1:2])
           names(t2) <- c("Level", "Area")
           t2$Area <- rhrConvertUnit(t2$Area, inUnit, outUnit)
@@ -1323,7 +1323,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
           ## Spatial Data
           fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")), winslash="/")
+                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
           writeOGR(rhrIsopleths(locoh), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                    overwrite_layer=TRUE)
 
@@ -1353,7 +1353,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
       ## Spatial Data
       fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")), winslash="/")
+                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
       writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                overwrite_layer=TRUE)
 
@@ -1364,7 +1364,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     }
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), winslash="/")
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
                       Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
 
@@ -1401,29 +1401,29 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
             if (inherits(ca, "error")) {
               fnRDS <- normalizePath(file.path(outDirData,
-                                 paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".Rds")), winslash="/")
+                                 paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".Rds")),mustWork=FALSE, winslash="/")
               saveRDS(ca, file=fnRDS)
               return(ca)
             } else {
               ## Write the results
               fnRDS <- normalizePath(file.path(outDirData,
-                                 paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".Rds")), winslash="/")
+                                 paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".Rds")),mustWork=FALSE, winslash="/")
               saveRDS(ca, file=fnRDS)
 
               ## Plot results
               fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".png")), winslash="/")
+                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".png")),mustWork=FALSE, winslash="/")
               fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".pdf")), winslash="/")
+                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".pdf")),mustWork=FALSE, winslash="/")
 
               suppressMessages(p1 <- plot(ca))
               suppressMessages(ggsave(file=fnPlotPNG, p1))
               suppressMessages(ggsave(file=fnPlotPDF, p1))
               
               fnPlotPNG1 <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_extend.png")), winslash="/")
+                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_extend.png")),mustWork=FALSE, winslash="/")
               fnPlotPDF1 <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_extend.pdf")), winslash="/")
+                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_extend.pdf")),mustWork=FALSE, winslash="/")
 
               png(fnPlotPNG1)
               print(plot(ca$rast))
@@ -1448,7 +1448,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                 )
 
               fnTbl1 <- normalizePath(file.path(outDirData,
-                                  paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_tbl1.Rds")), winslash="/")
+                                  paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_tbl1.Rds")),mustWork=FALSE, winslash="/")
               t1 <- data.frame(Parameter="Size", Value=round(rhrArea(ca), 2))
               t1$Value <- rhrConvertUnit(t1$Value, inUnit, outUnit)
               saveRDS(t1, file=fnTbl1)
@@ -1460,7 +1460,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
               ## Spatial Data
               fnVect <- normalizePath(file.path(outDirVect,
-                                  paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_core_area.shp")), winslash="/")
+                                  paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_core_area.shp")),mustWork=FALSE, winslash="/")
               writeOGR(rhrIsopleths(ca), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                        overwrite_layer=TRUE)
 
@@ -1485,7 +1485,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           ll <- list(message="Error, in order calculate core areas, you need also to calculate KDE")
           class(ll) <- "error"
           fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animalId, "_rhrCoreArea_type_", paste0(scn, collapse="_"), ".Rds")), winslash="/")
+                             paste0("animal_", animalId, "_rhrCoreArea_type_", paste0(scn, collapse="_"), ".Rds")),mustWork=FALSE, winslash="/")
           saveRDS(ll, file=fnRDS)
           return(list(rds=fnRDS))
 
@@ -1513,7 +1513,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
       ## Spatial Data
       fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")), winslash="/")
+                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
       writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
                overwrite_layer=TRUE)
 
@@ -1594,20 +1594,20 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
             
             if (inherits(asym, "error")) {
               fnRDS <- normalizePath(file.path(outDirData,
-                                 paste0("animal_", animalId, "_", scenariosKDE[scn, "basename"], ".Rds")), winslash="/")
+                                 paste0("animal_", animalId, "_", scenariosKDE[scn, "basename"], ".Rds")),mustWork=FALSE, winslash="/")
               saveRDS(asym, file=fnRDS)
               return(list(rds=fnRDS))
             } else {
               ## Write the results
               fnRDS <- normalizePath(file.path(outDirData,
-                                 paste0("animal_", animalId, "_", scenariosKDE[scn, "basename"], ".Rds")), winslash="/")
+                                 paste0("animal_", animalId, "_", scenariosKDE[scn, "basename"], ".Rds")),mustWork=FALSE, winslash="/")
               saveRDS(asym, file=fnRDS)
 
               ## Plot results
               fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenariosKDE[scn, "basename"], ".png")), winslash="/")
+                                     paste0("animal_", animalId, "_", scenariosKDE[scn, "basename"], ".png")),mustWork=FALSE, winslash="/")
               fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenariosKDE[scn, "basename"], ".pdf")), winslash="/")
+                                     paste0("animal_", animalId, "_", scenariosKDE[scn, "basename"], ".pdf")),mustWork=FALSE, winslash="/")
 
               suppressMessages(p1 <- plot(asym))
               suppressMessages(ggsave(file=fnPlotPNG, p1))
@@ -1640,20 +1640,20 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
             
             if (inherits(asym, "error")) {
               fnRDS <- normalizePath(file.path(outDirData,
-                                 paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".Rds")), winslash="/")
+                                 paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".Rds")),mustWork=FALSE, winslash="/")
               saveRDS(asym, file=fnRDS)
               return(list(rds=fnRDS))
             } else {
               ## Write the results
               fnRDS <- normalizePath(file.path(outDirData,
-                                 paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".Rds")), winslash="/")
+                                 paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".Rds")),mustWork=FALSE, winslash="/")
               saveRDS(asym, file=fnRDS)
 
               ## Plot results
               fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".png")), winslash="/")
+                                     paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".png")),mustWork=FALSE, winslash="/")
               fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".pdf")), winslash="/")
+                                     paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".pdf")),mustWork=FALSE, winslash="/")
 
               suppressMessages(p1 <- plot(asym))
               suppressMessages(ggsave(file=fnPlotPNG, p1))
@@ -1686,7 +1686,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
             ll <- list(message="Error, in order calculate home range asymptote, you must also select MCP or KDE")
             class(ll) <- "error"
             fnRDS <- normalizePath(file.path(outDirData,
-                               paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".Rds")), winslash="/")
+                               paste0("animal_", animalId, "_", scenariosMCP[scn, "basename"], ".Rds")),mustWork=FALSE, winslash="/")
             saveRDS(ll, file=fnRDS)
             return(list(rds=fnRDS))
 
@@ -1695,7 +1695,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
       names(resList$est[[thisEst]]$res) <- names(dat)
     }
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), winslash="/")
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
                       Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
 

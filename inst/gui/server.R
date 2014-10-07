@@ -120,7 +120,7 @@ shinyServer(function(input, output, session) {
         content=list(
           doPdf=input$configOutputMkPdf,
           doCp=input$configOutputCpWd,
-          wd=normalizePath(.outDir, winslash="/"), 
+          wd=normalizePath(.outDir, mustWork=FALSE, winslash="/"), 
           ## doZip=input$configOutputZip,
           ## zipPath=normalizePath(file.path(outDir, paste0(runId, ".zip")), winslash="/"),
           fileName=if (!is.null(input$readFileFile$name)) input$readFileFile$name else "data read from R", 
@@ -761,7 +761,7 @@ shinyServer(function(input, output, session) {
         closeAlert(session, "rhrAnalyzeInfo1")
 
         runId <- paste0("rhr-run-", format(now(), "%Y%m%d%H%M%S"))
-        outDir <- normalizePath(file.path(normalizePath(tempdir(), winslash="/"), runId), winslash="/")
+        outDir <- normalizePath(file.path(normalizePath(tempdir(), mustWork=FALSE, winslash="/"), runId), mustWork=FALSE, winslash="/")
         dir.create(outDir)
         addResourcePath("out", outDir)
 
@@ -933,7 +933,7 @@ shinyServer(function(input, output, session) {
           file.remove(normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"))
           file.remove(normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"))
           file.remove(normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"))
-          unlink(normalizePath(file.path(outDir, "figure"), winslash="/"), recursive=TRUE)
+          unlink(normalizePath(file.path(outDir, "figure"), mustWork=FALSE, winslash="/"), recursive=TRUE)
 
 
           ## ------------------------------------------------------------------------------ ##  
@@ -955,17 +955,17 @@ shinyServer(function(input, output, session) {
           ## }
 
           if (config()$general$content$doCp) {
-            dir.create(normalizePath(file.path(config()$general$content$wd, runId), winslash="/"))
+            dir.create(normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/"))
             filesNames <- list.files(outDir, full.names=TRUE, recursive=FALSE, ignore.case=TRUE)
             sapply(filesNames, function(x)
-                   file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId), winslash="/")))
+                   file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/")))
 
             for (f in c("data", "plots", "vector", "raster")) {
-              dir.create(normalizePath(file.path(config()$general$content$wd, runId, f), winslash="/"))
-              filesNames <- list.files(normalizePath(file.path(outDir, "results", f), winslash="/"), full.names=TRUE, recursive=TRUE,
+              dir.create(normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/"))
+              filesNames <- list.files(normalizePath(file.path(outDir, "results", f), mustWork=FALSE, winslash="/"), full.names=TRUE, recursive=TRUE,
                                        ignore.case=TRUE)
               sapply(filesNames, function(x)
-                     file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId, f), winslash="/")))
+                     file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/")))
             }
             
           }
@@ -978,7 +978,7 @@ shinyServer(function(input, output, session) {
                       append=TRUE)
           
         })
-        browseURL(normalizePath(file.path(outDir, "rhrReport.html"), winslash="/"))
+        browseURL(normalizePath(file.path(outDir, "rhrReport.html"), mustWork=FALSE, winslash="/"))
       } else {
         createAlert(session, "rhrAnalyzeInfo", "rhrAnalyzeInfo1",
                     "Not ready yet",
