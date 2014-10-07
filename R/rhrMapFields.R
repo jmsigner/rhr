@@ -11,8 +11,9 @@
 ##' @return RhrMappedData
 ##' @export 
 ##' @author Johannes Signer
-rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=NA), proj4string=NULL, dateFormat="ymd", timeFormat="hms",
-                         defaultId="Animal_1", duplicates) {
+rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=NA),
+                         proj4string=NULL, dateFormat="ymd", timeFormat="hms",
+                         defaultId="Animal_1") {
   ## Debug
   if (FALSE) {
     dat <- datSH
@@ -105,6 +106,10 @@ rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=N
 
   if (!is.null(fields$date) && !is.null(fields$time)) {
     if (dateFormat %in% c("dmy", "ymd", "mdy") && timeFormat %in% c("hms", "hm")) {
+
+      dateFormat <- paste0("lubridate::", dateFormat)
+      timeFormat <- paste0("lubridate::", timeFormat)
+
       dateParsed <- eval(parse(text=paste0(dateFormat, "(dat[, fields$date])")))
       timeParsed <- eval(parse(text=paste0(timeFormat, "(dat[, fields$time])")))  
       outdat$timestamp <- dateParsed + timeParsed
@@ -117,8 +122,10 @@ rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=N
     outdat$timestamp <- NA
   } else if (!is.null(fields$date) && is.null(fields$time)) {
     if (dateFormat %in% c("dmy", "ymd", "mdy")) {
+      dateFormat <- paste0("lubridate::", dateFormat)
       outdat$timestamp <- eval(parse(text=paste0(dateFormat, "(dat[, fields$date])")))  
     } else if (dateFormat %in% c("ymd_h", "ymd_hm", "ymd_hms", "dmy_h", "dmy_hm", "dmy_hms", "mdy_h", "mdy_hm", "mdy_hms")) {
+      dateFormat <- paste0("lubridate::", dateFormat)
       outdat$timestamp <- eval(parse(text=paste0(dateFormat, "(dat[, fields$date])")))  
     } else {
       warning("rhrMapFields: date format couldn't be parsed")

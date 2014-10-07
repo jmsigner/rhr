@@ -41,17 +41,11 @@ shinyServer(function(input, output, session) {
 
     if (is.null(.datFromR)) {
 
-      ## Values
-                                        #values <- reactiveValues()
-                                        #values$undoSubset <- NULL
-      if (debug) cat("\n Entered data !~u~! \n")
-
       res <- paste0('Unable to load data, did you select a file?')
       dat <- NULL
       exitStatus <- 1
 
 
-      if (debug) cat(input$readFileFieldSep, "\n", file=stderr())
       if (!is.null(input$readFileFile)) {
         sep <- switch(input$readFileFieldSep,
                       comma=",",
@@ -69,8 +63,6 @@ shinyServer(function(input, output, session) {
                                     hasHeader=input$readFileHasHeader),
                         error=function(e) e)
 
-        if (debug) cat(class(dat))
-
         if (!is(dat, "error")) {
           res <- "Data successfully read"
           exitStatus <- 0
@@ -79,8 +71,6 @@ shinyServer(function(input, output, session) {
           exitStatus <- 1
         }
       } 
-      
-### Seperate into message and preview
       list(data=dat, message=res, exitStatus=exitStatus)
     } else {
       list(data=.datFromR, message="Data read from R", exitStatus=0)

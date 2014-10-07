@@ -12,26 +12,26 @@ Depends:
     ggplot2,
     grid,
     sp,
-    KernSmooth,
     raster,
     rgeos,
-    ascii,
-    xtable,
-    lubridate,
-    gridExtra,
     rgdal,
     maptools,
-    methods,
+    methods
 Imports:
+    ascii,
     adehabitatHR,
     brew,
+    gridExtra,
+    KernSmooth,
     knitr,
+    lubridate,
     markdown,
     mixtools,
     mvtnorm,
     reshape2,
-    shiny,
-    shinyBS
+    shiny (>= 0.10.2.1),
+    shinyBS,
+    xtable
 LinkingTo: Rcpp
 Suggests:
     testthat
