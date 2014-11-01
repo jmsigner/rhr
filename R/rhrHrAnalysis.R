@@ -275,7 +275,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   if ("rhrSiteFidelity" %in% what) {
     thisEst <- "rhrSiteFidelity"
-    if (inGUI) setProgress(message="Starting with site fidelity", detail=".....")
+    if (inGUI) shiny::setProgress(message="Starting with site fidelity", detail=".....")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
 
     ## sanity check on args
@@ -304,7 +304,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
 
       resLog <- c(resLog, paste0("[", Sys.time(), "]: rhrSiteFidelity", animal[1, "id"]))
-      if (inGUI) setProgress(message="Site fidelity",
+      if (inGUI) shiny::setProgress(message="Site fidelity",
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
@@ -358,7 +358,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   if ("rhrTTSI" %in% what) {
     thisEst <- "rhrTTSI"
-    if (inGUI) setProgress(message=thisEst, detail="initializing")
+    if (inGUI) shiny::setProgress(message=thisEst, detail="initializing")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
 
     ## sanity check on args
@@ -384,7 +384,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
       resLog <- c(resLog, paste0("[", Sys.time(), "]: rhrTTSI", animal[1, "id"]))
-      if (inGUI) setProgress(message="Time to statistical independence",
+      if (inGUI) shiny::setProgress(message="Time to statistical independence",
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
@@ -458,7 +458,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
   if ("rhrMCP" %in% what) {
     thisEst <- "rhrMCP"
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with ", thisEst))
-    if (inGUI) setProgress(message=paste0("Starting with ", thisEst), detail=".....")
+    if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
 
     ## sanity check on args
     if (thisEst %in% names(args)) {
@@ -482,7 +482,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
       resLog <- c(resLog, paste0("[", Sys.time(), "]: rhrMCP ", animal[1, "id"]))
-      if (inGUI) setProgress(message=thisEst,
+      if (inGUI) shiny::setProgress(message=thisEst,
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
@@ -585,7 +585,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   if ("rhrKDE" %in% what) {
     thisEst <- "rhrKDE"
-    if (inGUI) setProgress(message=paste0("Starting with ", thisEst), detail=".....")
+    if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
     ## sanity check on args
     if (!is.null(args[[thisEst]])) {
@@ -614,7 +614,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
       resLog <- c(resLog, paste0("[", Sys.time(), "]: ", thisEst, " ", animal[1, "id"]))
-      if (inGUI) setProgress(message=thisEst,
+      if (inGUI) shiny::setProgress(message=thisEst,
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
@@ -767,7 +767,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   if ("rhrBBMM" %in% what) {
     thisEst <- "rhrBBMM"
-    if (inGUI) setProgress(message=paste0("Starting with ", thisEst), detail=".....")
+    if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
     ## sanity check on args
     if (!is.null(args[[thisEst]])) {
@@ -799,7 +799,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
       resLog <- c(resLog, paste0("[", Sys.time(), "]: ", thisEst, " ", animal[1, "id"]))
-      if (inGUI) setProgress(message=thisEst,
+      if (inGUI) shiny::setProgress(message=thisEst,
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
@@ -923,7 +923,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   if ("rhrUniNorm" %in% what) {
     thisEst <- "rhrUniNorm"
-    if (inGUI) setProgress(message=paste0("Starting with ", thisEst), detail=".....")
+    if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
     ## sanity check on args
     if (!is.null(args[[thisEst]])) {
@@ -949,7 +949,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
       resLog <- c(resLog, paste0("[", Sys.time(), "]: ", thisEst, " ", animal[1, "id"]))
-      if (inGUI) setProgress(message=thisEst,
+      if (inGUI) shiny::setProgress(message=thisEst,
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
@@ -1076,7 +1076,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   if ("rhrBiNorm" %in% what) {
     thisEst <- "rhrBiNorm"
-    if (inGUI) setProgress(message=paste0("Starting with ", thisEst), detail=".....")
+    if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
     ## sanity check on args
     if (!is.null(args[[thisEst]])) {
@@ -1102,7 +1102,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
       resLog <- c(resLog, paste0("[", Sys.time(), "]: ", thisEst, " ", animal[1, "id"]))
-      if (inGUI) setProgress(message=thisEst,
+      if (inGUI) shiny::setProgress(message=thisEst,
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
@@ -1232,7 +1232,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   if ("rhrLoCoH" %in% what) {
     thisEst <- "rhrLoCoH"
-    if (inGUI) setProgress(message="Local Convex Hull", detail="initializing")
+    if (inGUI) shiny::setProgress(message="Local Convex Hull", detail="initializing")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with rhrLoCoH"))
 
     ## sanity check on args
@@ -1265,7 +1265,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
       resLog <- c(resLog, paste0("[", Sys.time(), "]: rhrLoCoH ", animal[1, "id"]))
-      if (inGUI) setProgress(message="Local Convex Hull",
+      if (inGUI) shiny::setProgress(message="Local Convex Hull",
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
@@ -1377,7 +1377,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   if ("rhrCoreArea" %in% what) {
     thisEst <- "rhrCoreArea"
-    if (inGUI) setProgress(message=thisEst, detail="initializing")
+    if (inGUI) shiny::setProgress(message=thisEst, detail="initializing")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with rhrCoreArea"))
 
     if ("rhrKDE" %in% what) {
@@ -1390,7 +1390,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
       resList$est[[thisEst]]$res <- lapply(names(dat), function(animalId) {
         resLog <- c(resLog, paste0("[", Sys.time(), "]: rhrCoreArea ", animalId))
-        if (inGUI) setProgress(message="Core Area ",
+        if (inGUI) shiny::setProgress(message="Core Area ",
                                detail=paste0("Starting with animal: ", animalId, " (", which(animalId == names(dat)), " of ",
                                  length(dat), ")"))
 
@@ -1477,7 +1477,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
       
       resList$est[[thisEst]]$res <- lapply(names(dat), function(animalId) {
         resLog <- c(resLog, paste0("[", Sys.time(), "]: rhrCoreArea ", animalId))
-        if (inGUI) setProgress(message="Core Area ",
+        if (inGUI) shiny::setProgress(message="Core Area ",
                                detail=paste0("Starting with animal: ", animalId, " (", which(animalId == names(dat)), " of ",
                                  length(dat), ")"))
 
@@ -1529,7 +1529,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   if ("rhrAsymptote" %in% what) {
     thisEst <- "rhrAsymptote"
-    if (inGUI) setProgress(message=paste0("Starting with ", thisEst), detail=".....")
+    if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
 
     ## sanity check on args
@@ -1572,7 +1572,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
       resList$est[[thisEst]]$res <- lapply(names(dat), function(animalId) {
         resLog <- c(resLog, paste0("[", Sys.time(), "]: rhrAsymptote ", animalId))
-        if (inGUI) setProgress(message=thisEst,
+        if (inGUI) shiny::setProgress(message=thisEst,
                                detail=paste0("Starting with animal: ", animalId, " (", which(animalId == names(dat)), " of ",
                                  length(dat), ")"))
 
@@ -1677,7 +1677,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     } else {
       resList$est[[thisEst]]$res <- lapply(names(dat), function(animalId) {
         resLog <- c(resLog, paste0("[", Sys.time(), "]: rhrAsymptote ", animalId))
-        if (inGUI) setProgress(message=thisEst,
+        if (inGUI) shiny::setProgress(message=thisEst,
                                detail=paste0("Starting with animal: ", animalId, " (", which(animalId == names(dat)), " of ",
                                  length(dat), ")"))
 
