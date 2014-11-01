@@ -48,7 +48,7 @@ rhrHpi <- function(xy, rescale="none", correct=TRUE, ...) {
   h <- c(hx, hy)
 
   if (rescale == "unitvar") {
-    h <- dpik(xs, ...)
+    h <- KernSmooth::dpik(xs, ...)
     h <- h * c(sd(xy[, 1]), sd(xy[, 2]))
   }   
 
