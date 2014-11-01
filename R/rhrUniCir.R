@@ -5,9 +5,6 @@ rhrUniCir <- function(xy) {
   ll <- function(xy, par) -sum(log(dbexppm(xy, par[1], par[2], par[3], par[4])))
 
   ## AIC
-  xy <- datSH[1:149, 2:3]
-  xy <- datSH[1000:1035, 2:3]
-  ll(xy, c(mean(xy[, 1]), mean(xy[, 2]), 10, 20))
   phat <- optim(par=c(mean(xy[, 1]), mean(xy[, 2]), 10, 20), xy=xy, fn=ll, method="L-BFGS-B", lower=c(min(xy[, 1]), min(xy[, 1]), 0, 0))
 
   phat <- optim(par=c(mean(xy[, 1]), mean(xy[, 2]), 10, 20), xy=xy, fn=ll, method="L-BFGS-B", lower=c(-Inf, -Inf, 0, 0))$par
