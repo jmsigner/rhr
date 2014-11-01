@@ -13,16 +13,6 @@
 ##' @author Johannes Signer
 rhrReadData <- function(file, sep=",", skip=0, hasHeader=TRUE, sepDec=".", stringsAsFactors=FALSE, ...) {
   
-  ## Debugging
-  if (FALSE) {
-    file <- file.path(tempdir(), "test.txt")
-    data(datSH)
-    write.table(datSH, file, row.names=FALSE, col.names=TRUE, sep=",")
-    sep <- ","
-    skip <- 0
-    hasHeader <- TRUE
-    sepDec <- "."
-  }
 
   if (!sep %in% c("|", "\\|", ";", ",", "\t")) {
     stop("rhrReadData: unknown field separator")

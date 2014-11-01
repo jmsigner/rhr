@@ -1,15 +1,6 @@
 ##' @export
 rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL), proj4string=NA) {
 
-  if (FALSE) {
-      library(rhr)
-      data(datSH)
-    foo <- rhrBiNorm(datSH[1:250, 2:3])
-    plot(rhrUD(foo))
-    plot(rhrCUD(foo))
-    plot(rhrIsopleths(foo, levels=c(10, 30, 50, 90, 99)), add=T)
-  }
-
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()

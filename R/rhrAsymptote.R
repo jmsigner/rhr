@@ -39,20 +39,6 @@
 
 rhrAsymptote <- function(x, ns=seq(100, nrow(rhrData(x)), 500), nrep=10, tolTotArea=0.05, nTimes=5, sampling="sequential") {
 
-  ## Debug only
-  if (FALSE) {
-    library(rhr)
-    data(datSH)
-    x <- rhrMCP(datSH[, 2:3], levels=c(50, 95))
-    ns <- seq(100, nrow(x$args$xy), 100)
-    nrep <- 10
-    tolTotArea <- 0.05
-    nTimes <- 5
-    sampling <- "sequential"
-    x <- rhrAsymptote(x)
-              
-  }
-
   ## Input checks
   if (!is(x, "RhrEst")) {
     stop("x is not of class RhrEst")
