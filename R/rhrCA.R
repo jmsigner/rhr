@@ -91,6 +91,7 @@ rhrCoreArea.RhrEst <- function(x, method="powell90", ...) {
   for (i in seq_along(uds)) {
     pctr[i] <- sum(uds.fudso >= uds.fudso[i], na.rm=TRUE) / length(uds.fudso)
   }
+  
   dd <- sapply(1:length(pctr), function(i) distancePointLine(pctr[i], pctp[i], 0, 1, 1, 0))
   out <- list(pctprob=pctp, pctrange=pctr, rast=pctp.r >= pctp[which.max(dd)], dist=dd, method="powell")
   class(out) <- "RhrHRCoreArea"
