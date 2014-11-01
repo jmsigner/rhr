@@ -36,16 +36,6 @@ rhrSiteFidelity <- function(dat, n=100, alpha=0.05) {
   args <- as.list(environment())
   call <- match.call()
 
-  ## ------------------------------------------------------------------------------ ##  
-  ## Debug only
-  if (FALSE) {
-    data(datSH)
-    dat <- datSH[, 2:3]
-    n <- 100
-    alpha <- 0.05
-  }
-
-
   ## --------------------------------------------------------------------------- #
   ## Some argument checking
   dat <- rhrCheckData(dat, returnSP=FALSE)

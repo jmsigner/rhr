@@ -43,37 +43,6 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                           ## publishWithData=TRUE
                           ) {
 
-  ## Debugging
-  if (FALSE) {
-    library(rhr)
-    data(datSH)
-    dat <- datSH[1:1500,]
-    fields <- list(lon="x_epsg31467",
-                   lat="y_epsg31467",
-                   id="collar",
-                   date="day",
-                   time="time")
-    dateFormat <- "ymd"
-    timeFormat <- "hms"
-    inGUI <- FALSE
-
-    outDir <- normalizePath(file.path(tempdir(), paste0("rhr", format(Sys.time(), "%Y%m%d%H%M%S"))), mustWork=FALSE, winslash="/")
-    outDir <- normalizePath(file.path(tempdir(), paste0("rhr", format(Sys.time(), "rumba"))), mustWork=FALSE, winslash="/")
-    dat <- rhrMapFields(dat, fields, dateFormat=dateFormat, timeFormat=timeFormat)$dat
-    dat1 <- rhrMapFields(dat, fields, dateFormat=dateFormat, timeFormat=timeFormat)
-    names(dat)[1:3] <- c("id", "lon", "lat")
-    epsg <- "31467"
-
-    ## rhrHrAnalysis
-    what <- c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrLoCoH", "rhrAsymptote", "rhrCoreArea", "rhrBBMM", "rhrUniNorm", "rhrBiNorm")
-    args=list(rhrKDE=list(
-                h=as.list(c("href", "hpi", "hlscv")),
-                trast=rhrRasterFromExt(rhrExtFromPoints(dat[, c("lon", "lat")], buffer=5000), res=100))) 
-    verbose=TRUE
-    writeResultsSpatial=TRUE
-    inUnit <- "m"
-    outUnit <- "ha"
-  }
 
   ## ------------------------------------------------------------------------------ ##  
   ## Check if the minimum is provided

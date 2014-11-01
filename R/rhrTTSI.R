@@ -23,14 +23,6 @@ rhrTTSI <- function(dat, interval, ntimes=3, ...) {
   call <- match.call()
   names(dat)[1:3] <- c("x", "y", "timestamp")
 
-  if (FALSE) {
-    library(rhr)
-    data(datSH)
-    datSH <- datSH[!duplicated(lubridate::ymd(datSH$day) + lubridate::hms(datSH$time)), ]
-    datSH$ts <- lubridate::ymd(datSH$day) + lubridate::hms(datSH$time)
-    a <- rhrTTSI(datSH[, c(2:3, 6)], 5 * 3600, ntimes=3)
-  }
-
   ## get difference between first and last relocation
   totalDiff <- diff(range(as.numeric(dat$timestamp)))  
 
@@ -101,14 +93,6 @@ rhrTTSI <- function(dat, interval, ntimes=3, ...) {
 ##' @export
 
 plot.RhrTTSI <- function(x, ...) {
-
-  if (FALSE) {
-    library(rhr)
-    data(datSH)
-    datSH <- datSH[!duplicated(lubridate::ymd(datSH$day) + lubridate::hms(datSH$time)), ]
-    datSH$ts <- lubridate::ymd(datSH$day) + lubridate::hms(datSH$time)
-    x <- rhrTTSI(datSH[, c(2:3, 6)], 5 * 3600, ntimes=3)
-  }
 
   v        <- x$dat[, 'V']
   m        <- x$dat[, 'm']

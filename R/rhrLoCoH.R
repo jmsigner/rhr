@@ -51,19 +51,6 @@
 rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, proj4string=NA, autoN=FALSE) {
 
   ## ============================================================================== ##  
-  if (FALSE) {
-    data(datSH)
-    xy <- datSH[, 2:3]
-    xy <- coordinates(datP)
-    levels <- 95
-    type <- "k"
-    n <- 20
-    minPts <- 3
-    proj4string <- NA
-    autoN <- FALSE
-  }
-
-  ## ============================================================================== ##  
   ## Start
 
   ## Capture input arguments

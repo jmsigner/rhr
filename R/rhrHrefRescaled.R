@@ -20,17 +20,6 @@ rhrHrefScaled <- function(xy,
                           tol=0.1,
                           maxIt=500) {
 
-  ## Debug only
-  if (FALSE) {
-    data(datSH)
-    xy <- datSH[, 2:3]
-    range=range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2), length.out=100)))
-    trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.4), nrow=100, res=NULL)
-    numOfParts=1
-    level=95
-  }
-  
-
   ## Input checks
   if (!is.numeric(range)) {
     stop("rhrHrefScaled: numeric should be numeric")
