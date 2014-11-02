@@ -10,7 +10,7 @@
 ##' @details This function calcualtes bandwidth values for kernel density estimation by wrapping \code{KernSmooth::dpik}. If \code{correct} is TRUE, the bandwidth is trasformed with power 5/6 to correct for using an univariate implementation for bivariate data (Gitzen et. al 2006).
 
 ##' @return \code{vector} of length two
-##' @seealso \code{\link{KernSmooth::dpik}}
+##' @seealso \code{KernSmooth::dpik}
 ##' @export
 ##' @references Gitzen, R. A., Millspaugh, J. J., & Kernohan, B. J. (2006). Bandwidth selection for fixed-kernel analysis of animal utilization distributions. _Journal of Wildlife Management_, 70(5), 1334-1344.
 ##' 

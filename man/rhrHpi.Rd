@@ -62,6 +62,6 @@ utilization distributions. _Journal of Wildlife
 Management_, 70(5), 1334-1344.
 }
 \seealso{
-\code{\link{KernSmooth::dpik}}
+\code{KernSmooth::dpik}
 }
 
