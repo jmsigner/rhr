@@ -222,6 +222,7 @@ rhrArea.RhrLoCoH <- function(x, ...) {
 }
 
 ##' @export
+##' @method plot RhrLoCoH
 plot.RhrLoCoH <- function(x, title=NULL, ...) {
   ## fortify poly
   tempol <- rhrIsopleths(x, ...)

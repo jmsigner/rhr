@@ -94,6 +94,7 @@ print.RhrSiteFidelity <- function(x, ...) {
 }
 
 ##' @export
+##' @method plot RhrSiteFidelity
 ## FIXME: remove plotit
 plot.RhrSiteFidelity <- function(x, plotit=TRUE, ...) {
   p1 <- ggplot(data.frame(x=x$msdSim), aes(x=x)) + geom_histogram() +
