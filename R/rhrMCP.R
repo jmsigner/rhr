@@ -132,6 +132,7 @@ rhrLevels.RhrMCP <- function(x, ...) {
   x$args$levels
 }
 
+##' @method plot RhrMCP
 ##' @export
 plot.RhrMCP <- function(x, title=NULL, ...) {
   ## fortify poly

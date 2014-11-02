@@ -115,6 +115,7 @@ rhrArea.RhrBiCirc <- function(x, levels=95, ...) {
 }
 
 ##' @export
+##' @method plot RhrBiCirc
 plot.RhrBiCirc <- function(x, ...) {
   plot(rhrUD(x, ...))
 }

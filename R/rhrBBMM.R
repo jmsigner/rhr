@@ -118,9 +118,9 @@ rhrData.RhrBBMM <- function(x, ...) {
   x$args$xy
 }
 
+##' @method plot RhrBBMM
 ##' @export
 plot.RhrBBMM <- function(x, addIsopleths=TRUE, levels=95, ...) {
-
   if (addIsopleths) {
     tempol <- rhrIsopleths(x, levels, ...)
   }

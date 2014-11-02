@@ -233,6 +233,7 @@ rhrData.RhrKDE <- function(x, ...) {
   x$args$xy
 }
 
+##' @method plot RhrKDE
 ##' @export
 plot.RhrKDE <- function(x, addIsopleths=TRUE, ...) {
 

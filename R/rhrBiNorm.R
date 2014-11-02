@@ -80,6 +80,7 @@ rhrArea.RhrBiNorm <- function(x, levels=95, ...) {
 }
 
 ##' @export
+##' @method plot RhrBiNorm
 plot.RhrBiNorm <- function(x, levels=95, ...) {
   cud <- rhrCUD(x)
   iso <- rhrIsopleths(x, levels)
