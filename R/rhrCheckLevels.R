@@ -8,12 +8,12 @@ rhrCheckLevels <- function(levels) {
 
   ## Levels
   if (any(levels > 100) | any(levels < 1)) {
-    stop(paste0("rhr: rhrMCP: levels should be between 1 and 100. The current range is ", paste0(range(levels), collapse=" - ")))
+    stop(paste0("rhr: rhrCheckLevels: levels should be between 1 and 100. The current range is ", paste0(range(levels), collapse=" - ")))
   }
 
   ## NAs
   if (any(is.na(levels))) {
-    stop(paste0("rhr: rhrMCP: can not contain NAs"))
+    stop(paste0("rhr: rhrCheckLevels: can not contain NAs"))
   }
 
   levels[order(levels)]

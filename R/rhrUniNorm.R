@@ -1,3 +1,10 @@
+##' Univariate Normal Home-Range estimation 
+##'
+##' Computes home-range using univariate normal distribution
+##' @title rhrUniNorm
+##' @param xy valid input data 
+##' @param trast template raster
+##' @param proj4string proj4 string
 ##' @export
 rhrUniNorm <- function(xy, trast=NULL, proj4string=NA) {
 
@@ -19,7 +26,7 @@ rhrUniNorm <- function(xy, trast=NULL, proj4string=NA) {
                                                   nrow=2, byrow=TRUE),
                                                 log=TRUE))
 
-  phat <- optim(par=c(mean(xy[, 1]), mean(xy[, 2]), 1, 0.1, 1), xy=xy, fn=ll)$par
+  phat <- optimtion(par=c(mean(xy[, 1]), mean(xy[, 2]), 1, 0.1, 1), xy=xy, fn=ll)$par
   ll <- sum(mvtnorm::dmvnorm(xy, mean=c(phat[1:2]),
                              sigma=matrix(phat[c(3, 4, 4, 5)], byrow=2, nrow=2), log=TRUE))
 
@@ -88,6 +95,7 @@ rhrArea.RhrUniNorm <- function(x, levels=95, ...) {
 }
 
 ##' @export
+##' @method plot RhrUniNorm
 plot.RhrUniNorm <- function(x, levels=95, ...) {
   cud <- rhrCUD(x)
   iso <- rhrIsopleths(x, levels)

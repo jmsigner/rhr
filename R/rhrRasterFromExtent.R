@@ -53,18 +53,8 @@ rhrExtFromPoints <- function(xy, buffer=NULL, extendRange=NULL) {
     stop("rhrExtFromPoints: xy not provided, but required")
   }
 
-  ## Check that xy is either data.frame, matrix or SpatialPoints*
-  if (inherits(xy, "SpatialPoints")) {
-    xy <- coordinates(xy)
-  }
+  xy <- rhrCheckData(xy, returnSP=FALSE)
 
-  if (inherits(xy, "RhrMappedData")) {
-    xy <- data.frame(xy)
-  }
-
-  if (!class(xy) %in% c("matrix", "data.frame")) {
-    stop("rhrExtFromPoints: xy should be a matrix or data.frame")
-  }
 
   if (ncol(xy) < 2) {
     stop("rhrExtFromPoints: xy has less than 2 columns")
