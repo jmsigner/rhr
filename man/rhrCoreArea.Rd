@@ -52,11 +52,13 @@ greatest distance to the line with intercept 1 and slope -1
 is used as threshold. }
 }
 \examples{
-\dontrun{
-est <- rhrKDE(datSH[, 2:3])
-ca <- rhrCoreArea(est)
-plot(ca)
-}
+library(rhr)
+data(datSH)
+hr <- rhrKDE(datSH[, 2:3])
+caIso <- rhrCoreArea(hr)
+
+plot(hr)
+plot(rhrIsopleths(hr, levels=caIso$iso), border="red", add=TRUE)
 }
 \references{
 Peter N. Laver and Marcella J. Kelly. A critical review of
