@@ -1,18 +1,19 @@
-##' to come
+##' Convenience function to prepare data for further analysis.
 ##'
-##' to come
-##' @title to come
-##' @param dat 
-##' @param fields 
-##' @param proj4string 
-##' @param dateFormat 
-##' @param timeFormat 
-##' @param defaultId
-##' @return RhrMappedData
+##' For date and time the lubridate conventions are used. E.g. day-month-year is abbreviated as \code{dmy}.
+##' @title Map information to columns
+##' @param dat A data.frame or SptialPointsDataFrame. 
+##' @param fields A list with named elements for lon, lat and id. Optionally also for date and time.
+##' @param projString A object of class CRS.
+##' @param dateFormat A character indicating date format, see details.
+##' @param timeFormat A character indicating time format, see details.
+##' @param defaultId A character indicating default ID in case id is missing from fields.
+##' @return A list of class \code{RhrMappedData}. The list contains the following elements \code{dat} (SpatialPointsDataFrame, with the data), \code{hasTS} (logical vector indicating if there is a timestamp) and a list that gives information about the number of missing and duplicated points. 
 ##' @export 
+##' @example examples/exrhrMapFields.R
 ##' @author Johannes Signer
 rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=NA),
-                         proj4string=NULL, dateFormat="ymd", timeFormat="hms",
+                         projString=NULL, dateFormat="ymd", timeFormat="hms",
                          defaultId="Animal_1") {
   ## Debug
   if (FALSE) {
@@ -25,11 +26,13 @@ rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=N
     dateFormat <- "ymd"
     timeFormat <- "hms"
     defaultId <- "Animal_1"
+    rhrMapFields(dat, fields)
   }
 
+  ## check if we have a Spatial*DF
   if (is(dat, "SpatialPointsDataFrame")) {
-    if (is.null(proj4string)) {
-      proj4string <- proj4string(dat)
+    if (is.null(projString)) {
+      projString <- proj4string(dat)
     }
 
     coords <- coordinates(dat)
@@ -107,11 +110,8 @@ rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=N
   if (!is.null(fields$date) && !is.null(fields$time)) {
     if (dateFormat %in% c("dmy", "ymd", "mdy") && timeFormat %in% c("hms", "hm")) {
 
-      dateFormat <- paste0("lubridate::", dateFormat)
-      timeFormat <- paste0("lubridate::", timeFormat)
-
-      dateParsed <- eval(parse(text=paste0(dateFormat, "(dat[, fields$date])")))
-      timeParsed <- eval(parse(text=paste0(timeFormat, "(dat[, fields$time])")))  
+      dateParsed <- lubridate::parse_date_time(dat[, fields$date], dateFormat)
+      timeParsed <- lubridate::parse_date_time(dat[, fields$time], timeFormat)
       outdat$timestamp <- dateParsed + timeParsed
     } else {
       warning("rhrMapFields: date and/or time format couldn't be parsed")
@@ -122,20 +122,20 @@ rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=N
     outdat$timestamp <- NA
   } else if (!is.null(fields$date) && is.null(fields$time)) {
     if (dateFormat %in% c("dmy", "ymd", "mdy")) {
-      dateFormat <- paste0("lubridate::", dateFormat)
-      outdat$timestamp <- eval(parse(text=paste0(dateFormat, "(dat[, fields$date])")))  
+      outdat$timestamp <- lubridate::parse_date_time(dat[, fields$date], dateFormat)
     } else if (dateFormat %in% c("ymd_h", "ymd_hm", "ymd_hms", "dmy_h", "dmy_hm", "dmy_hms", "mdy_h", "mdy_hm", "mdy_hms")) {
-      dateFormat <- paste0("lubridate::", dateFormat)
-      outdat$timestamp <- eval(parse(text=paste0(dateFormat, "(dat[, fields$date])")))  
+      outdat$timestamp <- lubridate::parse_date_time(dat[, fields$date], dateFormat)
     } else {
       warning("rhrMapFields: date format couldn't be parsed")
       outdat$timestamp <- NA
     }
   }
 
+  
+
   ## ------------------------------------------------------------------------------ ##  
   ## Deal with duplicates
-  hasTS <- ifelse(all(is.na(outdat$timestamp)), FALSE, TRUE)
+  hasTS <- if (all(is.na(outdat$timestamp))) FALSE else TRUE
 
   ## split data by animal
   dat <- split(outdat, outdat$id)
@@ -156,15 +156,21 @@ rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=N
   nobsFinal <- sapply(dat, nrow)
   dat <- do.call(rbind, dat)
 
+  if (is(projString, "CRS")) {
+    dat <- SpatialPointsDataFrame(dat[, c("lon", "lat")], data=dat, proj4string=projString)
+  } else {
+    dat <- SpatialPointsDataFrame(dat[, c("lon", "lat")], data=dat, proj4string=CRS(as.character(NA)))
+    warning("rhrMapFields: proj4string not of class CRS, using NA")
+  }
+
   ## ------------------------------------------------------------------------------ ##  
   ## Deal with missing
-
-
 
   invisible(structure(list(res=list(nobs=nobs,
                              nIncompleteCases=nIncompleteCases,
                              nDuplicated=nDuplicated,
                              nobsFinal=nobsFinal),
+                           hasTS=hasTS,
                            dat=dat),
                       class=c("RhrMappedData", "list")))
 }
