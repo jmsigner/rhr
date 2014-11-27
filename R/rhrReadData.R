@@ -1,6 +1,5 @@
 ##' Wrapper around \code{readLines} to read data with different field separator and to do some checking, mainly used for the GUI
 ##'
-##' some details
 ##' @title read separator delimited text files
 ##' @param file character; the file name
 ##' @param sep character; the separator
@@ -8,12 +7,13 @@
 ##' @param hasHeader logical; indicates whether or not a header is presence
 ##' @param sepDec character; indicating the decimal separator
 ##' @param ... passed to scan
-##' @return \code{data.frame}
+##' @details ...
+##' @example examples/exrhrReadData.R
+##' @return object of class \code{rhrDat}
 ##' @export
 ##' @author Johannes Signer
 rhrReadData <- function(file, sep=",", skip=0, hasHeader=TRUE, sepDec=".", stringsAsFactors=FALSE, ...) {
   
-
   if (!sep %in% c("|", "\\|", ";", ",", "\t")) {
     stop("rhrReadData: unknown field separator")
   }
