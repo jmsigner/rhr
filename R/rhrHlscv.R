@@ -43,9 +43,7 @@ rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
                      trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
   ## Some input validation
-  if (!is(xy, "data.frame")) {
-    stop("rhrHlscv: xy: is not an object of class data.frame")
-  }
+  xy <- rhrCheckData(xy, returnSP=FALSE)
 
   if (is.null(trast)) {
     stop("rhrHlscv: trast is missing")
