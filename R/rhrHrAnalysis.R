@@ -25,11 +25,10 @@
 ##' @return List
 ##' @export
 ##' @author Johannes Signer
-rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrAsymptote", "rhrCoreArea"),
-                          args=NULL, verbose=TRUE, duplicated="nothing",
+rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrAsymptote", "rhrCoreArea"),
+                          args=NULL, verbose=TRUE, 
                           outDir=file.path(tempdir(), paste0("rhr", format(Sys.time(), "%Y%m%d%H%M%S"))),
                           inGUI=FALSE,
-                          epsg=NULL,
                           inUnit="ido",
                           outUnit="ius", 
                           writeResultsSpatial=TRUE
@@ -47,17 +46,142 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
   ## ------------------------------------------------------------------------------ ##  
   ## Check if the minimum is provided
 
-  if (missing(dat)) {
+  if (missing(datIn)) {
     stop("rhrHrAnalysis: dat is missing")
   }
 
-  if (is(dat, "rhrMappedData")) {
+  if (!is(datIn, "RhrMappedData")) {
     stop("rhrHrAnalysis: dat should be of class rhrMappedData")
+  }
+
+  ## ------------------------------------------------------------------------------ ##  
+  ## Functions
+
+  ## check args and fill with default one
+  checkArgs <- function(args, defaultArgs, toCheck) {
+    if (!is.null(args)) {
+      ## check on each arg
+      for (arg in toCheck) {
+        if (is.null(args[[arg]])) {
+          args[[arg]] <- defaultArgs[[arg]]
+        }
+      }
+    } else {
+      ## No args provided, take default
+      args <- defaultArgs
+    }
+    return(args)
+  }
+
+  ## log progress
+  logProg <- function(logf, thisEst, animal, dat, inGui) {
+    if (inGUI) {
+      shiny::setProgress(message=thisEst,
+                         detail=paste0("Starting with animal: ",
+                           animal$id[1], " (", which(animal$id[1] == names(dat)), " of ",
+                           length(dat), ")"))
+    }
+    c(logf, paste0("[", Sys.time(), "]: ", thisEst, " ", animal$id[1]))
+  }
+
+
+  ### Saving data 
+  saveRds <- function(est, animal, scn, outDirData) {
+    fnRDS <- normalizePath(file.path(outDirData,
+                                     paste0("animal_", animal$id[1], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
+    saveRDS(est, file=fnRDS)
+    return(fnRDS)
+  }
+
+  savePlots <- function(est, animal, scn, outDirPlots, legend="Home Range Estimates") {
+
+    ## Plot results
+    fnPlotPNG <- normalizePath(file.path(outDirPlots,
+                                         paste0("animal_", animal$id[1], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
+    fnPlotPDF <- normalizePath(file.path(outDirPlots,
+                                         paste0("animal_", animal$id[1], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
+    png(fnPlotPNG)
+    plot(est)
+    dev.off()
+
+    pdf(fnPlotPDF)
+    plot(est)
+    dev.off()
+
+    list(
+      list(name="Home range estimate",
+           plotPNG=fnPlotPNG,
+           plotPDF=fnPlotPDF)
+    )
+  }
+
+  saveMsg <- function(animal, scn, outDirData, name="ABC", msg="abc") {
+    messageRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal$id[1], "_", scn$basename, "_message.Rds")), mustWork=FALSE, winslash="/")
+    msg1 <- msg
+    saveRDS(msg1, file=messageRDS)
+    msg <- list(
+      list(name=msg, message=messageRDS))
+  }
+  
+  saveVect <- function(est, animal, scn, outDirVect) {
+    ## Spatial Data
+    fnVect <- normalizePath(file.path(outDirVect,
+                                      paste0("animal_", animal$id[1], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
+    writeOGR(rhrIsopleths(est), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
+             overwrite_layer=TRUE)
+
+    list(fnVect)
+  }
+
+  saveRast <- function(est, animal, scn, outDirRast) {
+    ## raster
+    fnRast <- normalizePath(file.path(outDirRast,
+                                      paste0("animal_", animal$id[1], "_", scn$basename, "_UD.tif")),mustWork=FALSE, winslash="/")
+    writeRaster(rhrUD(est), dsn=fnVect, filename=fnRast, overwrite=TRUE)
+
+    rsts <- list(
+      fnRast)
+  }
+
+  mergeIsos <- function(scenarios, resList, thisEst) {
+    resMISO <- list()
+    for (scn in seq_along(scenarios)) {
+      scns <- sapply(resList$est[[thisEst]]$res, function(x) x[[scn]]$vectordata[[1]])
+      vcts <- lapply(scns, shapefile)
+      animas <- names(resList$est[[thisEst]]$res)
+
+      for (s in seq_along(vcts)) {
+        vcts[[s]] <- spChFIDs(vcts[[s]], paste(scenarios[[scn]]$basename,
+                                               animas[s], vcts[[1]]$level, sep="_"))
+      }
+
+      vcts <- do.call(rbind, vcts)
+
+      ## Spatial Data
+      fnVect <- normalizePath(file.path(outDirVect,
+                                        paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
+      writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
+               overwrite_layer=TRUE)
+
+      resMISO[[scn]] <- list(fnVect)
+
+    }
+    return(resMISO)
+  } 
+
+  saveParameters <- function(thisEst, outDirData, args) {
+    ## Parameters
+    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")), mustWork=FALSE, winslash="/")
+    sfp <- data.frame(Parameter=names(args[[thisEst]]),
+                      Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
+    saveRDS(sfp, file=fnRDS)
+    return(fnRDS)
   }
 
   ## ------------------------------------------------------------------------------ ##  
   ## Default args
 
+  ### maybe move this to options and access it all with getOption
   defaultArgs <- list()
 
   ## Site fidelity
@@ -131,7 +255,6 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
   ## trast overrides everything else
   defaultArgs$rhrBiNorm$trast <- NULL
 
-
   ## LoCoH
   defaultArgs$rhrLoCoH <- list()
   defaultArgs$rhrLoCoH$levels <- 95
@@ -158,10 +281,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     dir.create(outDir, recursive=TRUE)
   }
 
-  outDirData  <- normalizePath(file.path(outDir, "results", "data"),mustWork=FALSE, winslash="/")
-  outDirPlots <- normalizePath(file.path(outDir, "results", "plots"),mustWork=FALSE, winslash="/")
-  outDirVect  <- normalizePath(file.path(outDir, "results", "vector"),mustWork=FALSE, winslash="/")
-  outDirRast  <- normalizePath(file.path(outDir, "results", "raster"),mustWork=FALSE, winslash="/")
+  outDirData  <- normalizePath(file.path(outDir, "results", "data"), mustWork=FALSE, winslash="/")
+  outDirPlots <- normalizePath(file.path(outDir, "results", "plots"), mustWork=FALSE, winslash="/")
+  outDirVect  <- normalizePath(file.path(outDir, "results", "vector"), mustWork=FALSE, winslash="/")
+  outDirRast  <- normalizePath(file.path(outDir, "results", "raster"), mustWork=FALSE, winslash="/")
 
   if (!file.exists(outDirData)) {
     dir.create(outDirData, recursive=TRUE)
@@ -181,9 +304,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
   ## ------------------------------------------------------------------------------ ##  
   ## proj4string
-
-
-  projString <- if (is.null(epsg)) NA_character_ else paste0("+init=epsg:", epsg)
+  # projString <- if (is.null(epsg)) NA_character_ else paste0("+init=epsg:", epsg)
 
   ## A list where all results are written, that are not saved.
   ## All entries in the list are always a list with one entry for every animal
@@ -204,35 +325,37 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
   resLog <- c(resLog, paste0("[", Sys.time(), "]: Preparing Data"))
 
   ## Do we work with or without time?
-  resGlobal$hasTimestamp <- ifelse(any(is.na(dat$timestamp)), FALSE, TRUE)
-  if (!resGlobal$hasTimestamp) {
-    warning("rhrHrAnalysis: timestamp contains NA, time is not considered")
-  }
+  ## resGlobal$hasTimestamp <- ifelse(any(is.na(dat$timestamp)), FALSE, TRUE)
+  ## if (!resGlobal$hasTimestamp) {
+  ##   warning("rhrHrAnalysis: timestamp contains NA, time is not considered")
+  ## }
                     
   ## split data by animal
   resLog <- c(resLog, paste0("[", Sys.time(), "]: Splitting data by animal"))
-  dat <- split(dat, dat$id)
 
-  resList$summary$nobs <- lapply(dat, nrow)
+  ## sp::split necessary
+  dat <- sp::split(datIn$dat, datIn$dat$id)
+
+  ## resList$summary$nobs <- lapply(dat, nrow)
 
   ## check if there are missing
-  resLog <- c(resLog, paste0("[", Sys.time(), "]: Check missing data"))
-  resList$summary$nIncompleteCases <- lapply(dat, function(x) sum(!complete.cases(x[, c("id", "lon", "lat")])))
+  ## resLog <- c(resLog, paste0("[", Sys.time(), "]: Check missing data"))
+  ## resList$summary$nIncompleteCases <- lapply(dat, function(x) sum(!complete.cases(x[, c("id", "lon", "lat")])))
 
   ## remove missing
-  dat <- lapply(dat, function(x) x[complete.cases(x[, c("id", "lon", "lat")]), ])
+  ## dat <- lapply(dat, function(x) x[complete.cases(x[, c("id", "lon", "lat")]), ])
 
   ## check for duplicated with/without time
-  if (resGlobal$hasTimestamp) {
-    resList$summary$nDuplicated <- lapply(dat, function(x) sum(duplicated(x[, c("id", "lon", "lat")])))
-    dat <- lapply(dat, function(x) x[!duplicated(x[, c("id", "lon", "lat")]), ])
-  } else {
-    resList$summary$nDuplicated <- lapply(dat, function(x) sum(duplicated(x[, c("id", "lon", "lat", "timestamp")])))
-    dat <- lapply(dat, function(x) x[!duplicated(x[, c("id", "lon", "lat", "timestamp")]), ])
-  }
+  ## if (resGlobal$hasTimestamp) {
+  ##   resList$summary$nDuplicated <- lapply(dat, function(x) sum(duplicated(x[, c("id", "lon", "lat")])))
+  ##   dat <- lapply(dat, function(x) x[!duplicated(x[, c("id", "lon", "lat")]), ])
+  ## } else {
+  ##   resList$summary$nDuplicated <- lapply(dat, function(x) sum(duplicated(x[, c("id", "lon", "lat", "timestamp")])))
+  ##   dat <- lapply(dat, function(x) x[!duplicated(x[, c("id", "lon", "lat", "timestamp")]), ])
+  ## }
 
-  ## final number of obs
-  resList$summary$nobs <- sapply(dat, nrow)
+  ## ## final number of obs
+  ## resList$summary$nobs <- sapply(dat, nrow)
 
   ## ============================================================================== ##  
   ## Estimators
@@ -248,19 +371,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
 
     ## sanity check on args
-    if (thisEst %in% names(args)) {
-      if (!is.null(args[[thisEst]])) {
-        ## check on each arg
-        if ((!"n" %in% names(args[[thisEst]])) | is.null(args[[thisEst]]$n)) {
-          args[[thisEst]]$n <- defaultArgs[[thisEst]]$n
-        }
-        if ((!"alpha" %in% names(args[[thisEst]])) | is.null(args[[thisEst]]$alpha)) {
-          args[[thisEst]]$alpha <- defaultArgs[[thisEst]]$alpha
-        }
-      }
-    } else {
-      args[[thisEst]] <- defaultArgs[[thisEst]]
-    }
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("n", "alpha"))
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
@@ -331,17 +442,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
 
     ## sanity check on args
-    if (thisEst %in% names(args)) {
-      if (!is.null(args[[thisEst]])) {
-        ## check on each arg
-        if ((!"init" %in% names(args[[thisEst]]) | is.null(args[[thisEst]]$init))) {
-          args[[thisEst]]$init $alpha
-        }
-      }
-    } else {
-      args[[thisEst]] <- defaultArgs[[thisEst]]
-    }
-
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("init"))
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
@@ -430,16 +531,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
 
     ## sanity check on args
-    if (thisEst %in% names(args)) {
-      if (!is.null(args[[thisEst]])) {
-        ## check on each arg
-        if (is.null(args[[thisEst]]$levels)) {
-          args[[thisEst]]$levels <- defaultArgs[[thisEst]]$levels
-        }
-      }
-    } else {
-      args[[thisEst]]$levels <- defaultArgs[[thisEst]]$levels
-    }
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels"))
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
@@ -460,26 +552,17 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                        error=function(e) e)
 
         if (inherits(mcp, "error")) {
+          saveRds(mcp, animal, scn, outDirData)
           return(mcp)
         } else {
           ## Write the results
-
-          ## Write the results
-          fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(mcp, file=fnRDS)
+          fnRDS <- saveRds(mcp, animal, scn, outDirData)
 
           ## Plot results
-          fnPlotPNG <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
-          fnPlotPDF <- normalizePath(file.path(outDirPlots, paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
-          suppressMessages(p1 <- plot(mcp))
-          suppressMessages(ggsave(filename=fnPlotPNG, p1))
-          suppressMessages(ggsave(filename=fnPlotPDF, p1))
+          plts <- savePlots(mcp, animal, scn, outDirPlots, legend="Home Range Estimates") 
 
-          plts <- list(
-            list(name="Isopleths",
-                 plotPNG=fnPlotPNG,
-                 plotPDF=fnPlotPDF)
-            )
+          ## Spatial Data
+          vcts <- saveVect(mcp, animal, scn, outDirVect)
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
@@ -495,13 +578,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                  path=fnTbl1))
 
           ## Spatial Data
-          fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-          writeOGR(rhrIsopleths(mcp), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-                   overwrite_layer=TRUE)
-
-          vcts <- list(
-            fnVect)
+          vcts <- saveVect(mcp, animal, scn, outDirVect)
 
           return(list(rds=fnRDS, plots=plts, name=scn$name, tables=tbls, vectordata=vcts))
         }
@@ -511,42 +588,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
 
     
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- list()
-
-    for (scn in seq_along(scenarios)) {
-      scns <- sapply(resList$est[[thisEst]]$res, function(x) x[[scn]]$vectordata[[1]])
-      vcts <- lapply(scns, shapefile)
-      animas <- names(resList$est[[thisEst]]$res)
-
-
-      for (s in seq_along(vcts)) {
-	vcts[[s]] <- spChFIDs(vcts[[s]], paste(scenarios[[scn]]$basename,
-                                               animas[s], vcts[[1]]$level, sep="_"))
-      }
-
-      vcts <- do.call(rbind, vcts)
-
-      ## Spatial Data
-      fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-      writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-               overwrite_layer=TRUE)
-
-      vcts <- list(
-        fnVect)
-
-      resList$est[[thisEst]]$allAnimals[[scn]] <- vcts
-    }
-
-
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
-    sfp <- data.frame(Parameter=names(args[[thisEst]]),
-                      Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
-
-    saveRDS(sfp, file=fnRDS)
-    resList$est[[thisEst]]$parameters <- fnRDS
+    resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
   }
 
   ## ------------------------------------------------------------------------------ ##  
@@ -555,23 +600,9 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
   if ("rhrKDE" %in% what) {
     thisEst <- "rhrKDE"
     if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
-    resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
-    ## sanity check on args
-    if (!is.null(args[[thisEst]])) {
-      ## check on each arg
-      if (is.null(args[[thisEst]]$levels)) {
-        args[[thisEst]]$levels <- defaultArgs[[thisEst]]$levels
-      }
-      if (is.null(args[[thisEst]]$trast)) {
-        args[[thisEst]]$trast <- defaultArgs[[thisEst]]$trast
-      }
-      if (is.null(args[[thisEst]]$h)) {
-        args[[thisEst]]$h <- defaultArgs[[thisEst]]$h
-      }
-    } else {
-      ## No args provided, take default
-      args[[thisEst]] <- defaultArgs[[thisEst]]
-    }
+    resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with ", thisEst))
+
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels", "trast", "h"))
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
@@ -582,67 +613,46 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     scenarios <- split(scenarios, 1:nrow(scenarios))
 
     resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
-      resLog <- c(resLog, paste0("[", Sys.time(), "]: ", thisEst, " ", animal[1, "id"]))
-      if (inGUI) shiny::setProgress(message=thisEst,
-                             detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
-                               length(dat), ")"))
+
+      ## Log progres
+      resLog <- logProg(resLog, thisEst, animal, dat, inGui)
+
       lapply(scenarios, function(scn) {
 
         ## h (its not possible yet to control h, if so you should calc a priori
         if (scn$h == "user") {
           hres <- list(h=rep(args[[thisEst]]$userh, 2), name="user")
         } else if (scn$h == "href") {
-          hres <- rhrHref(animal[, c("lon", "lat")])
+          hres <- rhrHref(animal)
         } else if (scn$h == "hlscv") {
-          hres <- rhrHlscv(animal[, c("lon", "lat")])
+          hres <- rhrHlscv(animal, trast=args[[thisEst]]$trast)
         } else if (scn$h == "hpi") {
-          hres <- rhrHpi(animal[, c("lon", "lat")])
+          hres <- rhrHpi(animal)
         } else {
           hres$msg <- "sorry, h input not understood, this calculation will be skipped"
         }
 
-        kde <- tryCatch(rhrKDE(animal[, c("lon", "lat")], h=hres$h,
-                               trast=args[[thisEst]]$trast, 
-                               proj4string=projString),
+        kde <- tryCatch(rhrKDE(animal, h=hres$h, trast=args[[thisEst]]$trast), 
                         error=function(e) e)
 
         if (inherits(kde, "error")) {
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(kde, file=fnRDS)
+          saveRds(kde, animal, scn, outDirData)
           return(kde)
         } else {
           ## Write the results
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(kde, file=fnRDS)
+          fnRDS <- saveRds(kde, animal, scn, outDirData)
+
           ## Plot results
-          fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
-          fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
-          png(fnPlotPNG)
-          plot(kde)
-          dev.off()
-
-          pdf(fnPlotPDF)
-          plot(kde)
-          dev.off()
-
-          plts <- list(
-            list(name="Kernel density estimate with isopleths",
-                 plotPNG=fnPlotPNG,
-                 plotPDF=fnPlotPDF)
-            )
+          plts <- savePlots(kde, animal, scn, outDirPlots, legend="Home Range Estimates") 
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl1.Rds")),mustWork=FALSE, winslash="/")
+                             paste0("animal_", animal$id[1], "_", scn$basename, "_tbl1.Rds")),mustWork=FALSE, winslash="/")
           t1 <- data.frame(Parameter="Value for bandwidth", Value=paste0(round(hres$h, 2), collapse=","))
           saveRDS(t1, file=fnTbl1)
 
           fnTbl2 <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, "_tbl2.Rds")),mustWork=FALSE, winslash="/")
+                             paste0("animal_", animal$id[1], "_", scn$basename, "_tbl2.Rds")),mustWork=FALSE, winslash="/")
           t2 <- data.frame(rhrArea(kde, args[[thisEst]]$levels))
           names(t2) <- c("Area", "Level")
           t2$Area <- rhrConvertUnit(t2$Area, inUnit, outUnit)
@@ -654,41 +664,21 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
             list(name="Home range areas",
                  path=fnTbl2))
 
-          ## message
-
           ## Spatial Data
-          fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-          writeOGR(rhrIsopleths(kde), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-                   overwrite_layer=TRUE)
-
-          vcts <- list(
-            fnVect)
+          vcts <- saveVect(kde, animal, scn, outDirVect)
 
           ## raster
-          fnRast <- normalizePath(file.path(outDirRast,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")),mustWork=FALSE, winslash="/")
-          writeRaster(rhrUD(kde), dsn=fnVect, filename=fnRast, overwrite=TRUE)
-
-          rsts <- list(
-            fnRast)
+          rsts <- saveRast(kde, animal, scn, outDirVect)
 
           ## Write the message
           if (!is.null(hres$converged)) {
             if (!hres$converged) {
-              messageRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, "_message.Rds")),mustWork=FALSE, winslash="/")
-              msg1 <- paste0("Caution, bandwidth with least square cross validation did not converge, defaulted back to the smallest value in search range")
-
-              saveRDS(msg1, file=messageRDS)
-
-              msg <- list(
-                list(name="LSVC did not converge",
-                     message=messageRDS))
+             msg <- saveMsg(animal, scn, outDirData, name="LSVC did not converge",
+                      msg="Caution, bandwidth with least square cross validation did not converge, defaulted back to the smallest value in search range")
             }
           } else {
             msg <- NULL
           }
-
 
           return(list(rds=fnRDS, plots=plts, name=scn$name, tables=tbls, vectordata=vcts,
                       rasterdata=rsts, messages=msg))
@@ -697,38 +687,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     })
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- list()
-
-    for (scn in seq_along(scenarios)) {
-      scns <- sapply(resList$est[[thisEst]]$res, function(x) x[[scn]]$vectordata[[1]])
-      vcts <- lapply(scns, shapefile)
-      animas <- names(resList$est[[thisEst]]$res)
-
-      for (s in seq_along(vcts)) {
-	vcts[[s]] <- spChFIDs(vcts[[s]], paste(scenarios[[scn]]$basename,
-                                               animas[s], vcts[[1]]$level, sep="_"))
-      }
-
-      vcts <- do.call(rbind, vcts)
-
-      ## Spatial Data
-      fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-      writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-               overwrite_layer=TRUE)
-
-      vcts <- list(
-        fnVect)
-
-      resList$est[[thisEst]]$allAnimals[[scn]] <- vcts
-    }
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
-    sfp <- data.frame(Parameter=names(args[[thisEst]]),
-                   Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
-    saveRDS(sfp, file=fnRDS)
-    resList$est[[thisEst]]$parameters <- fnRDS
+    resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
   }
 
   ## ------------------------------------------------------------------------------ ##  
@@ -738,25 +700,9 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     thisEst <- "rhrBBMM"
     if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
+
     ## sanity check on args
-    if (!is.null(args[[thisEst]])) {
-      ## check on each arg
-      if (is.null(args[[thisEst]]$levels)) {
-        args[[thisEst]]$levels <- defaultArgs[[thisEst]]$levels
-      }
-      if (is.null(args[[thisEst]]$trast)) {
-        args[[thisEst]]$trast <- defaultArgs[[thisEst]]$trast
-      }
-      if (is.null(args[[thisEst]]$rangesigma1)) {
-        args[[thisEst]]$rangesigma1 <- defaultArgs[[thisEst]]$rangesigma1
-      }
-      if (is.null(args[[thisEst]]$sigma2)) {
-        args[[thisEst]]$sigma2 <- defaultArgs[[thisEst]]$sigma2
-      }
-    } else {
-      ## No args provided, take default
-      args[[thisEst]] <- defaultArgs[[thisEst]]
-    }
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels", "trast", "rangesigma1", "sigma2"))
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
@@ -781,33 +727,14 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                         error=function(e) e)
 
         if (inherits(bbmm, "error")) {
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(bbmm, file=fnRDS)
+          saveRds(bbmm, animal, scn, outDirData)
           return(bbmm)
         } else {
           ## Write the results
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(bbmm, file=fnRDS)
+          fnRDS <- saveRds(bbmm, animal, scn, outDirData)
+
           ## Plot results
-          fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
-          fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
-          png(fnPlotPNG)
-          plot(rhrUD(bbmm))
-          dev.off()
-
-          pdf(fnPlotPDF)
-          plot(rhrUD(bbmm))
-          dev.off()
-
-          plts <- list(
-            list(name="Brownian Bridge UD",
-                 plotPNG=fnPlotPNG,
-                 plotPDF=fnPlotPDF)
-            )
+          plts <- savePlots(bbmm, animal, scn, outDirPlots, legend="Home Range Estimates") 
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
@@ -829,21 +756,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                  path=fnTbl2))
 
           ## Spatial Data
-          fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-          writeOGR(rhrIsopleths(bbmm, levels=args[[thisEst]]$levels), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-                   overwrite_layer=TRUE)
-
-          vcts <- list(
-            fnVect)
+          vcts <- saveVect(bbmm, animal, scn, outDirVect)
 
           ## raster
-          fnRast <- normalizePath(file.path(outDirRast,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")),mustWork=FALSE, winslash="/")
-          writeRaster(rhrUD(bbmm), dsn=fnVect, filename=fnRast, overwrite=TRUE)
-
-          rsts <- list(
-            fnRast)
+          rsts <- saveRast(bbmm, animal, scn, outDirVect)
 
           return(list(rds=fnRDS, plots=plts, name=scn$name, tables=tbls, vectordata=vcts,
                       rasterdata=rsts))
@@ -852,39 +768,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     })
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- list()
-
-    for (scn in seq_along(scenarios)) {
-      scns <- sapply(resList$est[[thisEst]]$res, function(x) x[[scn]]$vectordata[[1]])
-      vcts <- lapply(scns, shapefile)
-      animas <- names(resList$est[[thisEst]]$res)
-
-      for (s in seq_along(vcts)) {
-	vcts[[s]] <- spChFIDs(vcts[[s]], paste(scenarios[[scn]]$basename,
-                                               animas[s], vcts[[1]]$level, sep="_"))
-      }
-
-      vcts <- do.call(rbind, vcts)
-
-      ## Spatial Data
-      fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-      writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-               overwrite_layer=TRUE)
-
-      vcts <- list(
-        fnVect)
-
-      resList$est[[thisEst]]$allAnimals[[scn]] <- vcts
-    }
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
-    sfp <- data.frame(Parameter=names(args[[thisEst]]),
-                      Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
-
-    saveRDS(sfp, file=fnRDS)
-    resList$est[[thisEst]]$parameters <- fnRDS
+    resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
   }
 
   ## ------------------------------------------------------------------------------ ##  
@@ -894,19 +781,9 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     thisEst <- "rhrUniNorm"
     if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
+
     ## sanity check on args
-    if (!is.null(args[[thisEst]])) {
-      ## check on each arg
-      if (is.null(args[[thisEst]]$levels)) {
-        args[[thisEst]]$levels <- defaultArgs[[thisEst]]$levels
-      }
-      if (is.null(args[[thisEst]]$trast)) {
-        args[[thisEst]]$trast <- defaultArgs[[thisEst]]$trast
-      }
-    } else {
-      ## No args provided, take default
-      args[[thisEst]] <- defaultArgs[[thisEst]]
-    }
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels", "trast"))
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
@@ -929,33 +806,15 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                         error=function(e) e)
 
         if (inherits(est, "error")) {
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(est, file=fnRDS)
+          saveRds(est, animal, scn, outDirData)
           return(est)
         } else {
           ## Write the results
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(est, file=fnRDS)
+          fnRDS <- saveRds(est, animal, scn, outDirData)
+
           ## Plot results
-          fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
-          fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
-          png(fnPlotPNG)
-          print(plot(est, levels=args[[thisEst]]$levels))
-          dev.off()
+          plts <- savePlots(est, animal, scn, outDirPlots, legend="Home Range Estimates") 
 
-          pdf(fnPlotPDF)
-          print(plot(est, levels=args[[thisEst]]$levels))
-          dev.off()
-
-          plts <- list(
-            list(name="UD",
-                 plotPNG=fnPlotPNG,
-                 plotPDF=fnPlotPDF)
-            )
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
@@ -982,21 +841,9 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                  path=fnTbl2))
 
           ## Spatial Data
-          fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-          writeOGR(rhrIsopleths(est, levels=args[[thisEst]]$levels), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-                   overwrite_layer=TRUE)
-
-          vcts <- list(
-            fnVect)
-
+          vcts <- saveVect(est, animal, scn, outDirVect)
           ## raster
-          fnRast <- normalizePath(file.path(outDirRast,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")),mustWork=FALSE, winslash="/")
-          writeRaster(rhrUD(est), dsn=fnVect, filename=fnRast, overwrite=TRUE)
-
-          rsts <- list(
-            fnRast)
+          rsts <- saveRast(est, animal, scn, outDirVect)
 
           return(list(rds=fnRDS, plots=plts, name=scn$name, tables=tbls, vectordata=vcts,
                       rasterdata=rsts))
@@ -1005,39 +852,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     })
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- list()
-
-    for (scn in seq_along(scenarios)) {
-      scns <- sapply(resList$est[[thisEst]]$res, function(x) x[[scn]]$vectordata[[1]])
-      vcts <- lapply(scns, shapefile)
-      animas <- names(resList$est[[thisEst]]$res)
-
-      for (s in seq_along(vcts)) {
-	vcts[[s]] <- spChFIDs(vcts[[s]], paste(scenarios[[scn]]$basename,
-                                               animas[s], vcts[[1]]$level, sep="_"))
-      }
-
-      vcts <- do.call(rbind, vcts)
-
-      ## Spatial Data
-      fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-      writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-               overwrite_layer=TRUE)
-
-      vcts <- list(
-        fnVect)
-
-      resList$est[[thisEst]]$allAnimals[[scn]] <- vcts
-    }
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
-    sfp <- data.frame(Parameter=names(args[[thisEst]]),
-                      Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
-
-    saveRDS(sfp, file=fnRDS)
-    resList$est[[thisEst]]$parameters <- fnRDS
+    resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
   }
 
   ## ------------------------------------------------------------------------------ ##  
@@ -1047,19 +865,9 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     thisEst <- "rhrBiNorm"
     if (inGUI) shiny::setProgress(message=paste0("Starting with ", thisEst), detail=".....")
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
+
     ## sanity check on args
-    if (!is.null(args[[thisEst]])) {
-      ## check on each arg
-      if (is.null(args[[thisEst]]$levels)) {
-        args[[thisEst]]$levels <- defaultArgs[[thisEst]]$levels
-      }
-      if (is.null(args[[thisEst]]$trast)) {
-        args[[thisEst]]$trast <- defaultArgs[[thisEst]]$trast
-      }
-    } else {
-      ## No args provided, take default
-      args[[thisEst]] <- defaultArgs[[thisEst]]
-    }
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels", "trast"))
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
@@ -1082,33 +890,14 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                         error=function(e) e)
 
         if (inherits(est, "error")) {
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(est, file=fnRDS)
+          saveRds(est, animal, scn, outDirData)
           return(est)
         } else {
           ## Write the results
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(est, file=fnRDS)
+          fnRDS <- saveRds(est, animal, scn, outDirData)
+
           ## Plot results
-          fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
-          fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
-          png(fnPlotPNG)
-          print(plot(est, levels=args[[thisEst]]$levels))
-          dev.off()
-
-          pdf(fnPlotPDF)
-          print(plot(est, levels=args[[thisEst]]$levels))
-          dev.off()
-
-          plts <- list(
-            list(name="UD",
-                 plotPNG=fnPlotPNG,
-                 plotPDF=fnPlotPDF)
-            )
+          plts <- savePlots(est, animal, scn, outDirPlots, legend="Home Range Estimates") 
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
@@ -1138,21 +927,9 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                  path=fnTbl2))
 
           ## Spatial Data
-          fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-          writeOGR(rhrIsopleths(est, levels=args[[thisEst]]$levels), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-                   overwrite_layer=TRUE)
-
-          vcts <- list(
-            fnVect)
-
+          vcts <- saveVect(est, animal, scn, outDirVect)
           ## raster
-          fnRast <- normalizePath(file.path(outDirRast,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_UD.tif")),mustWork=FALSE, winslash="/")
-          writeRaster(rhrUD(est), dsn=fnVect, filename=fnRast, overwrite=TRUE)
-
-          rsts <- list(
-            fnRast)
+          rsts <- saveRast(est, animal, scn, outDirVect)
 
           return(list(rds=fnRDS, plots=plts, name=scn$name, tables=tbls, vectordata=vcts,
                       rasterdata=rsts))
@@ -1161,39 +938,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     })
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- list()
-
-    for (scn in seq_along(scenarios)) {
-      scns <- sapply(resList$est[[thisEst]]$res, function(x) x[[scn]]$vectordata[[1]])
-      vcts <- lapply(scns, shapefile)
-      animas <- names(resList$est[[thisEst]]$res)
-
-      for (s in seq_along(vcts)) {
-	vcts[[s]] <- spChFIDs(vcts[[s]], paste(scenarios[[scn]]$basename,
-                                               animas[s], vcts[[1]]$level, sep="_"))
-      }
-
-      vcts <- do.call(rbind, vcts)
-
-      ## Spatial Data
-      fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-      writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-               overwrite_layer=TRUE)
-
-      vcts <- list(
-        fnVect)
-
-      resList$est[[thisEst]]$allAnimals[[scn]] <- vcts
-    }
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
-    sfp <- data.frame(Parameter=names(args[[thisEst]]),
-                      Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
-
-    saveRDS(sfp, file=fnRDS)
-    resList$est[[thisEst]]$parameters <- fnRDS
+    resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
   }
 
   ## ------------------------------------------------------------------------------ ##  
@@ -1205,24 +953,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with rhrLoCoH"))
 
     ## sanity check on args
-    if (!is.null(args[[thisEst]])) {
-      ## check on each arg
-      if (is.null(args[[thisEst]]$levels)) {
-        args[[thisEst]]$levels <- defaultArgs[[thisEst]]$levels
-      }
-      if (is.null(args[[thisEst]]$type)) {
-        args[[thisEst]]$type <- defaultArgs[[thisEst]]$type
-      }
-      if (is.null(args[[thisEst]]$ns)) {
-        args[[thisEst]]$n <- defaultArgs[[thisEst]]$n
-      }
-      if (is.null(args[[thisEst]]$autoN)) {
-        args[[thisEst]]$autoN <- defaultArgs[[thisEst]]$autoN
-      }
-    } else {
-      ## No args provided, take default
-      args[[thisEst]] <- defaultArgs[[thisEst]]
-    }
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels", "type", "ns", "autoN"))
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
@@ -1244,31 +975,14 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                           error=function(e) e)
 
         if (inherits(locoh, "error")) {
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_rhrLoCoH_type_", paste0(scn, collapse="_"), ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(locoh, file=fnRDS)
+          saveRds(locoh, animal, scn, outDirData)
           return(locoh)
         } else {
           ## Write the results
-          fnRDS <- normalizePath(file.path(outDirData,
-                             paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
-          saveRDS(locoh, file=fnRDS)
+          fnRDS <- saveRds(locoh, animal, scn, outDirData)
 
           ## Plot results
-          fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".png")),mustWork=FALSE, winslash="/")
-          fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                 paste0("animal_", animal[1, "id"], "_", scn$basename, ".pdf")),mustWork=FALSE, winslash="/")
-
-          suppressMessages(p1 <- plot(locoh))
-          suppressMessages(ggsave(filename=fnPlotPNG, p1))
-          suppressMessages(ggsave(filename=fnPlotPDF, p1))
-
-          plts <- list(
-            list(name="Isopleths",
-                 plotPNG=fnPlotPNG,
-                 plotPDF=fnPlotPDF)
-            )
+          plts <- savePlots(locoh, animal, scn, outDirPlots, legend="Home Range Estimates") 
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
@@ -1291,10 +1005,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                  path=fnTbl2))
 
           ## Spatial Data
-          fnVect <- normalizePath(file.path(outDirVect,
-                              paste0("animal_", animal[1, "id"], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-          writeOGR(rhrIsopleths(locoh), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-                   overwrite_layer=TRUE)
+          vcts <- saveVect(locoh, animal, scn, outDirVect)
 
           vcts <- list(
             fnVect)
@@ -1306,39 +1017,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     })
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- list()
-
-    for (scn in seq_along(scenarios)) {
-      scns <- sapply(resList$est[[thisEst]]$res, function(x) x[[scn]]$vectordata[[1]])
-      vcts <- lapply(scns, shapefile)
-      animas <- names(resList$est[[thisEst]]$res)
-
-      for (s in seq_along(vcts)) {
-	vcts[[s]] <- spChFIDs(vcts[[s]], paste(scenarios[[scn]]$basename,
-                                               animas[s], vcts[[1]]$level, sep="_"))
-      }
-
-      vcts <- do.call(rbind, vcts)
-
-      ## Spatial Data
-      fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-      writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-               overwrite_layer=TRUE)
-
-      vcts <- list(
-        fnVect)
-
-      resList$est[[thisEst]]$allAnimals[[scn]] <- vcts
-    }
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
 
     ## Parameters
-    fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
-    sfp <- data.frame(Parameter=names(args[[thisEst]]),
-                      Value=as.character(sapply(args[[thisEst]], paste0, collapse=", ")))
-
-    saveRDS(sfp, file=fnRDS)
-    resList$est[[thisEst]]$parameters <- fnRDS
+    resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
   }
 
   ## ------------------------------------------------------------------------------ ##  
@@ -1369,53 +1051,17 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
             ca <- tryCatch(rhrCoreArea(kdeDensity), error=function(e) e)
 
             if (inherits(ca, "error")) {
-              fnRDS <- normalizePath(file.path(outDirData,
-                                 paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".Rds")),mustWork=FALSE, winslash="/")
-              saveRDS(ca, file=fnRDS)
+              fnRDS <- saveRds(ca, animal, scn, outDirData)
               return(ca)
+
             } else {
               ## Write the results
-              fnRDS <- normalizePath(file.path(outDirData,
-                                 paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".Rds")),mustWork=FALSE, winslash="/")
-              saveRDS(ca, file=fnRDS)
+              fnRDS <- saveRds(ca, animal, scn, outDirData)
 
               ## Plot results
-              fnPlotPNG <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".png")),mustWork=FALSE, winslash="/")
-              fnPlotPDF <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, ".pdf")),mustWork=FALSE, winslash="/")
+              plts <- savePlots(ca, animal, scn, outDirPlots, legend="Home Range Estimates") 
 
-              suppressMessages(p1 <- plot(ca))
-              suppressMessages(ggsave(filename=fnPlotPNG, p1))
-              suppressMessages(ggsave(filename=fnPlotPDF, p1))
-              
-              fnPlotPNG1 <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_extend.png")),mustWork=FALSE, winslash="/")
-              fnPlotPDF1 <- normalizePath(file.path(outDirPlots,
-                                     paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_extend.pdf")),mustWork=FALSE, winslash="/")
-
-              png(fnPlotPNG1)
-              print(plot(ca$rast))
-              dev.off()
-
-              pdf(fnPlotPDF1)
-              print(plot(ca$rast))
-              dev.off()
-              
-
-              suppressMessages(p1 <- plot(ca))
-              suppressMessages(ggsave(filename=fnPlotPNG, p1))
-              suppressMessages(ggsave(filename=fnPlotPDF, p1))
-
-              plts <- list(
-                list(name="Plot to determine core area",
-                     plotPNG=fnPlotPNG,
-                     plotPDF=fnPlotPDF),
-                list(name="Areal extent of core area",
-                     plotPNG=fnPlotPNG1,
-                     plotPDF=fnPlotPDF1)
-                )
-
+              ## Tables
               fnTbl1 <- normalizePath(file.path(outDirData,
                                   paste0("animal_", animalId, "_", scenarios[[scn]]$basename, "_tbl1.Rds")),mustWork=FALSE, winslash="/")
               t1 <- data.frame(Parameter="Size", Value=round(rhrArea(ca), 2))
@@ -1466,31 +1112,10 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                                            
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- list()
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
 
-    for (scn in seq_along(scenarios)) {
-      scns <- sapply(resList$est[[thisEst]]$res, function(x) x[[scn]]$vectordata[[1]])
-      vcts <- lapply(scns, shapefile)
-      animas <- names(resList$est[[thisEst]]$res)
-
-      for (s in seq_along(vcts)) {
-	vcts[[s]] <- spChFIDs(vcts[[s]], paste(scenarios[[scn]]$basename,
-                                               animas[s], vcts[[1]]$level, sep="_"))
-      }
-
-      vcts <- do.call(rbind, vcts)
-
-      ## Spatial Data
-      fnVect <- normalizePath(file.path(outDirVect,
-                          paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-      writeOGR(vcts, dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
-               overwrite_layer=TRUE)
-
-      vcts <- list(
-        fnVect)
-
-      resList$est[[thisEst]]$allAnimals[[scn]] <- vcts
-    }
+    ## Parameters
+    ## resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
   }
 
   ## ------------------------------------------------------------------------------ ##  
@@ -1502,33 +1127,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     resLog <- c(resLog, paste0("[", Sys.time(), "]: Start with", thisEst))
 
     ## sanity check on args
-    if (!is.null(args[[thisEst]])) {
-      ## check on each arg
-      if (is.null(args[[thisEst]]$minNP)) {
-        args[[thisEst]]$minNP <- defaultArgs[[thisEst]]$minNP
-      }
-      if (is.null(args[[thisEst]]$estimators)) {
-        args[[thisEst]]$estimators <- defaultArgs[[thisEst]]$estimators
-      }
-      if (is.null(args[[thisEst]]$nrep)) {
-        args[[thisEst]]$nrep <- defaultArgs[[thisEst]]$nrep
-      }
-      if (is.null(args[[thisEst]]$tolTotArea)) {
-        args[[thisEst]]$tolTotArea <- defaultArgs[[thisEst]]$tolTotArea
-      }
-      if (is.null(args[[thisEst]]$nTimes)) {
-        args[[thisEst]]$nTimes <- defaultArgs[[thisEst]]$nTimes
-      }
-      if (is.null(args[[thisEst]]$sampling)) {
-        args[[thisEst]]$sampling <- defaultArgs[[thisEst]]$sampling
-      }
-      if (is.null(args[[thisEst]]$si)) {
-        args[[thisEst]]$si <- defaultArgs[[thisEst]]$si
-      }
-    } else {
-      ## No args provided, take default
-      args[[thisEst]] <- defaultArgs[[thisEst]]
-    }
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("minNP", "estimators", "nrep", "tolTotArea", "nTimes", "sampling", "si"))
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
@@ -1677,4 +1276,3 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
   return(resList)
   
 }
- 
