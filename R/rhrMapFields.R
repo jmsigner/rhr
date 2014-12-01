@@ -8,7 +8,7 @@
 ##' @param dateFormat A character indicating date format, see details.
 ##' @param timeFormat A character indicating time format, see details.
 ##' @param defaultId A character indicating default ID in case id is missing from fields.
-##' @return A list of class \code{RhrMappedData}. The list contains the following elements \code{dat} (SpatialPointsDataFrame, with the data), \code{hasTS} (logical vector indicating if there is a timestamp) and a list that gives information about the number of missing and duplicated points. 
+##' @return A list of class \code{RhrMappedData}. The list contains the following elements: \code{dat} (SpatialPointsDataFrame, with the data), \code{hasTS} (logical vector indicating if there is a timestamp) and a list that gives information about the number of missing and duplicated points. 
 ##' @export 
 ##' @example examples/exrhrMapFields.R
 ##' @author Johannes Signer
@@ -112,7 +112,9 @@ rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=N
 
       dateParsed <- lubridate::parse_date_time(dat[, fields$date], dateFormat)
       timeParsed <- lubridate::parse_date_time(dat[, fields$time], timeFormat)
-      outdat$timestamp <- dateParsed + timeParsed
+      outdat$timestamp <- dateParsed + (lubridate::hour(timeParsed) * 3600 +
+                                          lubridate::minute(timeParsed) * 60 +
+                                          lubridate::second(timeParsed))
     } else {
       warning("rhrMapFields: date and/or time format couldn't be parsed")
       outdat$timestamp <- NA
