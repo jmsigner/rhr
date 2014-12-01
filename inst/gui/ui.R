@@ -35,9 +35,9 @@ shinyUI(
                       sidebarLayout(
                         sidebarPanel(
                           h2("Select Fields"), 
-                          selectInput("mfId", "Id", choices=NULL), 
-                          selectInput("mfX", "Longitude (X)", choices=NULL), 
-                          selectInput("mfY", "Latitude (Y)", choices=NULL), 
+                          selectInput("mfId", "Id", choices=NA), 
+                          selectInput("mfX", "Longitude (X)", choices=NA), 
+                          selectInput("mfY", "Latitude (Y)", choices=NA), 
                           selectInput("mfDate", "Date", choices=NULL), 
                           selectInput("mfTime", "Time", choices=NULL), 
                           hr(), 
