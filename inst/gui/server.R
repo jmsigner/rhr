@@ -5,7 +5,7 @@
 
 ## clean everything 
 rm(list=ls())
-debug <- FALSE
+debug <- TRUE
 if (debug) {
   .datFromR <- NULL
   outDir <- "/temp"
@@ -189,6 +189,7 @@ shinyServer(function(input, output, session) {
     }
   })
 
+  ##
   ## Remapping of the fields happens here
 
   data2 <- reactive({
@@ -202,71 +203,74 @@ shinyServer(function(input, output, session) {
       dateFormat       <- input$mfDateFormat
       timeFormat       <- input$mfTimeFormat
 
-      if (debug) cat("lat class: ", class(lat), "\n")
-      if (debug) cat("lon class: ", class(lon), "\n")
-      if (debug) cat("id class: ", class(id), "\n")
+      if (debug) cat("lat : ", lat, "\n")
+      if (debug) cat("lon : ", lon, "\n")
 
-      if (debug) cat("lat class: ", lat, "\n")
-      if (debug) cat("lon class: ", lon, "\n")
-      if (debug) cat("id : ", id, "\n")
-      if (debug) cat("day : ", date, "\n")
-      if (debug) cat("time : ", time, "\n")
-      if (debug) cat("dateformat : ", dateFormat, "\n")
-      if (debug) cat("timeformat : ", timeFormat, "\n")
+      if (!is.na(lon) & !is.na(lat)) {
 
-      if (debug) cat("Trying to remap", "\n")
-      if (debug) cat(names(data()$data), "\n")
-      if (debug) cat("Lookup ======= ", "\n")
-      if (debug) cat(c(lon=lon, lat=lat, id=id, date=date, time=time), "\n")
-      
-      dat2 <- tryCatch(rhrMapFields(data()$data,
-                                    fields=list(lon=lon, lat=lat, id=id, date=date, time=time), 
-                                    proj4string=NULL, dateFormat=dateFormat,
-                                    timeFormat=timeFormat, defaultId="Animal1"), error=function(e) NULL)
-      
 
-      if (debug) cat("str(dat2)\n")
-      if (debug) cat(str(dat2$dat))
+        if (debug) cat("lat : ", (lat), "\n")
+        if (debug) cat("lon : ", (lon), "\n")
+        if (debug) cat("id class: ", class(id), "\n")
 
-      if (debug) cat(input$configInEpsg, "\n")
-      if (debug) cat(input$configOutEpsg, "\n")
+        if (debug) cat("Trying to remap", "\n")
+        if (debug) cat(names(data()$data), "\n")
+        if (debug) cat("Lookup ======= ", "\n")
+        if (debug) cat(c(lon=lon, lat=lat, id=id, date=date, time=time), "\n")
+        
 
-      ## Epsg can be used later
-      if (!is.null(dat2)) {
-        if (!is.null(input$configOutEpsg)) {
-          if (!is.na(input$configOutEpsg)) {
-            if (!is.na(input$configInEpsg)) {
-              if (rhrValidEpsg(input$configOutEpsg)) {
-                ## should I also reproject
-                dat2$dat <- SpatialPointsDataFrame(dat2$dat[, c("lon", "lat")],
-                                                   data=dat2$dat[, c("id", "timestamp")],
-                                                   proj4string=CRS(paste0("+init=epsg:", input$configInEpsg)))
-                dat2$dat <- spTransform(dat2$dat, CRS(paste0("+init=epsg:", input$configOutEpsg)))
-                dat2$dat <- as.data.frame(dat2$dat)
-                names(dat2$dat) <- c("lon", "lat", "id", "timestamp")
-                dat2$dat <- dat2$dat[, c("id", "lon", "lat", "timestamp")]
-                ## successfully reporjected
-                createAlert(session, "rhrReproject", "rhrReproject1",
-                            "Reproject",
-                            message="Data successfully reprojected", 
-                            type="success", 
-                            dismiss=TRUE,
-                            append=FALSE)
-              } else {
-                createAlert(session, "rhrReproject", "rhrReproject1",
-                            "Reproject",
-                            message="Output EPSG not valid, won't reproject data", 
-                            type="error", 
-                            dismiss=TRUE,
-                            append=FALSE)
-                
+        dat2 <- rhrMapFields(data()$data,
+                                      fields=list(lon=lon, lat=lat, id=id, date=date, time=time), 
+                                      projString=NULL, dateFormat=dateFormat,
+                                      timeFormat=timeFormat, defaultId="Animal1")
+
+
+          if (debug) cat("str(dat2)\n")
+          if (debug) cat(str(dat2))
+          if (debug) cat("class(dat2)\n")
+          if (debug) cat(class(dat2))
+          if (debug) cat("===============\n")
+
+          if (debug) cat(input$configInEpsg, "\n")
+          if (debug) cat(input$configOutEpsg, "\n")
+
+          ## Epsg can be used later
+          if (!is.null(dat2)) {
+            if (!is.null(input$configOutEpsg)) {
+              if (!is.na(input$configOutEpsg)) {
+                if (!is.na(input$configInEpsg)) {
+                  if (rhrValidEpsg(input$configOutEpsg)) {
+                    ## should I also reproject
+                    proj4string(dat2$dat) <- CRS(paste0("+init=epsg:", input$configInEpsg))
+                    dat2$dat <- spTransform(dat2$dat, CRS(paste0("+init=epsg:", input$configOutEpsg)))
+                    dat2$dat <- as.data.frame(dat2$dat)
+                    names(dat2$dat) <- c("lon", "lat", "id", "timestamp")
+                    dat2$dat <- dat2$dat[, c("id", "lon", "lat", "timestamp")]
+                    ## successfully reporjected
+                    createAlert(session, "rhrReproject", "rhrReproject1",
+                                "Reproject",
+                                message="Data successfully reprojected", 
+                                type="success", 
+                                dismiss=TRUE,
+                                append=FALSE)
+                  } else {
+                    createAlert(session, "rhrReproject", "rhrReproject1",
+                                "Reproject",
+                                message="Output EPSG not valid, won't reproject data", 
+                                type="error", 
+                                dismiss=TRUE,
+                                append=FALSE)
+                    
+                  }
+                }
               }
             }
           }
-        }
+          
+        return(dat2)
+      } else {
+        return(NULL)
       }
-      
-      return(dat2)
     } else {
       if (debug) cat("dat2 is null\n")
       if (debug) cat("============ \n")
@@ -361,9 +365,10 @@ shinyServer(function(input, output, session) {
 
   output$subsetUI <- renderUI({
     if (succesfullyFinishedS2()) {
+      bbx <- bbox(data2()$dat)
       uis <- list(
-        sliderInput("subsetXSlider", "X-Range", min(data2()$dat$lon), max(data2()$dat$lon), value=range(data2()$dat$lon)), 
-        sliderInput("subsetYSlider", "Y-Range", min(data2()$dat$lat), max(data2()$dat$lat), value=range(data2()$dat$lat))
+        sliderInput("subsetXSlider", "X-Range", bbx[1, 1], bbx[1, 2], value=bbx[1, ]), 
+        sliderInput("subsetYSlider", "Y-Range", bbx[2, 1], bbx[2, 2], value=bbx[2, ])
         )
 
       if (!all(is.na(data2()$dat$timestamp))) {
@@ -425,26 +430,32 @@ shinyServer(function(input, output, session) {
       cat("[e] ===========================\n")
 
       dat <- data2()$dat
+      bbx <- if (!is.null(subsetXSliderValues()[1])) {
+        gEnvelope(readWKT(
+          paste0("MULTIPOINT((", subsetXSliderValues()[1], " ", subsetYSliderValues()[1], "), (",
+                 subsetXSliderValues()[2], " ", subsetYSliderValues()[2], "))")))
+      } else {
+        gEnvelope(dat)
+      }
+
       if (!all(is.na(data2()$dat$timestamp))) {
         dat <- dat[dat$id %in% checked & 
-                   dat$lat >= subsetYSliderValues()[1] &
-                   dat$lat <= subsetYSliderValues()[2] &
-                   dat$lon >= subsetXSliderValues()[1] &
-                   dat$lon <= subsetXSliderValues()[2] &
                    dat$timestamp >= ymd(subsetDatePicker()[1]) &
                    dat$timestamp <= ymd(subsetDatePicker()[2]), ]
       } else {
-        dat <- dat[dat$id %in% checked &
-                   dat$lat >= subsetYSliderValues()[1] &
-                   dat$lat <= subsetYSliderValues()[2] &
-                   dat$lon >= subsetXSliderValues()[1] &
-                   dat$lon <= subsetXSliderValues()[2], ]
+        dat <- dat[dat$id %in% checked , ]
       }
+
+      dat <- dat[which(gContains(bbx, dat, byid=TRUE)), ]
+
+      dataNew <- data2()
+      dataNew$dat <- dat
+
 
       if (nrow(dat) == 0) {
         NULL
       } else {
-        dat
+        dataNew
       }
 
 
@@ -453,8 +464,10 @@ shinyServer(function(input, output, session) {
 
   output$subsetPlot <- renderPlot({
     if (!is.null(data3())) {
-      plot(data2()$dat[, c("lon", "lat")], col=adjustcolor("black", 0.1), pch=19, asp=1)
-      points(data3()[ , c("lon", "lat")], col="red")
+      plot(data2()$dat, col=adjustcolor("black", 0.1), pch=19, asp=1)
+      points(data3()$dat, col="red")
+      axis(1)
+      axis(2)
       abline(v=subsetXSliderValues(), col="blue", lty=2)
       abline(h=subsetYSliderValues(), col="blue", lty=2)
     } else {
@@ -495,7 +508,7 @@ shinyServer(function(input, output, session) {
   subsetTable <- reactive({
     if (!is.null(data3())) {
       dataa <- as.data.frame(table(data2()$dat$id))
-      datbb <- as.data.frame(table(data3()$id))
+      datbb <- as.data.frame(table(data3()$dat$id))
       dat <- merge(dataa, datbb, by="Var1", all.x=TRUE)
       dat$Freq.y <- ifelse(is.na(dat$Freq.y), 0, dat$Freq.y)
 
@@ -503,7 +516,7 @@ shinyServer(function(input, output, session) {
       dat
     } else {
       dataa <- as.data.frame(table(data2()$dat$id))
-      datbb <- as.data.frame(table(data4()$id))
+      datbb <- as.data.frame(table(data4()$dat$id))
       dat <- merge(dataa, datbb, by="Var1", all.x=TRUE)
       dat$Freq.y <- ifelse(is.na(dat$Freq.y), 0, dat$Freq.y)
 
@@ -527,7 +540,7 @@ shinyServer(function(input, output, session) {
       data4 <- data3()
     } else {
       if (!is.null(data2())) {
-        data4 <- data2()$dat
+        data4 <- data2()
       } else {
         data4 <- NULL
       }
@@ -584,14 +597,15 @@ shinyServer(function(input, output, session) {
 
   output$configOuputGridBufferPlot <- renderPlot({
     if (!is.null(data4())) {
-      xrange <- bufferXSliderValues() * c(-1, 1) + range(data4()$lon)
-      yrange <- bufferYSliderValues() * c(-1, 1) + range(data4()$lat)
+      bbx <- bbox(data4()$dat)
+      xrange <- bufferXSliderValues() * c(-1, 1) + bbx[1, ]
+      yrange <- bufferYSliderValues() * c(-1, 1) + bbx[2, ] 
 
-      plot(data4()[, c("lon", "lat")], type="n", asp=1, ylim=yrange, xlim=xrange)
+      plot(data4()$dat, type="n", asp=1, ylim=yrange, xlim=xrange)
       abline(v=xrange, col="grey50", lty=1)
       abline(h=yrange, col="grey50", lty=1)
       polygon(c(xrange, rev(xrange)), rep(yrange, each=2), col=adjustcolor("red", 0.5), border="grey50")
-      points(data4()[, c("lon", "lat")], col=adjustcolor("black", 0.1), pch=19)
+      points(data4()$dat, col=adjustcolor("black", 0.1), pch=19)
     } else {
       plot(0,0, type="n")
     }
@@ -599,8 +613,9 @@ shinyServer(function(input, output, session) {
 
   output$bufferUI <- renderUI({
     if (!is.null(data4())) {
-      xrange <- diff(range(data4()$lon)) * 2
-      yrange <- diff(range(data4()$lat)) * 2
+      bbx <- bbox(data4()$dat)
+      xrange <- diff(bbx[1, ]) 
+      yrange <- diff(bbx[2, ]) 
       uis <- list(
         sliderInput("bufferXSlider", "X-Buffer", 0, xrange, xrange * 0.5), 
         sliderInput("bufferYSlider", "Y-Buffer", 0, yrange, yrange * 0.5)
@@ -624,7 +639,7 @@ shinyServer(function(input, output, session) {
 
   output$gridResUi <- renderUI({
     if (!is.null(data4())) {
-        rgs <- apply(data4()[, c("lon", "lat")], 2, function(x) diff(range(x)))
+        rgs <- apply(bbox(data4()$dat), 1, diff)
         rgs <- c(rgs / 10, rgs / 500)
         sliderInput("gridResSlider", "Resolution", min(rgs), max(rgs), mean(rgs))
       }
@@ -633,7 +648,7 @@ shinyServer(function(input, output, session) {
   trast <- reactive({
     if (!is.null(data4())) {
 
-      ext <- rhrExtFromPoints(data4()[, c("lon", "lat")],
+      ext <- rhrExtFromPoints(data4()$dat,
                               buffer=c(bufferXSliderValues(), bufferYSliderValues()),
                               extendRange=NULL) 
       if (input$configOutputGridGrid == "pixel") {
@@ -656,7 +671,7 @@ shinyServer(function(input, output, session) {
 
   output$gridPlot <- renderPlot({
     if (!is.null(data4())) {
-      plot(rhrUD(rhrKDE(data4()[if (nrow(data4()) < 100) sample(nrow(data4(), 100)) else 1:nrow(data4()), c("lon", "lat")],
+      plot(rhrUD(rhrKDE(data4()$dat[if (length(data4()$dat) < 100) sample(length(data4()$dat, 100)) else 1:length(data4()$dat), ],
                         trast=trast())))
     }
   })
