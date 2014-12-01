@@ -1,10 +1,10 @@
 ##' @export
 rhrValidEpsg <- function(epsg) {
-  data(rhrEPSGs, envir=environment())
+  data(rhrEPSGs)
   if (is.null(epsg)) {
     return(FALSE)
   }
-  if (epsg %in% rhr:::rhrEPSGs) {
+  if (epsg %in% rhrEPSGs) {
     return(TRUE)
   } else {
     return(FALSE)
