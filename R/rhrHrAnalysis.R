@@ -388,8 +388,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
-        sf <- tryCatch(rhrSiteFidelity(animal[, c("lon", "lat")], n=scn$n, alpha=args[[thisEst]]$alpha),
-                       error=function(e) e)
+        sf <- tryCatch(rhrSiteFidelity(animal, n=scn$n, alpha=args[[thisEst]]$alpha), error=function(e) e)
 
         if (inherits(sf, "error")) {
           fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
@@ -458,9 +457,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
-        ttsi <- tryCatch(rhrTTSI(animal[, c("lon", "lat", "timestamp")], interval=args[[thisEst]]$init, ntimes=args[[thisEst]]$ntimes,
-                                 consec=args[[thisEst]]$consec),
-                       error=function(e) e)
+        ttsi <- tryCatch(rhrTTSI(animal, interval=args[[thisEst]]$init, ntimes=args[[thisEst]]$ntimes, consec=args[[thisEst]]$consec), error=function(e) e)
 
         if (inherits(ttsi, "error")) {
           fnRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal[1, "id"], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
@@ -501,15 +498,11 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                  message=messageRDS))
 
           ## tables
-
           return(list(rds=fnRDS, plots=plts, name=scn$name, messages=msg))
-
-          
         }
       })
     })
 
-    
     ## Parameters
     fnRDS <- normalizePath(file.path(outDirData, paste0(thisEst, "Params.Rds")),mustWork=FALSE, winslash="/")
     sfp <- data.frame(Parameter=names(args[[thisEst]]),
@@ -517,9 +510,6 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
     saveRDS(sfp, file=fnRDS)
     resList$est[[thisEst]]$parameters <- fnRDS
-
-
-
   } 
 
   ## ------------------------------------------------------------------------------ ##  
@@ -547,9 +537,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                              detail=paste0("Starting with animal: ", animal[1, "id"], " (", which(animal[1, "id"] == names(dat)), " of ",
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
-        mcp <- tryCatch(rhrMCP(animal[, c("lon", "lat")], levels=args[[thisEst]]$levels,
-                               proj4string=projString),
-                       error=function(e) e)
+        mcp <- tryCatch(rhrMCP(animal, levels=args[[thisEst]]$levels), error=function(e) e)
 
         if (inherits(mcp, "error")) {
           saveRds(mcp, animal, scn, outDirData)
@@ -572,7 +560,6 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
           t1$Area <- rhrConvertUnit(t1$Area, inUnit, outUnit)
           saveRDS(t1, file=fnTbl1)
 
-
           tbls <- list(
             list(name="Home range areas",
                  path=fnTbl1))
@@ -585,8 +572,6 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
       })
     })
       
-
-    
     ## merge isopleths of animals along scenarios
     resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
 
@@ -632,8 +617,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
           hres$msg <- "sorry, h input not understood, this calculation will be skipped"
         }
 
-        kde <- tryCatch(rhrKDE(animal, h=hres$h, trast=args[[thisEst]]$trast), 
-                        error=function(e) e)
+        kde <- tryCatch(rhrKDE(animal, h=hres$h, trast=args[[thisEst]]$trast), error=function(e) e)
 
         if (inherits(kde, "error")) {
           saveRds(kde, animal, scn, outDirData)
@@ -719,12 +703,10 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
 
-        bbmm <- tryCatch(rhrBBMM(animal[, c("lon", "lat", "timestamp")],
-                                 rangesigma1=args[[thisEst]]$rangesigma1, 
+        bbmm <- tryCatch(rhrBBMM(animal, rangesigma1=args[[thisEst]]$rangesigma1, 
                                  sigma2=args[[thisEst]]$sigma2,
                                  trast=args[[thisEst]]$trast,
-                                 proj4string=projString),
-                        error=function(e) e)
+                                 proj4string=projString), error=function(e) e)
 
         if (inherits(bbmm, "error")) {
           saveRds(bbmm, animal, scn, outDirData)
@@ -800,10 +782,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
 
-        est <- tryCatch(rhrUniNorm(animal[, c("lon", "lat")],
-                                 trast=args[[thisEst]]$trast,
-                                 proj4string=projString),
-                        error=function(e) e)
+        est <- tryCatch(rhrUniNorm(animal, trast=args[[thisEst]]$trast, proj4string=projString), error=function(e) e)
 
         if (inherits(est, "error")) {
           saveRds(est, animal, scn, outDirData)
@@ -814,7 +793,6 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
           ## Plot results
           plts <- savePlots(est, animal, scn, outDirPlots, legend="Home Range Estimates") 
-
 
           ## tables
           fnTbl1 <- normalizePath(file.path(outDirData,
@@ -884,10 +862,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
 
-        est <- tryCatch(rhrBiNorm(animal[, c("lon", "lat")],
-                                  trast=args[[thisEst]]$trast,
-                                  proj4string=projString),
-                        error=function(e) e)
+        est <- tryCatch(rhrBiNorm(animal[, c("lon", "lat")], trast=args[[thisEst]]$trast), error=function(e) e)
 
         if (inherits(est, "error")) {
           saveRds(est, animal, scn, outDirData)
@@ -970,9 +945,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                                length(dat), ")"))
       lapply(scenarios, function(scn) {
 
-        locoh <- tryCatch(rhrLoCoH(animal[, c("lon", "lat")], type=scn$type, autoN=scn$autoN, n=scn$n, levels=args[[thisEst]]$levels,
-                               proj4string=projString),
-                          error=function(e) e)
+        locoh <- tryCatch(rhrLoCoH(animal, type=scn$type, autoN=scn$autoN, n=scn$n, levels=args[[thisEst]]$levels), error=function(e) e)
 
         if (inherits(locoh, "error")) {
           saveRds(locoh, animal, scn, outDirData)
