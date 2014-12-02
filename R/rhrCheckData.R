@@ -10,7 +10,7 @@ rhrCheckData <- function(dat, returnSP=FALSE) {
   if (!returnSP) {
     ## remapped already, no need to worry about it anymore
     if (inherits(dat, "RhrMappedData")) {
-      return(data.frame(dat))
+      return(as.data.frame(dat$dat))
 
       ## data.frame
     } else if(inherits(dat, "data.frame")) {
@@ -35,7 +35,7 @@ rhrCheckData <- function(dat, returnSP=FALSE) {
 
     ## remapped already, no need to worry about it anymore
     if (inherits(dat, "RhrMappedData")) {
-      return(sp::SpatialPoints(data.frame(dat)[, c("lon", "lat")]))
+      return(sp::SpatialPoints(data.frame(dat$dat)[, c("lon", "lat")]))
 
       ## data.frame
     } else if(inherits(dat, "data.frame")) {
