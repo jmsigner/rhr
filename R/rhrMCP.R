@@ -36,7 +36,7 @@
 ##'
 ##' ## SptialPolygonsDataFrame of isopleth
 ##' rhrIsopleths(mcp2)
-rhrMCP <- function(xy, levels=95, proj4string=NA) {
+rhrMCP <- function(xy, levels=95) {
 
   ## ============================================================================== ##  
   ## Start
@@ -49,18 +49,17 @@ rhrMCP <- function(xy, levels=95, proj4string=NA) {
   ## check input 
   xy <- rhrCheckData(xy, returnSP=TRUE)
   levels <- rhrCheckLevels(levels)
-  projString <- rhrProjString(xy, projString=proj4string)
+  projString <- proj4string(xy)
 
 
   ## ============================================================================== ##  
   ## Calc MCP
-
   bb <- tryCatch(
     expr=list(msg=NULL, exitStatus=0, res=.rhrMCP(xy, levels)),
     error=function(e) list(msg=e, exitStatus=1))
 
   if (bb$exitStatus == 0) {
-    sp::proj4string(bb$res) <- projString
+    proj4string(bb$res) <- projString
   }
 
   res <- structure(
