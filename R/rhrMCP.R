@@ -39,13 +39,6 @@
 rhrMCP <- function(xy, levels=95, proj4string=NA) {
 
   ## ============================================================================== ##  
-  if (FALSE) {
-    xy <- SpatialPoints(datSH[, 2:3])
-    levels <- 95
-    proj4string <- NA
-  }
-
-  ## ============================================================================== ##  
   ## Start
 
   ## Capture input arguments
@@ -124,7 +117,7 @@ rhrArea.RhrMCP <- function(x, ...) {
 
 ##' @export
 rhrData.RhrMCP <- function(x, ...) {
-  x$args$xy
+  x$args$xy$dat
 }
 
 ##' @export
@@ -141,10 +134,10 @@ plot.RhrMCP <- function(x, title=NULL, ...) {
   tempolPoints <- try(ggplot2::fortify(tempol, region="id"))
   tempolDF <- merge(tempolPoints, tempol@data, by="id")
 
-  points <- x$args$xy
+  points <- rhrData(x)
 
   if (inherits(points, "SpatialPoints")) {
-    points <- sp::coordinates(xy)
+    points <- data.frame(sp::coordinates(points))
   }
   
   names(points)[1:2] <- c("lon", "lat")
