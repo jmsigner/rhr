@@ -1,0 +1,119 @@
+library(testthat)
+library(rhr)
+data(datSH)
+
+context("rhrLoCoH: test cases")
+
+fields <- list(lon="x_epsg31467",
+               lat="y_epsg31467",
+               id="collar",
+               date="day",
+               time="time")
+dateFormat <- "ymd"
+timeFormat <- "hms"
+datSH <- datSH[1:500, ]
+dat1 <- datSH[, 2:3]
+dat2 <- SpatialPoints(datSH[, 2:3])
+dat3 <- SpatialPointsDataFrame(datSH[, 2:3], data=datSH)
+dat4 <- SpatialPointsDataFrame(datSH[, 2:3], data=datSH, proj4string=CRS("+init=epsg:31467"))
+dat5 <- complex(real=datSH[, 2], imaginary=datSH[, 3])
+dat6 <- rhrMapFields(datSH, fields, dateFormat=dateFormat, timeFormat=timeFormat)
+dat7 <- rhrMapFields(datSH, fields, dateFormat=dateFormat, timeFormat=timeFormat,
+                     projString=CRS("+init=epsg:31467"))
+
+dat <- list(dat1, dat2, dat3, dat4, dat5, dat6, dat7)
+
+test_that("Test .rhrLoCoH", {
+  ## should only work with SP*
+  expect_error(rhr:::.rhrLoCoH(dat1, levels=95))
+  expect_is(rhr:::.rhrLoCoH(dat1, "k", 10, 10, level=95), "SpatialPolygons")
+  expect_error(rhr:::.rhrLoCoH(dat2, "k", 10, 10, level=95))
+  expect_error(rhr:::.rhrLoCoH(dat3, "k", 10, 10, level=95))
+  expect_error(rhr:::.rhrLoCoH(dat4, "k", 10, 10, level=95))
+  expect_error(rhr:::.rhrLoCoH(dat5, "k", 10, 10, level=95))
+  expect_error(rhr:::.rhrLoCoH(dat6, "k", 10, 10, level=95))
+  expect_error(rhr:::.rhrLoCoH(dat7, "k", 10, 10, level=95))
+  expect_is(rhr:::.rhrLoCoH(dat1, "a", 500, 10, level=95), "SpatialPolygons")
+  expect_is(rhr:::.rhrLoCoH(dat1, "r", 500, 10, level=95), "SpatialPolygons")
+})
+
+test_that("LocoH works", {
+  ests <- lapply(dat, rhrLoCoH, type="k", n=50)
+  expect_true(all(sapply(ests, class)[1, ] == "RhrLoCoH"))
+  expect_equal(sum(sapply(ests, "[[", "exitStatus")), 0)
+  expect_true(all(sapply(ests, function(x) class(x$call)) == "call"))
+  expect_true(all(sapply(ests, function(x) class(x$args)) == "list"))
+  expect_true(all(sapply(ests, function(x) class(x$res)) == "list"))
+  expect_true(all(sapply(ests, function(x) inherits(x$res$hr, "SpatialPolygons"))))
+  expect_true(all(sapply(ests, rhrLevels) == 95))
+  expect_equal(sd(unlist(sapply(ests, rhrArea)[2, ])), 0)
+  expect_equal(sum(sapply(lapply(ests, rhrIsopleths), is.projected), na.rm=TRUE), 2)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrUD(x), warning=function(w) return(TRUE)))), 7)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrCUD(x), warning=function(w) return(TRUE)))), 7)
+
+  ests <- lapply(dat, rhrLoCoH, type="a", n=400)
+  expect_true(all(sapply(ests, class)[1, ] == "RhrLoCoH"))
+  expect_equal(sum(sapply(ests, "[[", "exitStatus")), 0)
+  expect_true(all(sapply(ests, function(x) class(x$call)) == "call"))
+  expect_true(all(sapply(ests, function(x) class(x$args)) == "list"))
+  expect_true(all(sapply(ests, function(x) class(x$res)) == "list"))
+  expect_true(all(sapply(ests, function(x) inherits(x$res$hr, "SpatialPolygons"))))
+  expect_true(all(sapply(ests, rhrLevels) == 95))
+  expect_equal(sd(unlist(sapply(ests, rhrArea)[2, ])), 0)
+  expect_equal(sum(sapply(lapply(ests, rhrIsopleths), is.projected), na.rm=TRUE), 2)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrUD(x), warning=function(w) return(TRUE)))), 7)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrCUD(x), warning=function(w) return(TRUE)))), 7)
+
+  ests <- lapply(dat, rhrLoCoH, type="r", n=500)
+  expect_true(all(sapply(ests, class)[1, ] == "RhrLoCoH"))
+  expect_equal(sum(sapply(ests, "[[", "exitStatus")), 0)
+  expect_true(all(sapply(ests, function(x) class(x$call)) == "call"))
+  expect_true(all(sapply(ests, function(x) class(x$args)) == "list"))
+  expect_true(all(sapply(ests, function(x) class(x$res)) == "list"))
+  expect_true(all(sapply(ests, function(x) inherits(x$res$hr, "SpatialPolygons"))))
+  expect_true(all(sapply(ests, rhrLevels) == 95))
+  expect_equal(sd(unlist(sapply(ests, rhrArea)[2, ])), 0)
+  expect_equal(sum(sapply(lapply(ests, rhrIsopleths), is.projected), na.rm=TRUE), 2)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrUD(x), warning=function(w) return(TRUE)))), 7)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrCUD(x), warning=function(w) return(TRUE)))), 7)
+
+  ests <- lapply(dat, rhrLoCoH, type="k", autoN=TRUE)
+  expect_true(all(sapply(ests, class)[1, ] == "RhrLoCoH"))
+  expect_equal(sum(sapply(ests, "[[", "exitStatus")), 0)
+  expect_true(all(sapply(ests, function(x) class(x$call)) == "call"))
+  expect_true(all(sapply(ests, function(x) class(x$args)) == "list"))
+  expect_true(all(sapply(ests, function(x) class(x$res)) == "list"))
+  expect_true(all(sapply(ests, function(x) inherits(x$res$hr, "SpatialPolygons"))))
+  expect_true(all(sapply(ests, rhrLevels) == 95))
+  expect_equal(sd(unlist(sapply(ests, rhrArea)[2, ])), 0)
+  expect_equal(sum(sapply(lapply(ests, rhrIsopleths), is.projected), na.rm=TRUE), 2)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrUD(x), warning=function(w) return(TRUE)))), 7)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrCUD(x), warning=function(w) return(TRUE)))), 7)
+
+  ests <- lapply(dat, rhrLoCoH, type="a", autoN=TRUE)
+  expect_true(all(sapply(ests, class)[1, ] == "RhrLoCoH"))
+  expect_equal(sum(sapply(ests, "[[", "exitStatus")), 0)
+  expect_true(all(sapply(ests, function(x) class(x$call)) == "call"))
+  expect_true(all(sapply(ests, function(x) class(x$args)) == "list"))
+  expect_true(all(sapply(ests, function(x) class(x$res)) == "list"))
+  expect_true(all(sapply(ests, function(x) inherits(x$res$hr, "SpatialPolygons"))))
+  expect_true(all(sapply(ests, rhrLevels) == 95))
+  expect_equal(sd(unlist(sapply(ests, rhrArea)[2, ])), 0)
+  expect_equal(sum(sapply(lapply(ests, rhrIsopleths), is.projected), na.rm=TRUE), 2)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrUD(x), warning=function(w) return(TRUE)))), 7)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrCUD(x), warning=function(w) return(TRUE)))), 7)
+
+  ests <- lapply(dat, rhrLoCoH, type="r", autoN=TRUE)
+  expect_true(all(sapply(ests, class)[1, ] == "RhrLoCoH"))
+  expect_equal(sum(sapply(ests, "[[", "exitStatus")), 0)
+  expect_true(all(sapply(ests, function(x) class(x$call)) == "call"))
+  expect_true(all(sapply(ests, function(x) class(x$args)) == "list"))
+  expect_true(all(sapply(ests, function(x) class(x$res)) == "list"))
+  expect_true(all(sapply(ests, function(x) inherits(x$res$hr, "SpatialPolygons"))))
+  expect_true(all(sapply(ests, rhrLevels) == 95))
+  expect_equal(sd(unlist(sapply(ests, rhrArea)[2, ])), 0)
+  expect_equal(sum(sapply(lapply(ests, rhrIsopleths), is.projected), na.rm=TRUE), 2)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrUD(x), warning=function(w) return(TRUE)))), 7)
+  expect_equal(um(sapply(ests, function(x) tryCatch(rhrCUD(x), warning=function(w) return(TRUE)))), 7)
+
+})
