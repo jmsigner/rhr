@@ -26,7 +26,7 @@ rhrUniNorm <- function(xy, trast=NULL, proj4string=NA) {
                                                   nrow=2, byrow=TRUE),
                                                 log=TRUE))
 
-  phat <- optimtion(par=c(mean(xy[, 1]), mean(xy[, 2]), 1, 0.1, 1), xy=xy, fn=ll)$par
+  phat <- optim(par=c(mean(xy[, 1]), mean(xy[, 2]), 1, 0.1, 1), xy=xy, fn=ll)$par
   ll <- sum(mvtnorm::dmvnorm(xy, mean=c(phat[1:2]),
                              sigma=matrix(phat[c(3, 4, 4, 5)], byrow=2, nrow=2), log=TRUE))
 

@@ -47,10 +47,16 @@ rhrMCP <- function(xy, levels=95) {
 
   
   ## check input 
+  projString <- if (inherits(xy, "SpatialPoints")) {
+    proj4string(xy) 
+  } else if (is(xy, "RhrMappedData")) {
+    proj4string(xy$dat)
+  } else {
+    CRS(NA_character_)
+  }
+
   xy <- rhrCheckData(xy, returnSP=TRUE)
   levels <- rhrCheckLevels(levels)
-  projString <- proj4string(xy)
-
 
   ## ============================================================================== ##  
   ## Calc MCP
@@ -115,8 +121,8 @@ rhrArea.RhrMCP <- function(x, ...) {
 }
 
 ##' @export
-rhrData.RhrMCP <- function(x, ...) {
-  x$args$xy$dat
+rhrData.RhrMCP <- function(x, spatial=FALSE, ...) {
+  xx <- rhrCheckData(x$args$xy, returnSP=spatial)
 }
 
 ##' @export
@@ -133,12 +139,8 @@ plot.RhrMCP <- function(x, title=NULL, ...) {
   tempolPoints <- try(ggplot2::fortify(tempol, region="id"))
   tempolDF <- merge(tempolPoints, tempol@data, by="id")
 
-  points <- rhrData(x)
+  points <- rhrData(x, spatial=FALSE)
 
-  if (inherits(points, "SpatialPoints")) {
-    points <- data.frame(sp::coordinates(points))
-  }
-  
   names(points)[1:2] <- c("lon", "lat")
 
   ggplot2::ggplot(tempolDF, aes(x=long, y=lat, group=group, color=factor(level))) + 

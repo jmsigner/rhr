@@ -7,11 +7,11 @@
 ##' @author Johannes Signer
 rhrCheckData <- function(dat, returnSP=FALSE) {
   
+  ## return data.frames
   if (!returnSP) {
     ## remapped already, no need to worry about it anymore
     if (inherits(dat, "RhrMappedData")) {
-      return(sp::SpatialPoints(data.frame(dat$dat)[, c("lon", "lat")]))
-
+      return(data.frame(dat$dat)[, c("lon", "lat")])
       ## data.frame
     } else if(inherits(dat, "data.frame")) {
       if (ncol(dat) > 2) {

@@ -5,10 +5,10 @@
 
 ## clean everything 
 rm(list=ls())
-debug <- TRUE
+debug <- FALSE
 if (debug) {
   .datFromR <- NULL
-  outDir <- "/temp"
+  outDir <- "/tmp"
 }
 #####
 

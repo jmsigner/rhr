@@ -1,21 +1,35 @@
 context("rhrCheckData: test cases")
 
-set.seed(1234)
-datSH <- data.frame(x=rnorm(500), y=rnorm(500))
-Z <- complex(re=datSH[, "x"], im=datSH[, "y"])
-datSp <- SpatialPoints(datSH[, c("x", "y")])
+library(testthat)
+library(rhr)
+data(datSH)
 
+context("rhrMCP: test cases")
 
-test_that("Wrong input is recognized", {
-  expect_that(rhr:::rhrCheckData(), throws_error())
-  expect_that(rhr:::rhrCheckData(1:10), throws_error())
+fields <- list(lon="x_epsg31467",
+               lat="y_epsg31467",
+               id="collar",
+               date="day",
+               time="time")
+dateFormat <- "ymd"
+timeFormat <- "hms"
+
+dat1 <- datSH[, 2:3]
+dat2 <- SpatialPoints(datSH[, 2:3])
+dat3 <- SpatialPointsDataFrame(datSH[, 2:3], data=datSH)
+dat4 <- SpatialPointsDataFrame(datSH[, 2:3], data=datSH, proj4string=CRS("+init=epsg:31467"))
+dat5 <- complex(real=datSH[, 2], imaginary=datSH[, 3])
+dat6 <- rhrMapFields(datSH, fields, dateFormat=dateFormat, timeFormat=timeFormat)
+dat7 <- rhrMapFields(datSH, fields, dateFormat=dateFormat, timeFormat=timeFormat,
+                     projString=CRS("+init=epsg:31467"))
+
+dat <- list(dat1, dat2, dat3, dat4, dat5, dat6, dat7)
+
+test_that("rhrCheckData works", {
+ expect_true(all(sapply(lapply(dat, rhr:::rhrCheckData, returnSP=FALSE), class) == "data.frame"))
+ expect_true(all(sapply(lapply(dat, rhr:::rhrCheckData, returnSP=FALSE), ncol) == 2))
+ expect_true(all(sapply(lapply(dat, rhr:::rhrCheckData, returnSP=TRUE), inherits, "SpatialPoints")))
 })
 
-test_that("Correct class is returned", {
-  expect_that(rhr:::rhrCheckData(Z), is_a("data.frame"))
-  expect_that(rhr:::rhrCheckData(datSH[, c("x", "y")]), is_a("data.frame"))
-  expect_that(rhr:::rhrCheckData(datSH[, c("x", "y", "x")]), gives_warning())
-  expect_that(rhr:::rhrCheckData(datSp), is_a("data.frame"))
-})
 
 

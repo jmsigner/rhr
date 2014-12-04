@@ -4,7 +4,7 @@
 \title{Local Convex Hull (LoCoH)}
 \usage{
 rhrLoCoH(xy, type = "k", n = 10, levels = 95, minPts = 3,
-  proj4string = NA, autoN = FALSE)
+  autoN = FALSE)
 }
 \arguments{
   \item{xy}{data.frame with two columns. The first column

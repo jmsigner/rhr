@@ -57,25 +57,20 @@
 
 rhrKDE <- function(xy,
                    h=rhrHref(xy)$h, 
-                   trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL),
-                   proj4string=NA) {
-
-  ## ------------------------------------------------------------------------------ ##  
-  ## Debug only
-  if (FALSE) {
-    xy <- datSH[, 2:3]
-    h <- rhrHref(xy)$h
-    trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)
-    proj4string <- NA
-  }
+                   trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
 
-  
   ## check input 
-  projString <- rhrProjString(xy, projString=proj4string)
+  projString <- if (inherits(xy, "SpatialPoints")) {
+    proj4string(xy) 
+  } else if (is(xy, "RhrMappedData")) {
+    proj4string(xy$dat)
+  } else {
+    CRS(NA_character_)
+  }
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
   ## ---------------------------------------------------------------------------- #
@@ -97,7 +92,7 @@ rhrKDE <- function(xy,
     error=function(e) list(msg=e, exitStatus=1))
 
   if (res$exitStatus == 0) {
-    sp::proj4string(res$res) <- projString
+    proj4string(res$res) <- projString
   }
 
   res <- structure(
@@ -161,60 +156,8 @@ rhrCUD.RhrKDE <- function(x, ...) {
 rhrIsopleths.RhrKDE <- function(x, levels=95, ...) {
 
   levels <- rhrCheckLevels(levels)
-
   cud <- rhrCUD(x)
-  con <- raster::rasterToContour(cud * 100, levels=levels)
-
-  b <- sp::coordinates(con)
-  
-  ## make sure there are at least 2 points
-  b <- lapply(b, function(x) Filter(function(x) nrow(x) > 2, x))
-
-  ## Make spatial polyon
-  ## Complete ring and create each Polygon
-  con <- lapply(b, function(x) {
-    if (length(x) == 1) {
-      lapply(x, function(xx) sp::Polygon(rbind(xx, xx[1,])[, 1:2], hole=FALSE))
-
-    } else { 
-      bb <- sp::SpatialPolygons(lapply(seq(length(x)), function(i) sp::Polygons(list(sp::Polygon(rbind(x[[i]], x[[i]][1,])[, 1:2])), i)))
-      if (any((tm <- rgeos::gIntersects(bb, byid=T))[upper.tri(tm)])) {
-
-        ## some polys intersect find out which and set as wholes
-        pos <- expand.grid(b=1:length(bb), s=1:length(bb))
-        holes <- rep(FALSE, length(bb))
-
-        for (i in 1:nrow(pos)) {
-          if (rgeos::gContainsProperly(bb[pos[i,1]], bb[pos[i,2]])) {
-
-            ## second poly is contained by the first
-            holes[pos[i,2]] <- TRUE
-          }
-        }
-
-        lapply(seq_along(x), function(i) sp::Polygon(rbind(x[[i]], x[[i]][1,])[, 1:2], hole=holes[i]))
-
-
-      } else {
-        lapply(x, function(xx) sp::Polygon(rbind(xx, xx[1,])[, 1:2], hole=FALSE))
-
-      }
-    }
-  })
-
-  ## Check holes, if more than 1 poly, make sp polygons, then check wholes
-  ## create a list of Polygons for each level
-  con <- lapply(seq_along(con), function(i) sp::Polygons(con[[i]], i))
-  con <- sp::SpatialPolygons(con)
-
-  ## Set proj4string
-######
-  ## proj4string(con) <- proj4string(cud)  
-
-  df <- data.frame(level=levels, area=gArea(con, byid=TRUE))
-  row.names(df) <- 1:length(levels)
-  con <- sp::SpatialPolygonsDataFrame(con, df)
-  return(con)
+  rhrCUD2Isopleths(cud, levels) 
 }
 
 ##' @export
@@ -229,36 +172,18 @@ rhrArea.RhrKDE <- function(x, levels=95, ...) {
 }
 
 ##' @export
-rhrData.RhrKDE <- function(x, ...) {
-  x$args$xy
+rhrData.RhrKDE <- function(x, spatial=FALSE, ...) {
+  xx <- rhrCheckData(x$args$xy, returnSP=spatial)
 }
 
 ##' @method plot RhrKDE
 ##' @export
 plot.RhrKDE <- function(x, addIsopleths=TRUE, ...) {
-
   if (addIsopleths) {
     tempol <- rhrIsopleths(x, ...)
   }
-
-##  df <- data.frame(rasterToPoints(rhrUD(x)))
-##  names(df) <- c("x", "y", "ud")
-##  
-##  pUD <- ggplot(data=df) +
-##    geom_raster(aes(x=x, y=y, fill=ud)) +
-##      coord_equal() + scale_x_continuous(expand=c(0,0)) +
-##        scale_fill_gradient(low="white", high="darkgreen") + 
-##          scale_y_continuous(expand=c(0,0)) + labs(x=NULL, y=NULL) + theme_bw() +
-##            coord_fixed()
   plot(rhrUD(x))
-
   if (addIsopleths) {
-    ## fortify poly
-##    tempol@data$id <- rownames(tempol@data)
-##    tempolPoints <- try(fortify(tempol, region="id"))
-##    tempolDF <- merge(tempolPoints, tempol@data, by="id")
-##
-##    pUD <- pUD + geom_path(data=tempolDF, aes(x=long, y=lat, group=group), size=0.2, colour="black")
     plot(rhrIsopleths(x), add=TRUE)
   }
 }

@@ -30,13 +30,9 @@ rhrCUD2Isopleths <- function(cud, levels=95, ...) {
             holes[pos[i,2]] <- TRUE
           }
         }
-
         lapply(seq_along(x), function(i) Polygon(rbind(x[[i]], x[[i]][1,])[, 1:2], hole=holes[i]))
-
-
       } else {
         lapply(x, function(xx) Polygon(rbind(xx, xx[1,])[, 1:2], hole=FALSE))
-
       }
     }
   })
@@ -47,9 +43,7 @@ rhrCUD2Isopleths <- function(cud, levels=95, ...) {
   con <- SpatialPolygons(con)
 
   ## Set proj4string
-###### 
   proj4string(con) <- proj4string(cud)  
-
   df <- data.frame(level=levels, area=gArea(con, byid=TRUE))
   row.names(df) <- 1:length(levels)
   con <- SpatialPolygonsDataFrame(con, df)

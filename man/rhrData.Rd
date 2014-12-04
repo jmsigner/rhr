@@ -3,12 +3,15 @@
 \alias{rhrData}
 \title{rhrData}
 \usage{
-rhrData(x, ...)
+rhrData(x, spatial = FALSE, ...)
 }
 \arguments{
-  \item{...}{}
+  \item{x}{object of class RhrEst}
 
-  \item{obj}{object of class RhrEst}
+  \item{spatial}{logical value indicating whether or not to
+  return spatial points}
+
+  \item{...}{}
 }
 \value{
 data.frame

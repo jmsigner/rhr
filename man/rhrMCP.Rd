@@ -3,7 +3,7 @@
 \alias{rhrMCP}
 \title{rhrMCP}
 \usage{
-rhrMCP(xy, levels = 95, proj4string = NA)
+rhrMCP(xy, levels = 95)
 }
 \arguments{
   \item{xy}{data.frame with two columns. The first column

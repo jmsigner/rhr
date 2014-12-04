@@ -22,7 +22,7 @@ rhrReadData(file, sep = ",", skip = 0, hasHeader = TRUE, sepDec = ".",
   \item{...}{passed to scan}
 }
 \value{
-\code{data.frame}
+object of class \code{rhrDat}
 }
 \description{
 Wrapper around \code{readLines} to read data with different
@@ -30,7 +30,18 @@ field separator and to do some checking, mainly used for
 the GUI
 }
 \details{
-some details
+...
+}
+\examples{
+## Generate data
+tmpDir <- tempdir()
+dat <- data.frame(x=runif(1000),
+                  y=runif(1000))
+
+write.csv(dat, file.path(tmpDir, "test.csv"))
+
+## Read data
+dat <- rhrReadData(file.path(tmpDir, "test.csv"), sep=",")
 }
 \author{
 Johannes Signer

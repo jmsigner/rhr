@@ -4,7 +4,7 @@
 \title{Kernel Density Estimation (KDE)}
 \usage{
 rhrKDE(xy, h = rhrHref(xy)$h, trast = rhrRasterFromExt(rhrExtFromPoints(xy,
-  extendRange = 0.2), nrow = 100, res = NULL), proj4string = NA)
+  extendRange = 0.2), nrow = 100, res = NULL))
 }
 \arguments{
   \item{xy}{\code{data.frame} with two columns: x and y

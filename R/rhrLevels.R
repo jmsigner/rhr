@@ -12,5 +12,10 @@ rhrLevels <- function (x , ...) {
 
 ##' @export
 rhrLevels.default <- function (x , ...) {
-  paste0 ("rhrLevels is not defined for object of class", class(x))
+  paste0 ("rhrLevels is not defined for object of class ", class(x))
+}
+
+##' @export
+rhrLevels.RhrProbEst <- function (x , ...) {
+  message("Probabilistic estimators: to get home range at specific level call 'rhrArea(est, level=95)', or 'rhrIsopleths(est, level=95)' to get contour lines.")
 }

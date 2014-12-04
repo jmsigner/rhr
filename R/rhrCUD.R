@@ -13,3 +13,8 @@ rhrCUD <- function(x, ...) {
 rhrCUD.default <- function (x , ...) {
   paste0("rhrCUD is not defined for object of class ", class(x))
 }
+
+##' @export
+rhrCUD.RhrGeoEst <- function (x , ...) {
+  warning("rhrCUD is not defined for geometric estimators")
+}

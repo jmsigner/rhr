@@ -3,15 +3,13 @@
 \alias{rhrHrAnalysis}
 \title{Function to run perform analyses and save results to temporary file}
 \usage{
-rhrHrAnalysis(dat, what = c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE",
-  "rhrAsymptote", "rhrCoreArea"), args = NULL, verbose = TRUE,
-  duplicated = "nothing", outDir = file.path(tempdir(), paste0("rhr",
-  format(Sys.time(), "\%Y\%m\%d\%H\%M\%S"))), inGUI = FALSE, epsg = NULL,
-  inUnit = "ido", outUnit = "ius", writeResultsSpatial = TRUE)
+rhrHrAnalysis(datIn, what = c("rhrSiteFidelity", "rhrTTSI", "rhrMCP",
+  "rhrKDE", "rhrAsymptote", "rhrCoreArea"), args = NULL, verbose = TRUE,
+  outDir = file.path(tempdir(), paste0("rhr", format(Sys.time(),
+  "\%Y\%m\%d\%H\%M\%S"))), inGUI = FALSE, inUnit = "ido", outUnit = "ius",
+  writeResultsSpatial = TRUE)
 }
 \arguments{
-  \item{dat}{RhrMappedData}
-
   \item{what}{character vector; indicating which steps
   should be performed, order does not matter}
 
@@ -19,6 +17,8 @@ rhrHrAnalysis(dat, what = c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE",
 
   \item{verbose}{logical; whether or not progress should be
   given on the command line}
+
+  \item{dat}{RhrMappedData}
 
   \item{duplicated}{character; determine what to do with
   either 'nothing', 'delete' or 'random', to add random

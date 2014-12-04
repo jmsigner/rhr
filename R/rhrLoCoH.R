@@ -48,7 +48,7 @@
 ##' parameters(locoh)
 ##' }
 
-rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, proj4string=NA, autoN=FALSE) {
+rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
 
   ## ============================================================================== ##  
   ## Start
@@ -58,11 +58,17 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, proj4string=NA, au
   call <- match.call()
 
   ## check input coordinates
-  projString <- rhrProjString(xy, projString=proj4string)
+  projString <- if (inherits(xy, "SpatialPoints")) {
+    proj4string(xy) 
+  } else if (is(xy, "RhrMappedData")) {
+    proj4string(xy$dat)
+  } else {
+    CRS(NA_character_)
+  }
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
-  # input checking
-  # type:
+  ## input checking
+  ## type
   if (!type %in% c("a", "k", "r")) {
     stop("rhrLocoh: incorrect type")
   }
@@ -96,7 +102,6 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, proj4string=NA, au
 
   if (bb$exitStatus == 0) {
     proj4string(bb$res) <- projString
-
   }
 
   res <- structure(
@@ -106,7 +111,7 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, proj4string=NA, au
     call=call,
     args=args,
     res=list(hr=bb$res, n=n)),
-    class=c("RhrLoCoH", "RhrEst", "list"))
+    class=c("RhrLoCoH", "RhrGeoEst", "RhrEst", "list"))
   return(invisible(res))
 
 }
@@ -219,6 +224,11 @@ rhrIsopleths.RhrLoCoH <- function(x, ...) {
 ##' @export
 rhrArea.RhrLoCoH <- function(x, ...) {
   data.frame(rhrIsopleths(x, ...))
+}
+
+##' @export
+rhrLevels.RhrLoCoH <- function(x, ...) {
+  x$args$levels
 }
 
 ##' @export

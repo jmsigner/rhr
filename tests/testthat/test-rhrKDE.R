@@ -1,60 +1,59 @@
-context("rhrKDE: test cases")
-
+library(testthat)
 library(rhr)
+library(magrittr)
 data(datSH)
 
+context("rhrKDE: test cases")
 
-test_that("Test rhrMCP", {
-  ## res
-  resKDE <- rhr::rhrKDE(datSH[, 2:3])
-  expect_that(resKDE, is_a("RhrKDE"))
-  expect_that(resKDE, is_a("RhrEst"))
-  expect_that(resKDE, is_a("list"))
-  expect_that(resKDE$call, is_a("call"))
-  expect_that(resKDE$args, is_a("list"))
-  expect_that(resKDE$res, is_a("list"))
-  expect_that(resKDE$res$hr, is_a("RasterLayer"))
-                 
-  expect_that(resKDE$args$xy, is_a("data.frame"))
-  expect_that(ncol(resKDE$args$xy), equals(2))
-  expect_that(resKDE$args$proj4string, equals(NA))
-  expect_that(is.na(proj4string(resKDE$res$hr)), is_true())
+fields <- list(lon="x_epsg31467",
+               lat="y_epsg31467",
+               id="collar",
+               date="day",
+               time="time")
+dateFormat <- "ymd"
+timeFormat <- "hms"
 
-  expect_that(rhrArea(resKDE), is_a("numeric"))
-  expect_that(names(rhrArea(resKDE)), equals("95"))
-  expect_that(rhrIsopleths(resKDE), is_a("SpatialPolygons"))
+datSH <- datSH[!duplicated(datSH[, 2:3]), ]
+dat1 <- datSH[, 2:3]
+dat2 <- SpatialPoints(datSH[, 2:3])
+dat3 <- SpatialPointsDataFrame(datSH[, 2:3], data=datSH)
+dat4 <- SpatialPointsDataFrame(datSH[, 2:3], data=datSH, proj4string=CRS("+init=epsg:31467"))
+dat5 <- complex(real=datSH[, 2], imaginary=datSH[, 3])
+dat6 <- rhrMapFields(datSH, fields, dateFormat=dateFormat, timeFormat=timeFormat)
+dat7 <- rhrMapFields(datSH, fields, dateFormat=dateFormat, timeFormat=timeFormat,
+                     projString=CRS("+init=epsg:31467"))
 
-  expect_that(rhr::rhrKDE(), throws_error())
-  expect_that(rhr::rhrKDE(datSH[, 2:4]), gives_warning())
-  expect_that(rhr::rhrKDE(datSH[, 1:4]), throws_error())
-
-})
+dat <- list(dat1, dat2, dat3, dat4, dat5, dat6, dat7)
+trast <- rhrRasterFromExt(rhrExtFromPoints(dat7, extendRange=0.3), nrow=100, res=NULL)
+h <- rhrHref(dat1)$h
 
 test_that("Test .rhrKDE", {
-  ## res
-  trast=rhrRasterFromExt(rhrExtFromPoints(datSH[, 2:3], extendRange=0.2), nrow=100, res=NULL)
-
-  resKDE <- rhr::.rhrKDE(datSH[, 2:3], h=c(100,100), trast=trast)
-  expect_that(resKDE, is_a("RasterLayer"))
-
-  expect_that(rhr::.rhrKDE(datSH[, 2:3]), throws_error())
-  expect_that(rhr::.rhrKDE(datSH[, 1:4]), throws_error())
-  expect_that(rhr::.rhrKDE(datSH), throws_error())
+  ## should only work with SP*
+  expect_error(.rhrKDE(dat1))
+  expect_is(.rhrKDE(dat1, h, trast), "RasterLayer")
+  expect_error(.rhrKDE(dat2, h, trast))
+  expect_error(.rhrKDE(dat3, h, trast))
+  expect_error(.rhrKDE(dat4, h, trast))
+  expect_error(.rhrKDE(dat5, h, trast))
+  expect_error(.rhrKDE(dat6, h, trast))
+  expect_error(.rhrKDE(dat7, h, trast))
 })
 
-test_that("rhrCUD", {
-  expect_that(rhrCUD(rhrKDE(datSH[, 2:3])), is_a("RasterLayer"))
-})
-
-test_that("rhrUD", {
-  expect_that(rhrUD(rhrKDE(datSH[, 2:3])), is_a("RasterLayer"))
-})
-
-test_that("rhrIsopleths", {
-  expect_that(rhrIsopleths(rhrKDE(datSH[, 2:3])), is_a("SpatialPolygons"))
-})
-
-test_that("rhrArea", {
-  expect_that(rhrArea(rhrKDE(datSH[, 2:3])), is_a("numeric"))
-  expect_that(names(rhrArea(rhrKDE(datSH[, 2:3]), levels=c(50, 95))), equals(c("50", "95")))
+test_that("KDE works", {
+  ests <- lapply(dat, rhrKDE)
+  expect_true(all(sapply(ests, class)[1, ] == "RhrKDE"))
+  expect_equal(sum(sapply(ests, "[[", "exitStatus")), 0)
+  expect_true(all(sapply(ests, function(x) class(x$call)) == "call"))
+  expect_true(all(sapply(ests, function(x) class(x$args)) == "list"))
+  expect_true(all(sapply(ests, function(x) class(x$res)) == "list"))
+  expect_true(all(sapply(ests, function(x) inherits(x$res$hr, "RasterLayer"))))
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrLevels(x), message=function(m) return(TRUE)))), 7)
+  expect_equal(sd(unlist(sapply(ests, rhrArea)[2, ])), 0)
+  expect_equal(sum(sapply(lapply(ests, function(x) proj4string(x$res$hr)), is.na)), 5)
+  expect_equal(sum(sapply(lapply(ests, function(x) proj4string(rhrUD(x))), is.na)), 5)
+  expect_equal(sum(sapply(lapply(ests, function(x) proj4string(rhrCUD(x))), is.na)), 5)
+  expect_equal(sum(sapply(lapply(ests, rhrIsopleths), is.projected), na.rm=TRUE), 2)
+  expect_true(all(lapply(ests, rhrData) %>% sapply(., class) %>% unlist %>% "=="(., "data.frame")))
+  expect_true(all(lapply(ests, rhrData, spatial=TRUE) %>% sapply(., is, "SpatialPoints")))
+  expect_true(all(sapply(ests, rhrHasUD)))
 })

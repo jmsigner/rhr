@@ -1,16 +1,17 @@
 ##' Returns the area of RhrEst object
 ##'
 ##' @title rhrData
-##' @param obj object of class RhrEst
+##' @param x object of class RhrEst
+##' @param spatial logical value indicating whether or not to return spatial points
 ##' @param ... 
 ##' @return data.frame
 ##' @export
 ##' @author Johannes Signer
-rhrData <- function (x , ...) {
+rhrData <- function (x, spatial=FALSE, ...) {
   UseMethod ("rhrData", x)
 }
 
 ##' @export
-rhrData.default <- function (x , ...) {
+rhrData.default <- function (x, spatial=FALSE, ...) {
   paste0 ("rhrData is not defined for object of class ", class(x))
 }
