@@ -232,6 +232,11 @@ rhrLevels.RhrLoCoH <- function(x, ...) {
 }
 
 ##' @export
+rhrData.RhrLoCoH <- function(x, spatial=FALSE, ...) {
+  xx <- rhrCheckData(x$args$xy, returnSP=spatial)
+}
+
+##' @export
 ##' @method plot RhrLoCoH
 plot.RhrLoCoH <- function(x, title=NULL, ...) {
   ## fortify poly
@@ -240,7 +245,7 @@ plot.RhrLoCoH <- function(x, title=NULL, ...) {
   tempolPoints <- try(fortify(tempol, region="id"))
   tempolDF <- merge(tempolPoints, tempol@data, by="id")
 
-  points <- x$args$xy
+  points <- rhrData(x, spatial=FALSE)
   names(points)[1:2] <- c("lon", "lat")
 
   ggplot(tempolDF, aes(x=long, y=lat, group=group, color=factor(level))) + 

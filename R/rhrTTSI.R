@@ -5,6 +5,7 @@
 ##' @param dat data.frame, with three columns: x and y coordinates and a timestamp in seconds.
 ##' @param interval numeric value, the initial interval considered
 ##' @param ntimes numeric value, the number of times the critical value needs to be exceeded in order to reach independence.
+##' @param time vector with time stamp for each relocation.
 ##' @param ... further arguments passed to \code{rhrSchoener}.
 ##' @return \code{vector} vector of length three. V is Schoeners v, n the number of points and m the number of point pairs considered to calculated t2.
 ##' @export
@@ -18,9 +19,18 @@
 ##' plot(ttsi)
 ##' }
 
-rhrTTSI <- function(dat, interval, ntimes=3, ...) {
+rhrTTSI <- function(dat, time, interval, ntimes=3, ...) {
 
   call <- match.call()
+  dat <- rhrCheckData(dat, returnSP=FALSE)
+
+  if (nrow(dat) != length(time)) {
+    stop("rhrTTSI: not every observation has a timestamp")
+  }
+
+  dat <- data.frame(x = dat[, 1],
+                    y = dat[, 2],
+                    timestamp = time)
   names(dat)[1:3] <- c("x", "y", "timestamp")
 
   ## get difference between first and last relocation

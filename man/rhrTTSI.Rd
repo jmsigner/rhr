@@ -4,11 +4,13 @@
 \title{rhrTTSI
 This a wrapper around \code{rhrSchoener} to calculate time to statistical indpendence from a series of intervals.}
 \usage{
-rhrTTSI(dat, interval, ntimes = 3, ...)
+rhrTTSI(dat, time, interval, ntimes = 3, ...)
 }
 \arguments{
   \item{dat}{data.frame, with three columns: x and y
   coordinates and a timestamp in seconds.}
+
+  \item{time}{vector with time stamp for each relocation.}
 
   \item{interval}{numeric value, the initial interval
   considered}

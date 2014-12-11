@@ -1,14 +1,19 @@
 ##' @export
-rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL), proj4string=NA) {
+rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
 
   ## check input 
+  projString <- if (inherits(xy, "SpatialPoints")) {
+    proj4string(xy) 
+  } else if (is(xy, "RhrMappedData")) {
+    proj4string(xy$dat)
+  } else {
+    CRS(NA_character_)
+  }
   xy <- rhrCheckData(xy, returnSP=FALSE)
-  projString <- rhrProjString(xy, projString=proj4string)
-
 
   hats <- mixtools::mvnormalmixEM(xy[, 1:2], k=2)
 
@@ -21,11 +26,9 @@ rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRang
   ## log likelihood
   ll <- hats$loglik
 
-  ## AIC
+  ## AIC(s)
   K <- 11
   AIC <- -2 * ll + 2 * K
-
-  ## AICc
   AICc <- AIC + (2*K*(K+1)) / (nrow(xy) - K -1)
 
   ## project
@@ -47,7 +50,7 @@ rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRang
         mean2=hats$mu[[2]],
         sigma1=hats$sigma[[1]], 
         sigma2=hats$sigma[[2]])),
-    class=c("RhrBiNorm", "RhrEst", "list"))
+    class=c("RhrBiNorm", "RhrProbEst", "RhrEst", "list"))
   return(invisible(res))
 }
 
@@ -59,8 +62,6 @@ d2mvnorm <- function(xy, m, mu1, sig1, mu2, sig2) {
 rhrUD.RhrBiNorm <- function(x, ...) {
   x$ud
 }
-
-
 
 ##' @export
 rhrCUD.RhrBiNorm <- function(x, ...) {
@@ -80,10 +81,21 @@ rhrArea.RhrBiNorm <- function(x, levels=95, ...) {
 }
 
 ##' @export
+##' @rdname rhrHasUD
+rhrHasUD.RhrBiNorm <- function(x, ...) {
+  TRUE
+}
+
+##' @export
+rhrData.RhrBiNorm <- function(x, spatial=FALSE, ...) {
+  xx <- rhrCheckData(x$args$xy, returnSP=spatial)
+}
+
+##' @export
 ##' @method plot RhrBiNorm
 plot.RhrBiNorm <- function(x, levels=95, ...) {
-  cud <- rhrCUD(x)
+  ud <- rhrUD(x)
   iso <- rhrIsopleths(x, levels)
-  plot(cud)
+  plot(ud)
   plot(iso, add=TRUE)
 }

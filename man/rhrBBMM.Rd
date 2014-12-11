@@ -3,18 +3,21 @@
 \alias{rhrBBMM}
 \title{Brownian Bridge Movement Model (BBMM)}
 \usage{
-rhrBBMM(xyt, rangesigma1 = c(0, 10000), sigma2 = 123,
-  trast = rhrRasterFromExt(rhrExtFromPoints(xyt, extendRange = 0.2), nrow =
-  100, res = NULL), proj4string = NA)
+rhrBBMM(xy, time, rangesigma1 = c(0, 10000), sigma2 = 123,
+  trast = rhrRasterFromExt(rhrExtFromPoints(xy, extendRange = 0.2), nrow =
+  100, res = NULL))
 }
 \arguments{
+  \item{xy}{\code{data.frame} with two columns: x and y
+  coordinates.}
+
   \item{sigma2}{}
 
   \item{trast}{a \code{RasterLayer} used as an template for
   the output grid.}
 
-  \item{xy}{\code{data.frame} with two columns: x and y
-  coordinates.}
+  \item{xyt}{a vector with time stamps for each
+  relocation.}
 
   \item{sigma1}{}
 }

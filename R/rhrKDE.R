@@ -176,6 +176,12 @@ rhrData.RhrKDE <- function(x, spatial=FALSE, ...) {
   xx <- rhrCheckData(x$args$xy, returnSP=spatial)
 }
 
+##' @export
+##' @rdname rhrHasUD
+rhrHasUD.RhrKDE <- function(x, ...) {
+  TRUE
+}
+
 ##' @method plot RhrKDE
 ##' @export
 plot.RhrKDE <- function(x, addIsopleths=TRUE, ...) {

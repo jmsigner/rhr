@@ -4,22 +4,22 @@
 ##' @title rhrUniNorm
 ##' @param xy valid input data 
 ##' @param trast template raster
-##' @param proj4string proj4 string
 ##' @export
-rhrUniNorm <- function(xy, trast=NULL, proj4string=NA) {
-
-  if (FALSE) {
-    xy <- datSH[, 2:3]
-    x <- rhrUniNorm(xy)
-  }
-
+rhrUniNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
+                       
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
 
   ## check input 
+  projString <- if (inherits(xy, "SpatialPoints")) {
+    proj4string(xy) 
+  } else if (is(xy, "RhrMappedData")) {
+    proj4string(xy$dat)
+  } else {
+    CRS(NA_character_)
+  }
   xy <- rhrCheckData(xy, returnSP=FALSE)
-  projString <- rhrProjString(xy, projString=proj4string)
   
   ll <- function(xy, par) -sum(mvtnorm::dmvnorm(xy, mean=c(par[1], par[2]),
                                                 sigma=matrix(c(par[3], par[4], par[4], par[5]),
@@ -27,9 +27,9 @@ rhrUniNorm <- function(xy, trast=NULL, proj4string=NA) {
                                                 log=TRUE))
 
   phat <- optim(par=c(mean(xy[, 1]), mean(xy[, 2]), 1, 0.1, 1), xy=xy, fn=ll)$par
+
   ll <- sum(mvtnorm::dmvnorm(xy, mean=c(phat[1:2]),
                              sigma=matrix(phat[c(3, 4, 4, 5)], byrow=2, nrow=2), log=TRUE))
-
 
   ## ud
   if (is.null(trast)) {
@@ -47,9 +47,8 @@ rhrUniNorm <- function(xy, trast=NULL, proj4string=NA) {
   ## AIC
   K <- 6
   AIC <- -2 * ll + 2 * K
-
-  ## AICc
   AICc <- AIC + (2*K*(K+1)) / (nrow(xy) - K -1)
+
   res <- structure(
     list(
       args=args,
@@ -64,7 +63,7 @@ rhrUniNorm <- function(xy, trast=NULL, proj4string=NA) {
         mean=phat[1:2], 
         sigma=matrix(phat[c(3, 4, 4, 5)], byrow=2, nrow=2)
         )),
-    class=c("RhrUniNorm", "RhrEst", "list"))
+    class=c("RhrUniNorm", "RhrProbEst", "RhrEst", "list"))
   return(invisible(res))
 }
 
@@ -95,10 +94,21 @@ rhrArea.RhrUniNorm <- function(x, levels=95, ...) {
 }
 
 ##' @export
+##' @rdname rhrHasUD
+rhrHasUD.RhrUniNorm <- function(x, ...) {
+  TRUE
+}
+
+##' @export
+rhrData.RhrUniNorm <- function(x, spatial=FALSE, ...) {
+  xx <- rhrCheckData(x$args$xy, returnSP=spatial)
+}
+
+##' @export
 ##' @method plot RhrUniNorm
 plot.RhrUniNorm <- function(x, levels=95, ...) {
-  cud <- rhrCUD(x)
+  ud <- rhrUD(x)
   iso <- rhrIsopleths(x, levels)
-  plot(cud)
+  plot(ud)
   plot(iso, add=TRUE)
 }

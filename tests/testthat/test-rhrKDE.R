@@ -57,3 +57,6 @@ test_that("KDE works", {
   expect_true(all(lapply(ests, rhrData, spatial=TRUE) %>% sapply(., is, "SpatialPoints")))
   expect_true(all(sapply(ests, rhrHasUD)))
 })
+
+
+

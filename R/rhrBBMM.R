@@ -18,6 +18,7 @@
 ##' A function to estimate home ranges with kernel density estimation. 
 ##'
 ##' @param xy \code{data.frame} with two columns: x and y coordinates.
+##' @param xyt a vector with time stamps for each relocation.
 ##' @param sigma1
 ##' @param sigma2
 ##' @param trast a \code{RasterLayer} used as an template for the output grid.
@@ -30,31 +31,36 @@
 ##' 
 ##' @author Johannes Signer 
 
-rhrBBMM <- function(xyt,
+rhrBBMM <- function(xy,
+                    time, 
                     rangesigma1=c(0, 10000), 
                     sigma2=123,
-                    trast=rhrRasterFromExt(rhrExtFromPoints(xyt, extendRange=0.2), nrow=100, res=NULL),
-                    proj4string=NA) {
+                    trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
-  ## ------------------------------------------------------------------------------ ##  
-  ## Debug only
-  if (FALSE) {
-    datSH <- datSH[!duplicated(ymd(datSH$day) + hms(datSH$time)), ]
-    xyt <- as.ltraj(datSH[, 2:3], ymd(datSH$day) + hms(datSH$time), id=1)
-    trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)
-    proj4string <- NA
-    sig2 <- 10
-  }
 
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
 
-  
-  ## check input 
-  xyt <- adehabitatLT::as.ltraj(xyt[, 1:2], xyt[, 3], id=1)
-  projString <- rhrProjString(xyt, projString=proj4string)
+  projString <- if (inherits(xy, "SpatialPoints")) {
+    proj4string(xy) 
+  } else if (is(xy, "RhrMappedData")) {
+    proj4string(xy$dat)
+  } else {
+    CRS(NA_character_)
+  }
+  xy <- rhrCheckData(xy, returnSP=FALSE)
 
+  if (nrow(xy) != length(time)) {
+    stop("rhrTTSI: not every observation has a timestamp")
+  }
+
+  xyt <- data.frame(x = xy[, 1],
+                    y = xy[, 2],
+                    timestamp = time)
+
+  
+  xyt <- adehabitatLT::as.ltraj(xyt[, 1:2], xyt[, 3], id=1)
   sigma1 <- adehabitatHR::liker(xyt, rangesig1=c(0, 10000), sig2=sigma2, plotit=FALSE)[[1]]$sig1
 
   res(trast) <- rep(min(res(trast)), 2)
@@ -79,7 +85,7 @@ rhrBBMM <- function(xyt,
       args=args,
       res=res$res,
       sigma1=sigma1), 
-    class=c("RhrBBMM", "RhrEst", "list"))
+    class=c("RhrBBMM", "RhrProbEst", "RhrEst", "list"))
   return(invisible(res))
 }
 

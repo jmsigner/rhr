@@ -12,19 +12,8 @@ rhrHasUD <- function(x, ...) {
 
 ##' @export
 ##' @rdname rhrHasUD
-rhrHasUD.RhrMCP <- function(x, ...) {
+rhrHasUD.RhrGeoEst <- function(x, ...) {
   FALSE
 }
 
 
-##' @export
-##' @rdname rhrHasUD
-rhrHasUD.RhrKDE <- function(x, ...) {
-  TRUE
-}
-
-##' @export
-##' @rdname rhrHasUD
-rhrHasUD.RhrLoCoH <- function(x, ...) {
-  FALSE
-}

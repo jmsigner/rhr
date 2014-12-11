@@ -3,14 +3,13 @@
 \alias{rhrUniNorm}
 \title{rhrUniNorm}
 \usage{
-rhrUniNorm(xy, trast = NULL, proj4string = NA)
+rhrUniNorm(xy, trast = rhrRasterFromExt(rhrExtFromPoints(xy, extendRange =
+  0.2), nrow = 100, res = NULL))
 }
 \arguments{
   \item{xy}{valid input data}
 
   \item{trast}{template raster}
-
-  \item{proj4string}{proj4 string}
 }
 \description{
 Univariate Normal Home-Range estimation
