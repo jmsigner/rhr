@@ -1,3 +1,14 @@
+##' Validate numeric input
+##'
+##' Takes a numeric input and validates it with regard to length, range and missing values
+##' @title rhrCheckNumber
+##' @param val numeric vector
+##' @param arg character, name of argument
+##' @param from lower boundary
+##' @param to upper boundary
+##' @param length max length
+##' @param canHaveNA logical, can the vector contain NA's?
+##' @param fun name of the function
 ##' @export
 rhrCheckNumber <- function(val, arg, length=1, from=NA, to=NA, canHaveNA=FALSE, fun=as.character(as.list(match.call())[[1]])) {
 

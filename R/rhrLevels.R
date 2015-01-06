@@ -2,7 +2,7 @@
 ##'
 ##' @title rhrLevels
 ##' @param x object of class RhrEst
-##' @param ... 
+##' @param ... not implemented 
 ##' @return vector
 ##' @export
 ##' @author Johannes Signer

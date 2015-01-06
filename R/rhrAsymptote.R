@@ -16,7 +16,7 @@
 ##' Calculate home rnage asymptote for an object of class RhrHREstimator
 ##' 
 ##' calculate home range asymptote
-##' @param x RhrHREstimator object
+##' @param x RhrEst object
 ##' @param ns numeric vector of the number of samples to be taken at each step
 ##' @param nrep the number of replicates for each sample size
 ##' @param tolTotArea tolerance to the total area (that is the area using all points)
@@ -85,11 +85,7 @@ rhrAsymptote <- function(x, ns=seq(100, nrow(rhrData(x)), 500), nrep=10, tolTotA
   }
 
   # Which estimator was used
-  est <- NA
-  est <- switch(class(x)[1], 
-                "RhrMCP" = "rhrMCP",
-                "RhrKDE" = "rhrKDE",
-                "RhrLoCoH" = "rhrLoCoH")
+  est <- sub("^R(*)", "r\\1", class(x)[1])
 
   providedArgs <- x$args
   for (i in seq_along(providedArgs)) {
@@ -149,7 +145,6 @@ rhrAsymptote <- function(x, ns=seq(100, nrow(rhrData(x)), 500), nrep=10, tolTotA
   asymReached <- data.frame(level=as.numeric(names(confints)),
                             ns=asymReached)
 
-  ## plot
   out <- list(asymptote=asymReached, confints=do.call("rbind", confints), hrAreas=bb, call=match.call(),
               params=list(ns=ns, tolTotArea=tolTotArea), totalA=totalA, hrEstimator=x)
   class(out) <- "RhrHRAsymptote"
@@ -179,7 +174,6 @@ print.RhrHRAsymptote <- function(x, ...) {
 ##' 
 ##' generic plot for RhrHRAsymptote
 ##' @param x RhrHRAsymptote
-##' @param draw indicates whether the plot should be drawn or not. If this is  \code{FALSE} a grob is returned.
 ##' @param ... none implemented
 ##' @method plot RhrHRAsymptote
 ##' @export
@@ -189,6 +183,9 @@ plot.RhrHRAsymptote <- function(x, ...) {
   ## Input checks
   ## to be completed
   cc <- reshape2::melt(x$confints, id=c("level", "ns"))
+
+  ## Define vars
+  area <- xx <- ymin <- ymax <- value <- variable <- NULL
 
   ## totalA
   totalA <- x$totalA

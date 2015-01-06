@@ -22,6 +22,7 @@
 ##' @param n numeric value, if type is k it is the number of neaerst neibhers, if type is r it is the radius that is searched and if type is a it is the cummulative distance to be used.
 ##' @param minPts numeric value, the minimum number of neighbours required.
 ##' @param autoN boolean, determine \code{n} automatically. This take precedence over n, but is set to \code{FALSE} by default.
+##' @param levels numeric vector, indicating desired isopleths.
 ##' @details Three different types available for determining the number of neighbors:
 ##' \itemize{
 ##'  \item{"k"}{uses the k nearest neighbours}
@@ -59,11 +60,11 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
 
   ## check input coordinates
   projString <- if (inherits(xy, "SpatialPoints")) {
-    proj4string(xy) 
+    sp::proj4string(xy) 
   } else if (is(xy, "RhrMappedData")) {
-    proj4string(xy$dat)
+    sp::proj4string(xy$dat)
   } else {
-    CRS(NA_character_)
+    sp::CRS(NA_character_)
   }
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
@@ -101,7 +102,7 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
     error=function(e) list(msg=e, exitStatus=1))
 
   if (bb$exitStatus == 0) {
-    proj4string(bb$res) <- projString
+    sp::proj4string(bb$res) <- projString
   }
 
   res <- structure(
@@ -127,11 +128,13 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
     ## 1. calc dist
     ## 2. order by dist
     ## 3. take n nearest
-    aa <- lapply(no, function(i) no[order(sqrt((xy[,1] - xy[i,1])^2 + (xy[,2] - xy[i,2])^2))][1:n])
+    aa <- lapply(no, function(i)
+      no[order(sqrt((xy[,1] - xy[i,1])^2 + (xy[,2] - xy[i,2])^2))][1:n])
   } else if (type == "r") {
     ## 1. calc dist
     ## 2. take all pts with dist <= n
-    aa <- lapply(no, function(i) no[sqrt((xy[,1] - xy[i,1])^2 + (xy[,2] - xy[i,2])^2) <= n])
+    aa <- lapply(no, function(i)
+      no[sqrt((xy[,1] - xy[i,1])^2 + (xy[,2] - xy[i,2])^2) <= n])
   } else if (type == "a") {
     # 1. calc dist
     # 2. order by dist
@@ -147,12 +150,12 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
   ## remove the ones with less than minPts pts
   aa <- aa[sapply(aa, length) >= minPts]
 
-  xysp <- SpatialPointsDataFrame(xy[, 1:2], data=data.frame(id=1:nrow(xy)))
+  xysp <- sp::SpatialPointsDataFrame(xy[, 1:2], data=data.frame(id=1:nrow(xy)))
 
   zz <- lapply(aa, function(x) xysp[x, ])
-  mcps <- lapply(zz, gConvexHull)
+  mcps <- lapply(zz, rgeos::gConvexHull)
 
-  mcpAreas <- sapply(mcps, gArea)
+  mcpAreas <- sapply(mcps, rgeos::gArea)
 
   mcpAreasOrder <- order(mcpAreas)
 
@@ -175,29 +178,30 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
     wlevel <- sapply(level, function(l) which.min(abs(pp - l)))
     for (i in seq_along(wlevel)) {
       ## buffer is necessary, to overcome some topology errors if the polygon is quasi a line
-      p1 <- lapply(1:wlevel[i], function(i) Polygon(mm[[i]]@polygons[[1]]@Polygons[[1]]@coords))
-      ff <- SpatialPolygons(list(Polygons(p1, ID=1)))
+      p1 <- lapply(1:wlevel[i], function(i) sp::Polygon(mm[[i]]@polygons[[1]]@Polygons[[1]]@coords))
+      ff <- sp::SpatialPolygons(list(sp::Polygons(p1, ID=1)))
 
-      qq[[i]] <- gBuffer(gUnaryUnion(ff), width=0, id=i)
+      qq[[i]] <- rgeos::gBuffer(rgeos::gUnaryUnion(ff), width=0, id=i)
     }
 
     rr <- do.call(rbind, qq)
-    areas <- sapply(qq, gArea)
+    areas <- sapply(qq, rgeos::gArea)
 
-    qq2 <- SpatialPolygonsDataFrame(rr, data=data.frame(level=round(pp[wlevel], 2),
+    qq2 <- sp::SpatialPolygonsDataFrame(rr, data=data.frame(level=round(pp[wlevel], 2),
                                         area=areas), match.ID=FALSE)
   } else {
 
     qq[[1]] <- mm[[1]]
     for (i in 2:length(mm)) {
       ## buffer is necessary, to overcome some topology errors if the polygon is quasi a line
-      qq[[i]] <- gBuffer(gUnaryUnion(gUnion(qq[[i-1]], mm[[i]])), width=0, id=i)
+      qq[[i]] <- rgeos::gBuffer(rgeos::gUnaryUnion(
+        rgeos::gUnion(qq[[i-1]], mm[[i]])), width=0, id=i)
     }
     
     rr <- do.call(rbind, qq)
-    areas <- sapply(qq, gArea)
+    areas <- sapply(qq, rgeos::gArea)
 
-    qq2 <- SpatialPolygonsDataFrame(rr, data=data.frame(level=round(pp, 2),
+    qq2 <- sp::SpatialPolygonsDataFrame(rr, data=data.frame(level=round(pp, 2),
                                           area=areas), match.ID=FALSE)
     qq2 <- qq2[!duplicated(cbind(qq2$level, qq2$area)), ]
   }
@@ -239,6 +243,9 @@ rhrData.RhrLoCoH <- function(x, spatial=FALSE, ...) {
 ##' @export
 ##' @method plot RhrLoCoH
 plot.RhrLoCoH <- function(x, title=NULL, ...) {
+
+  long <- lat <- group <- level <- lon <- NULL
+  
   ## fortify poly
   tempol <- rhrIsopleths(x, ...)
   tempol@data$id <- rownames(tempol@data)

@@ -11,7 +11,7 @@ rhrData(x, spatial = FALSE, ...)
   \item{spatial}{logical value indicating whether or not to
   return spatial points}
 
-  \item{...}{}
+  \item{...}{not implemented}
 }
 \value{
 data.frame

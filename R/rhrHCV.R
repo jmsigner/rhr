@@ -11,7 +11,7 @@
 ##' data(datSH)
 ##' rhrHpi(datSH[, 2:3])
 
-rhrHpi <- function(xy) {
+rhrHcv <- function(xy) {
 
   ## Some input validation
   xy <- rhrCheckData(xy, returnSP=FALSE)

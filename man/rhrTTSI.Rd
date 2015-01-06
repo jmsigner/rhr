@@ -32,14 +32,6 @@ rhrTTSI This a wrapper around \code{rhrSchoener} to
 calculate time to statistical indpendence from a series of
 intervals.
 }
-\examples{
-\dontrun{
-data(datSH)
-dat <- data.frame(datSH[, 2:3], timestamp=as.numeric(ymd(datSH$day) + hms(datSH$time)))
-ttsi <- rhrTTSI(dat, interval=5*60*50)
-plot(ttsi)
-}
-}
 \author{
 Johannes Signer
 }

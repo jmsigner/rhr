@@ -7,7 +7,7 @@ rhrAsymptote(x, ns = seq(100, nrow(rhrData(x)), 500), nrep = 10,
   tolTotArea = 0.05, nTimes = 5, sampling = "sequential")
 }
 \arguments{
-  \item{x}{RhrHREstimator object}
+  \item{x}{RhrEst object}
 
   \item{ns}{numeric vector of the number of samples to be
   taken at each step}

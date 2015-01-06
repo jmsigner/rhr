@@ -3,7 +3,7 @@
 ##' @title rhrData
 ##' @param x object of class RhrEst
 ##' @param spatial logical value indicating whether or not to return spatial points
-##' @param ... 
+##' @param ... not implemented
 ##' @return data.frame
 ##' @export
 ##' @author Johannes Signer

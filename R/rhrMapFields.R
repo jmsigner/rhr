@@ -15,27 +15,13 @@
 rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=NA),
                          projString=NULL, dateFormat="ymd", timeFormat="hms",
                          defaultId="Animal_1") {
-  ## Debug
-  if (FALSE) {
-    dat <- datSH
-    fields <- list(lon="x_epsg31467",
-                   lat="y_epsg31467",
-                   id=NA, 
-                   date="day",
-                   time="time")
-    dateFormat <- "ymd"
-    timeFormat <- "hms"
-    defaultId <- "Animal_1"
-    rhrMapFields(dat, fields)
-  }
-
   ## check if we have a Spatial*DF
   if (is(dat, "SpatialPointsDataFrame")) {
     if (is.null(projString)) {
-      projString <- proj4string(dat)
+      projString <- sp::proj4string(dat)
     }
 
-    coords <- coordinates(dat)
+    coords <- sp::coordinates(dat)
     dat <- data.frame(dat)
     dat$lon <- coords[, 1]
     dat$lat <- coords[, 2]
@@ -159,9 +145,11 @@ rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=N
   dat <- do.call(rbind, dat)
 
   if (is(projString, "CRS")) {
-    dat <- SpatialPointsDataFrame(dat[, c("lon", "lat")], data=dat, proj4string=projString)
+    dat <- sp::SpatialPointsDataFrame(dat[, c("lon", "lat")], data=dat,
+                                      proj4string=projString)
   } else {
-    dat <- SpatialPointsDataFrame(dat[, c("lon", "lat")], data=dat, proj4string=CRS(as.character(NA)))
+    dat <- sp::SpatialPointsDataFrame(dat[, c("lon", "lat")], data=dat,
+                                      proj4string=sp::CRS(as.character(NA)))
     warning("rhrMapFields: proj4string not of class CRS, using NA")
   }
 

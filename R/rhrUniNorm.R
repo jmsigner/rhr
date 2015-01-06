@@ -1,6 +1,6 @@
-##' Univariate Normal Home-Range estimation 
+##' Bivariate Unimodal Normal Home-Range estimation 
 ##'
-##' Computes home-range using univariate normal distribution
+##' Computes home-range using bivariate bimodal normal distribution
 ##' @title rhrUniNorm
 ##' @param xy valid input data 
 ##' @param trast template raster
@@ -13,11 +13,11 @@ rhrUniNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRan
 
   ## check input 
   projString <- if (inherits(xy, "SpatialPoints")) {
-    proj4string(xy) 
+    sp::proj4string(xy) 
   } else if (is(xy, "RhrMappedData")) {
-    proj4string(xy$dat)
+    sp::proj4string(xy$dat)
   } else {
-    CRS(NA_character_)
+    sp::CRS(NA_character_)
   }
   xy <- rhrCheckData(xy, returnSP=FALSE)
   
@@ -36,13 +36,13 @@ rhrUniNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRan
     trast <- rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)
   }
 
-  r1 <- data.frame(rasterToPoints(trast))
+  r1 <- data.frame(raster::rasterToPoints(trast))
   r1$density <- dUniNorm(r1[, 1:2], mu=c(phat[1:2]),
                          sigma=matrix(phat[c(3, 4, 4, 5)], byrow=2, nrow=2))
-  ud <- rasterFromXYZ(r1)
+  ud <- raster::rasterFromXYZ(r1)
 
   ## project ud
-  proj4string(ud) <- projString
+  sp::proj4string(ud) <- projString
 
   ## AIC
   K <- 6

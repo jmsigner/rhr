@@ -9,9 +9,6 @@
   \item{x}{RhrHRAsymptote}
 
   \item{...}{none implemented}
-
-  \item{draw}{indicates whether the plot should be drawn or
-  not. If this is \code{FALSE} a grob is returned.}
 }
 \description{
 generic plot for RhrHRAsymptote

@@ -114,6 +114,6 @@ test_that("LocoH works", {
   expect_equal(sd(unlist(sapply(ests, rhrArea)[2, ])), 0)
   expect_equal(sum(sapply(lapply(ests, rhrIsopleths), is.projected), na.rm=TRUE), 2)
   expect_equal(sum(sapply(ests, function(x) tryCatch(rhrUD(x), warning=function(w) return(TRUE)))), 7)
-  expect_equal(um(sapply(ests, function(x) tryCatch(rhrCUD(x), warning=function(w) return(TRUE)))), 7)
+  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrCUD(x), warning=function(w) return(TRUE)))), 7)
 
 })

@@ -11,6 +11,9 @@ rhrSiteFidelity(dat, n = 100, alpha = 0.05)
   column contains the y-coordinates}
 
   \item{n}{the number of simulated trajectories.}
+
+  \item{alpha}{Numeric vector of length one, giving the
+  alpha value.}
 }
 \value{
 object of class \code{RhrFidelity}, which is a list of

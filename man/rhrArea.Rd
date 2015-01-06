@@ -8,7 +8,7 @@ rhrArea(x, ...)
 \arguments{
   \item{x}{object of class RhrEst}
 
-  \item{...}{}
+  \item{...}{none implemented}
 }
 \value{
 vector

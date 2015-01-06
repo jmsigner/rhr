@@ -14,7 +14,7 @@ rhrCorrectLevels(str, low = 1, upper = 100, defaultLevel = 95)
 
   \item{upper}{upperbound for levels}
 
-  \item{default.level}{is the default level}
+  \item{defaultLevel}{is the default level}
 }
 \description{
 correct levels at which a home range should be calculated

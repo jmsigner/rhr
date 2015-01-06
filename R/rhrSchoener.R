@@ -19,24 +19,10 @@
 ##' @export
 ##' @author Johannes Signer 
 ##' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, _Ecology_, 66(4), 1176 - 1184
-##' @examples
-##' data(datSH)
-##' dat <- data.frame(datSH[, 2:3], as.numeric(ymd(datSH$day) + hms(datSH$time)))
-##' rhrSchoener(dat, interval=60)
 
-
-
-rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE, meth=1) {
+rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
 
   ## Debugging
-  if (FALSE) {
-    alpha <- 0.25
-    minM <- 10
-    consec <- TRUE
-    meth <- 1
-    dat <- data.frame(datSH[, 2:3], as.numeric(ymd(datSH$day) + hms(datSH$time)))
-    interval <- 60
-  }
 
   if (ncol(dat) < 3) {
     stop("rhrSchoener: dat: three columns are required")

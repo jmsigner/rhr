@@ -18,12 +18,12 @@
 ##' A function to estimate home ranges with kernel density estimation. 
 ##'
 ##' @param xy \code{data.frame} with two columns: x and y coordinates.
-##' @param xyt a vector with time stamps for each relocation.
-##' @param sigma1
-##' @param sigma2
+##' @param time a vector with time stamps for each relocation.
+##' @param rangesigma1 parameter 1
+##' @param sigma2 parameter 2
 ##' @param trast a \code{RasterLayer} used as an template for the output grid.
 
-##' @seealso \code{KernSmooth::bkde2d}, \code{KernSmooth::dpik}, \code{rhr::rhrHref}, \code{rhr::rhrHlscv}, \code{rhr::rhrHpi}
+##' @seealso \code{adehabitatHR::kernelbb}
 
 
 ##' @return object of class \code{RhrBBMM}
@@ -43,11 +43,11 @@ rhrBBMM <- function(xy,
   call <- match.call()
 
   projString <- if (inherits(xy, "SpatialPoints")) {
-    proj4string(xy) 
+    sp::proj4string(xy) 
   } else if (is(xy, "RhrMappedData")) {
-    proj4string(xy$dat)
+    sp::proj4string(xy$dat)
   } else {
-    CRS(NA_character_)
+    sp::CRS(NA_character_)
   }
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
@@ -63,18 +63,18 @@ rhrBBMM <- function(xy,
   xyt <- adehabitatLT::as.ltraj(xyt[, 1:2], xyt[, 3], id=1)
   sigma1 <- adehabitatHR::liker(xyt, rangesig1=c(0, 10000), sig2=sigma2, plotit=FALSE)[[1]]$sig1
 
-  res(trast) <- rep(min(res(trast)), 2)
+  raster::res(trast) <- rep(min(raster::res(trast)), 2)
   
   ## ---------------------------------------------------------------------------- #
   ## Estimate BBMM
   res <- tryCatch(
     expr=list(
       exitStatus=0,
-      res=raster(as(adehabitatHR::kernelbb(xyt, sig1=sigma1, sig2=sigma2, grid=as(trast, "SpatialPixels")), "SpatialGridDataFrame"))),
+      res=raster::raster(as(adehabitatHR::kernelbb(xyt, sig1=sigma1, sig2=sigma2, grid=as(trast, "SpatialPixels")), "SpatialGridDataFrame"))),
     error=function(e) list(msg=e, exitStatus=1))
 
   if (res$exitStatus == 0) {
-    proj4string(res$res) <- projString
+    sp::proj4string(res$res) <- projString
   }
 
   res <- structure(
@@ -122,6 +122,12 @@ rhrArea.RhrBBMM <- function(x, levels=95, ...) {
 ##' @export
 rhrData.RhrBBMM <- function(x, ...) {
   x$args$xy
+}
+
+##' @export
+##' @rdname rhrHasUD
+rhrHasUD.RhrBBMM <- function(x, ...) {
+  TRUE
 }
 
 ##' @method plot RhrBBMM

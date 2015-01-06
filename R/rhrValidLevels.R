@@ -4,7 +4,7 @@
 #' @param str A string that contains the level, seperated by comas (usually provided through the GUI). If there are no suitable levels, then the default.level is used.
 #' @param low lower bound for levels
 #' @param upper upperbound for levels
-#' @param default.level is the default level
+#' @param defaultLevel is the default level
 #' @export
 
 rhrCorrectLevels <- function(str, low=1, upper=100, defaultLevel=95) {

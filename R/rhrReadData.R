@@ -6,6 +6,7 @@
 ##' @param skip numeric; the number of lines to skip
 ##' @param hasHeader logical; indicates whether or not a header is presence
 ##' @param sepDec character; indicating the decimal separator
+##' @param stringsAsFactors logical; indicating whether or not strings should be read as factors.
 ##' @param ... passed to scan
 ##' @details ...
 ##' @example examples/exrhrReadData.R

@@ -22,6 +22,9 @@ rhrLoCoH(xy, type = "k", n = 10, levels = 95, minPts = 3,
   searched and if type is a it is the cummulative distance
   to be used.}
 
+  \item{levels}{numeric vector, indicating desired
+  isopleths.}
+
   \item{minPts}{numeric value, the minimum number of
   neighbours required.}
 

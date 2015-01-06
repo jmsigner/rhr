@@ -12,9 +12,6 @@ rhrMCP(xy, levels = 95)
 
   \item{levels}{vector with the percentage of closest
   points to the centroid that are used to calculated MCP}
-
-  \item{proj4string}{character, with the projection (it is
-  parsed with \code{sp::CRS}).}
 }
 \value{
 object of class \code{RhrMCP}

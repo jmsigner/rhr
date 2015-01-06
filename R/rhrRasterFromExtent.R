@@ -36,16 +36,6 @@ rasterFromXYVect <- function(xy, xrange=NA, yrange=NA, res=100) {
 ##' @export
 ##' @return matrix
 ##' @author Johannes Signer
-##' @examples
-##' dat <- data.frame(x=rnorm(100), y=rnorm(100))
-##' ## Get the bounding box
-##' rhrExtFromPoints(dat)
-##' ## Get the bounding box buffered by 10 units
-##' rhrExtFromPoints(dat, buffer=10)
-##' ## Get the bounding box with an extended range
-##' rhrExtFromPoints(dat, extendRange=0.5)
-##' ## Note, buffer takes precedence over extendRange
-##' rhrExtFromPoints(dat, buffer=10, extendRange=0.5)
 
 rhrExtFromPoints <- function(xy, buffer=NULL, extendRange=NULL) {
   ## check input
@@ -135,14 +125,11 @@ rhrExtFromPoints <- function(xy, buffer=NULL, extendRange=NULL) {
 ##' @param nrow numeric; number of rows
 ##' @param ncol numeric; number of columns
 ##' @param res numeric; the resolution
+##' @param sameRes logical; indicating if the same resolution be used in x and y direction
 ##' @export
 ##' @return raster
 ##' @author Johannes Signer
-##' @examples
-##' dat <- data.frame(x=rnorm(100), y=rnorm(100))
-##' ## Get the bounding box
-##' ext <- rhrExtFromPoints(dat)
-##' r <- rhrRasterFromExt(ff, nrow=10, ncol=100) 
+
 rhrRasterFromExt <- function(ext, nrow=NULL, ncol=NULL, res=1, sameRes=TRUE) {
 
   if (missing(ext)) {

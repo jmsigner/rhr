@@ -41,15 +41,18 @@ config <- list(
       TotA=0.05,
       Alpha=0.05, 
       NTimes=4,
-      sampling=c("Sequential" = "sequential", "Random" = "random"),
-      estimators=c("Minimum convex polygon" = "rhrMCP", "Kernel Density Estimation" = "rhrKDE")
-      
+      sampling=c("Sequential" = "sequential", "Random" = "random")
       )
     )
   )
 
 methodLookup <- data.frame(
-  short=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrLoCoH", "rhrAsymptote", "rhrCoreArea", "rhrBBMM", "rhrUniNorm", "rhrBiNorm"),
+  short=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrLoCoH", "rhrBBMM", "rhrUniNorm", "rhrBiNorm"),
   long=c("Site Fidelity", "Time to Statistical Independence", "Minimum Convex Polygon", "Kernel Density Estimation",
-    "Local Convex Hull", "Asymptote", "Core Area", "Brownian Bridges", "Unimodal bivariate Normal", "Bimodal bivariate Normal"),
+    "Local Convex Hull", "Brownian Bridges", "Unimodal bivariate Normal", "Bimodal bivariate Normal"),
+  stringsAsFactors=FALSE)
+
+propertyLookup <- data.frame(
+  short=c("area", "asymptote", "corearea"),
+  long=c("Home Range Area", "Home Range Asymptote", "Home Range Core Area"), 
   stringsAsFactors=FALSE)

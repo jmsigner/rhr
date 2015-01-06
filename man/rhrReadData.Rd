@@ -19,6 +19,9 @@ rhrReadData(file, sep = ",", skip = 0, hasHeader = TRUE, sepDec = ".",
   \item{sepDec}{character; indicating the decimal
   separator}
 
+  \item{stringsAsFactors}{logical; indicating whether or
+  not strings should be read as factors.}
+
   \item{...}{passed to scan}
 }
 \value{

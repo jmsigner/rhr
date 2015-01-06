@@ -11,15 +11,15 @@ rhrBBMM(xy, time, rangesigma1 = c(0, 10000), sigma2 = 123,
   \item{xy}{\code{data.frame} with two columns: x and y
   coordinates.}
 
-  \item{sigma2}{}
+  \item{time}{a vector with time stamps for each
+  relocation.}
+
+  \item{rangesigma1}{parameter 1}
+
+  \item{sigma2}{parameter 2}
 
   \item{trast}{a \code{RasterLayer} used as an template for
   the output grid.}
-
-  \item{xyt}{a vector with time stamps for each
-  relocation.}
-
-  \item{sigma1}{}
 }
 \value{
 object of class \code{RhrBBMM}
@@ -32,8 +32,6 @@ estimation.
 Johannes Signer
 }
 \seealso{
-\code{KernSmooth::bkde2d}, \code{KernSmooth::dpik},
-\code{rhr::rhrHref}, \code{rhr::rhrHlscv},
-\code{rhr::rhrHpi}
+\code{adehabitatHR::kernelbb}
 }
 

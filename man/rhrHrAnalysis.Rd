@@ -6,10 +6,11 @@
 rhrHrAnalysis(datIn, what = c("rhrSiteFidelity", "rhrTTSI", "rhrMCP",
   "rhrKDE", "rhrAsymptote", "rhrCoreArea"), args = NULL, verbose = TRUE,
   outDir = file.path(tempdir(), paste0("rhr", format(Sys.time(),
-  "\%Y\%m\%d\%H\%M\%S"))), inGUI = FALSE, inUnit = "ido", outUnit = "ius",
-  writeResultsSpatial = TRUE)
+  "\%Y\%m\%d\%H\%M\%S"))), inGUI = FALSE, inUnit = "ido", outUnit = "ius")
 }
 \arguments{
+  \item{datIn}{RhrMappedData}
+
   \item{what}{character vector; indicating which steps
   should be performed, order does not matter}
 
@@ -18,11 +19,15 @@ rhrHrAnalysis(datIn, what = c("rhrSiteFidelity", "rhrTTSI", "rhrMCP",
   \item{verbose}{logical; whether or not progress should be
   given on the command line}
 
-  \item{dat}{RhrMappedData}
+  \item{outDir}{character; path to the directory where the
+  results are saved.}
 
-  \item{duplicated}{character; determine what to do with
-  either 'nothing', 'delete' or 'random', to add random
-  noise.}
+  \item{inGUI}{logical; indicating whether or not the call
+  was made from a GUI}
+
+  \item{inUnit}{character; units of the input}
+
+  \item{outUnit}{character; units of the output}
 }
 \value{
 List

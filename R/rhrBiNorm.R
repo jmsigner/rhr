@@ -1,3 +1,9 @@
+##' Bivariate bimodal Normal Home-Range estimation 
+##'
+##' Computes home-range using bivariate bimodal normal distribution
+##' @title rhrBiNorm
+##' @param xy valid input data 
+##' @param trast template raster
 ##' @export
 rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
@@ -7,21 +13,21 @@ rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRang
 
   ## check input 
   projString <- if (inherits(xy, "SpatialPoints")) {
-    proj4string(xy) 
+    sp::proj4string(xy) 
   } else if (is(xy, "RhrMappedData")) {
-    proj4string(xy$dat)
+    sp::proj4string(xy$dat)
   } else {
-    CRS(NA_character_)
+    sp::CRS(NA_character_)
   }
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
   hats <- mixtools::mvnormalmixEM(xy[, 1:2], k=2)
 
-  r1 <- data.frame(rasterToPoints(trast))
+  r1 <- data.frame(raster::rasterToPoints(trast))
   r1$density <- d2mvnorm(r1[, 1:2], m=hats$lambda[1], 
                          mu1=hats$mu[[1]], sig1=hats$sigma[[1]], mu2=hats$mu[[2]], sig2=hats$sigma[[2]])
 
-  ud <- rasterFromXYZ(r1)
+  ud <- raster::rasterFromXYZ(r1)
 
   ## log likelihood
   ll <- hats$loglik
@@ -32,7 +38,7 @@ rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRang
   AICc <- AIC + (2*K*(K+1)) / (nrow(xy) - K -1)
 
   ## project
-  proj4string(ud) <- projString
+  sp::proj4string(ud) <- projString
 
   res <- structure(
     list(

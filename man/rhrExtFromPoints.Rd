@@ -26,17 +26,6 @@ The buffer width is the same in all directions. If both
 buffer and extendRange are provided, precedence is given to
 buffer.
 }
-\examples{
-dat <- data.frame(x=rnorm(100), y=rnorm(100))
-## Get the bounding box
-rhrExtFromPoints(dat)
-## Get the bounding box buffered by 10 units
-rhrExtFromPoints(dat, buffer=10)
-## Get the bounding box with an extended range
-rhrExtFromPoints(dat, extendRange=0.5)
-## Note, buffer takes precedence over extendRange
-rhrExtFromPoints(dat, buffer=10, extendRange=0.5)
-}
 \author{
 Johannes Signer
 }

@@ -2,7 +2,7 @@
 ##'
 ##' @title rhrArea
 ##' @param x object of class RhrEst
-##' @param ... 
+##' @param ... none implemented
 ##' @return vector
 ##' @export
 ##' @author Johannes Signer

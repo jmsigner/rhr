@@ -34,6 +34,7 @@
 
 
 ##' @return object of class \code{RhrHREstimator}
+##' @import Rcpp ggplot2 grid maptools methods rgdal
 ##' @export
 ##' 
 ##' @author Johannes Signer 
@@ -65,11 +66,11 @@ rhrKDE <- function(xy,
 
   ## check input 
   projString <- if (inherits(xy, "SpatialPoints")) {
-    proj4string(xy) 
+    sp::proj4string(xy) 
   } else if (is(xy, "RhrMappedData")) {
-    proj4string(xy$dat)
+    sp::proj4string(xy$dat)
   } else {
-    CRS(NA_character_)
+    sp::CRS(NA_character_)
   }
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
@@ -92,7 +93,7 @@ rhrKDE <- function(xy,
     error=function(e) list(msg=e, exitStatus=1))
 
   if (res$exitStatus == 0) {
-    proj4string(res$res) <- projString
+    sp::proj4string(res$res) <- projString
   }
 
   res <- structure(
@@ -110,10 +111,10 @@ rhrKDE <- function(xy,
 ##' @export
 .rhrKDE <- function(xy, h, trast) {
   ## prep kde
-  xrange <- c(xmin(trast), xmax(trast))
-  yrange <- c(ymin(trast), ymax(trast))
-  rncol <- ncol(trast)
-  rnrow <- nrow(trast)
+  xrange <- c(raster::xmin(trast), raster::xmax(trast))
+  yrange <- c(raster::ymin(trast), raster::ymax(trast))
+  rncol <- raster::ncol(trast)
+  rnrow <- raster::nrow(trast)
 
 
   ## Create Raster

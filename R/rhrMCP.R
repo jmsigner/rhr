@@ -19,7 +19,6 @@
 ##' @title rhrMCP
 ##' @param xy data.frame with two columns. The first column contains x coordinates and the second column contains y coordinates
 ##' @param levels vector with the percentage of closest points to the centroid that are used to calculated MCP
-##' @param proj4string character, with the projection (it is parsed with \code{sp::CRS}).  
 ##' @return object of class \code{RhrMCP}
 ##' @export
 ##' @author Johannes Signer inspired from \code{adehabitatHR::mcp}
@@ -48,11 +47,11 @@ rhrMCP <- function(xy, levels=95) {
   
   ## check input 
   projString <- if (inherits(xy, "SpatialPoints")) {
-    proj4string(xy) 
+    sp::proj4string(xy) 
   } else if (is(xy, "RhrMappedData")) {
-    proj4string(xy$dat)
+    sp::proj4string(xy$dat)
   } else {
-    CRS(NA_character_)
+    sp::CRS(NA_character_)
   }
 
   xy <- rhrCheckData(xy, returnSP=TRUE)
@@ -64,8 +63,15 @@ rhrMCP <- function(xy, levels=95) {
     expr=list(msg=NULL, exitStatus=0, res=.rhrMCP(xy, levels)),
     error=function(e) list(msg=e, exitStatus=1))
 
+  oong <- lat <- group <- level <- lon <- NULL
+  long <- lat <- group <- level <- lon <- NULL
+  long <- lat <- group <- level <- lon <- NULL
+  long <- lat <- group <- level <- lon <- NULL
+  long <- lat <- group <- level <- lon <- NULL
+  long <- lat <- group <- level <- lon <- NULL
+  long <- lat <- group <- level <- lon <- NULL
   if (bb$exitStatus == 0) {
-    proj4string(bb$res) <- projString
+    sp::proj4string(bb$res) <- projString
   }
 
   res <- structure(
@@ -133,6 +139,9 @@ rhrLevels.RhrMCP <- function(x, ...) {
 ##' @method plot RhrMCP
 ##' @export
 plot.RhrMCP <- function(x, title=NULL, ...) {
+
+  long <- lat <- group <- level <- lon <- NULL
+
   ## fortify poly
   tempol <- rhrIsopleths(x)
   tempol@data$id <- rownames(tempol@data)

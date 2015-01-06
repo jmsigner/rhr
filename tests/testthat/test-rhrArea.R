@@ -8,7 +8,7 @@ dat <- datSH[1:100, ]
 dat$ts <- ymd(dat$day) + hms(dat$time)
 dat <- dat[, c(2, 3, 6)]
 
-res <- list(rhrMCP(dat), rhrKDE(dat), rhrLoCoH(dat), rhrBBMM(dat), rhrBiCirc(dat), rhrBiNorm(dat), rhrUniNorm(dat))
+res <- list(rhrMCP(dat), rhrKDE(dat), rhrLoCoH(dat), rhrBiCirc(dat), rhrBiNorm(dat), rhrUniNorm(dat))
 
 
 

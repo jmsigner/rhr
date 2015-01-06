@@ -13,6 +13,9 @@ rhrRasterFromExt(ext, nrow = NULL, ncol = NULL, res = 1, sameRes = TRUE)
   \item{ncol}{numeric; number of columns}
 
   \item{res}{numeric; the resolution}
+
+  \item{sameRes}{logical; indicating if the same resolution
+  be used in x and y direction}
 }
 \value{
 raster
@@ -25,12 +28,6 @@ This function wraps \code{raster::rast} and adds
 functionality to a take control over the resolution.
 Resolution is given precedence over \code{nrow} and
 \code{ncol}.
-}
-\examples{
-dat <- data.frame(x=rnorm(100), y=rnorm(100))
-## Get the bounding box
-ext <- rhrExtFromPoints(dat)
-r <- rhrRasterFromExt(ff, nrow=10, ncol=100)
 }
 \author{
 Johannes Signer

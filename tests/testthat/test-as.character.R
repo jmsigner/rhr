@@ -1,7 +1,7 @@
 context("as.character: test cases")
 
 set.seed(1234)
-r <- raster()
+r <- raster::raster()
 
 
 test_that("function works", {

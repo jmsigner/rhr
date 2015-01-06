@@ -26,6 +26,9 @@ rhrHlscv(xy, range = do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
 
   \item{binned}{whether or not a binned version is used or
   not.}
+
+  \item{trast}{A RasterLayer with the desired extent and
+  resolution.}
 }
 \value{
 \code{vector} of length two

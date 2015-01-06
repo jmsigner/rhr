@@ -1,15 +1,13 @@
+##' Bimodal circular home range estimation
+##'
+##' Computes home-range using two circular normal distributions
+##' @title rhrBiCirc
+##' @param xy valid input data 
 ##' @export
 rhrBiCirc <- function(xy) {
 
   xy <- rhrCheckData(xy, returnSP=FALSE)
   
-  if (FALSE) {
-    xy <- datSH[, 2:3]
-    x <- rhrBiCirc(xy)
-    plot(rhrUD(x))
-    points(xy)
-  }
-
   K <- 7  # we have 7 parameters
 
   ## nll
@@ -47,7 +45,7 @@ rhrBiCirc <- function(xy) {
         sigma1=ll$par[5],
         sigma2=ll$par[6],
         pi=ll$par[7])), 
-    class=c("RhrBiCirc", "RhrEst", "list"))
+    class=c("RhrBiCirc", "RhrProbEst", "RhrEst", "list"))
   return(invisible(res))
 
 }
@@ -91,15 +89,21 @@ rhrUD.RhrBiCirc <- function(x, trast, ...) {
     trast <- rhrRasterFromExt(rhrExtFromPoints(x$args$xy, extendRange=0.2), nrow=100, res=NULL)
   }
 
-  r1 <- data.frame(rasterToPoints(trast))
+  r1 <- data.frame(raster::rasterToPoints(trast))
   r1$density <- d2cbn(r1[, 1], r1[, 2], x$parameters$mean1,
                          x$parameters$mean2, x$parameters$sigma1, x$parameters$sigma2, x$parameters$pi)
-  rasterFromXYZ(r1)
+  raster::rasterFromXYZ(r1)
 }
 
 ##' @export
 rhrCUD.RhrBiCirc <- function(x, ...) {
   rhrUD2CUD(rhrUD(x, ...))
+}
+
+##' @export
+##' @rdname rhrHasUD
+rhrHasUD.RhrBiCirc <- function(x, ...) {
+  TRUE
 }
 
 

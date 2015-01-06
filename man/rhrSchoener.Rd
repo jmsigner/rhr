@@ -3,8 +3,7 @@
 \alias{rhrSchoener}
 \title{Schoener's ratio}
 \usage{
-rhrSchoener(dat, interval, alpha = 0.25, minM = 10, consec = TRUE,
-  meth = 1)
+rhrSchoener(dat, interval, alpha = 0.25, minM = 10, consec = TRUE)
 }
 \arguments{
   \item{dat}{data.frame with 3 columns. The first column
@@ -42,11 +41,6 @@ and then relocations are sampled based on \code{interval}.
 In cases when relocations are not spaced equally, i.e. no
 relocation is available exactly at the interval, the
 relocation directly thereafter is used.
-}
-\examples{
-data(datSH)
-dat <- data.frame(datSH[, 2:3], as.numeric(ymd(datSH$day) + hms(datSH$time)))
-rhrSchoener(dat, interval=60)
 }
 \author{
 Johannes Signer

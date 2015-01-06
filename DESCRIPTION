@@ -11,30 +11,30 @@ Depends:
     Rcpp,
     ggplot2,
     grid,
-    sp,
-    raster,
-    rgeos,
     rgdal,
     maptools,
     methods
 Imports:
-    ascii,
+    sp,
+    raster,
+    rgeos,
     adehabitatHR,
     adehabitatLT,
-    brew,
     gridExtra,
     KernSmooth,
-    knitr,
     lubridate,
-    markdown,
     mixtools,
     mvtnorm,
-    reshape2,
-    shiny (>= 0.10.2.1),
-    shinyBS,
-    xtable
+    reshape2
 LinkingTo: Rcpp
 Suggests:
-    testthat
+    ascii,
+    shiny (>= 0.10.2.1),
+    knitr,
+    markdown,
+    testthat,
+    shinyBS,
+    brew,
+    xtable
 NeedsCompilation: yes
 Roxygen: list(wrap = TRUE)

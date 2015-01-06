@@ -207,10 +207,7 @@ shinyUI(
                                                                       value=config$homeRange$asymptote$NTimes), 
                                                          selectInput("configAsymptoteSampling", "Sampling regime",
                                                                      choices=config$homeRange$asymptote$sampling, 
-                                                                     multiple=FALSE, selectize=FALSE),
-                                                         selectInput("configAsymptoteEstmators", "Estimators",
-                                                                     choices=config$homeRange$asymptote$estimators,
-                                                                     multiple=TRUE, selectize=FALSE)
+                                                                     multiple=FALSE, selectize=FALSE)
                                                          ), 
                                                 ## tabPanel("Synoptic Home Ranges",
                                                 ##         h1("Not yet implemented")), 

@@ -11,13 +11,6 @@
 ##' @export
 ##' @author Johannes Signer 
 ##' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, Ecology, 66(4), 1176 - 1184
-##' @examples
-##' \dontrun{
-##' data(datSH)
-##' dat <- data.frame(datSH[, 2:3], timestamp=as.numeric(ymd(datSH$day) + hms(datSH$time)))
-##' ttsi <- rhrTTSI(dat, interval=5*60*50)
-##' plot(ttsi)
-##' }
 
 rhrTTSI <- function(dat, time, interval, ntimes=3, ...) {
 
@@ -94,11 +87,6 @@ rhrTTSI <- function(dat, time, interval, ntimes=3, ...) {
 
 }
 
-##' plot for RhrTTSI
-
-##' generic plot for RhrTTSI
-##' @param x RhrHREstimator object
-##' @param ... none implemented
 ##' @method plot RhrTTSI
 ##' @export
 
@@ -156,10 +144,6 @@ plot.RhrTTSI <- function(x, ...) {
 
 }
 
-##' print object of rhrTTSI
-
-##' @param x RhrTTSI
-##' @param ... none implemented
 ##' @method print RhrTTSI
 ##' @export
 

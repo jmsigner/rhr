@@ -5,7 +5,7 @@
 
 ## clean everything 
 rm(list=ls())
-debug <- FALSE
+debug <- TRUE
 if (debug) {
   .datFromR <- NULL
   outDir <- "/tmp"
@@ -16,6 +16,7 @@ library(brew)
 library(lubridate)
 library(knitr)
 library(markdown)
+library(rhr)
 library(shinyBS)
 library(shiny)
 
@@ -24,10 +25,10 @@ shinyServer(function(input, output, session) {
   ## Set up
 
 
-##  runId <- paste0("rhr-run-", format(now(), "%Y%m%d%H%M%S"))
-##  outDir <- normalizePath(file.path(normalizePath(tempdir(), winslash="/"), runId), winslash="/")
-##  dir.create(outDir)
-##  addResourcePath("out", outDir)
+  ##  runId <- paste0("rhr-run-", format(now(), "%Y%m%d%H%M%S"))
+  ##  outDir <- normalizePath(file.path(normalizePath(tempdir(), winslash="/"), runId), winslash="/")
+  ##  dir.create(outDir)
+  ##  addResourcePath("out", outDir)
 
 
   if (debug) cat("====================================================\n", file=stderr())
@@ -92,26 +93,27 @@ shinyServer(function(input, output, session) {
         h2("Preview of data"),
         p("The frist 25 relocations the data are shown below"), 
         renderTable(head(data()$data, 25))
-        )
+      )
     } else {
       list(
         h2("No data loaded yet"),
         helpText("Please upload data first, using the panel on the left hand side")
-        )
+      )
     }
   })
 
 
   ## We can only proceed if this is true
   succesfullyFinishedS1 <- reactive({
-    if (debug) cat("\n Entered successfullyFinishedS1 !~u~! \n")
+    if (debug) cat("\n Entered successfullyFinishedS1 \n")
+    if (debug) cat(str(data()$data))
     if (!is.null(data()$data) & data()$exitStatus == 0) {
       TRUE
     } else {
       FALSE
     }
   })
-    
+  
   ## All Settings
   config <- reactive({
     list(
@@ -129,19 +131,19 @@ shinyServer(function(input, output, session) {
           decSeparator=input$readFileSepDec,
           hasHeader=input$readFileHasHeader,
           skip=input$readFileSkipLines
-          )), 
-         fields=list(
-           name="Remapping of Fields",
-           content=list(
-           id=input$mfId, 
-           lon=input$mfX, 
-           lat=input$mfY, 
-           date=input$mfDate, 
-           time=input$mfTime, 
-           dateFormat=input$mfDateFormat, 
-           timeFormat=input$mfTimeFormat)
-         )
+        )), 
+      fields=list(
+        name="Remapping of Fields",
+        content=list(
+          id=input$mfId, 
+          lon=input$mfX, 
+          lat=input$mfY, 
+          date=input$mfDate, 
+          time=input$mfTime, 
+          dateFormat=input$mfDateFormat, 
+          timeFormat=input$mfTimeFormat)
       )
+    )
   })
 
   ## ============================================================================= ##
@@ -165,7 +167,10 @@ shinyServer(function(input, output, session) {
       updateSelectInput(session, "mfY", choices = mfChoices)
       updateSelectInput(session, "mfDate", choices = mfChoices)
       updateSelectInput(session, "mfTime", choices = mfChoices)
-      updateSelectInput(session, "mfDateFormat", choices = c("ymd", "dmy", "mdy", "ymd_h", "ymd_hm", "ymd_hms", "dmy_h", "dmy_hm", "dmy_hms", "mdy_h", "mdy_hm", "mdy_hms"))
+      updateSelectInput(session, "mfDateFormat",
+                        choices = c("ymd", "dmy", "mdy", "ymd_h", "ymd_hm",
+                          "ymd_hms", "dmy_h", "dmy_hm", "dmy_hms", "mdy_h",
+                          "mdy_hm", "mdy_hms"))
       updateSelectInput(session, "mfTimeFormat", choices = c("hm", "hms"))
 
       if (debug) cat("\n Updated Select Input \n")
@@ -185,7 +190,7 @@ shinyServer(function(input, output, session) {
     } else {
       return(list(
         helpText("Invalid or no input EPSG provided")
-        ))
+      ))
     }
   })
 
@@ -193,7 +198,7 @@ shinyServer(function(input, output, session) {
   ## Remapping of the fields happens here
 
   data2 <- reactive({
-    if (debug) cat("\n Entered data2 \n")
+    if (debug) cat("\n Entered data2 \n\n")
     if (succesfullyFinishedS1()) {
       id         <- ifelse(input$mfId == "NA", NA, input$mfId)
       lon        <- ifelse(input$mfX == "NA", NA, input$mfX)
@@ -220,53 +225,53 @@ shinyServer(function(input, output, session) {
         
 
         dat2 <- rhrMapFields(data()$data,
-                                      fields=list(lon=lon, lat=lat, id=id, date=date, time=time), 
-                                      projString=NULL, dateFormat=dateFormat,
-                                      timeFormat=timeFormat, defaultId="Animal1")
+                             fields=list(lon=lon, lat=lat, id=id, date=date, time=time), 
+                             projString=NULL, dateFormat=dateFormat,
+                             timeFormat=timeFormat, defaultId="Animal1")
 
 
-          if (debug) cat("str(dat2)\n")
-          if (debug) cat(str(dat2))
-          if (debug) cat("class(dat2)\n")
-          if (debug) cat(class(dat2))
-          if (debug) cat("===============\n")
+        if (debug) cat("\nstr(dat2)\n")
+        if (debug) cat(str(dat2))
+        if (debug) cat("\nclass(dat2)\n")
+        if (debug) cat(class(dat2))
+        if (debug) cat("\n===============\n")
 
-          if (debug) cat(input$configInEpsg, "\n")
-          if (debug) cat(input$configOutEpsg, "\n")
+        if (debug) cat(input$configInEpsg, "\n")
+        if (debug) cat(input$configOutEpsg, "\n")
 
-          ## Epsg can be used later
-          if (!is.null(dat2)) {
-            if (!is.null(input$configOutEpsg)) {
-              if (!is.na(input$configOutEpsg)) {
-                if (!is.na(input$configInEpsg)) {
-                  if (rhrValidEpsg(input$configOutEpsg)) {
-                    ## should I also reproject
-                    proj4string(dat2$dat) <- CRS(paste0("+init=epsg:", input$configInEpsg))
-                    dat2$dat <- spTransform(dat2$dat, CRS(paste0("+init=epsg:", input$configOutEpsg)))
-                    dat2$dat <- as.data.frame(dat2$dat)
-                    names(dat2$dat) <- c("lon", "lat", "id", "timestamp")
-                    dat2$dat <- dat2$dat[, c("id", "lon", "lat", "timestamp")]
-                    ## successfully reporjected
-                    createAlert(session, "rhrReproject", "rhrReproject1",
-                                "Reproject",
-                                message="Data successfully reprojected", 
-                                type="success", 
-                                dismiss=TRUE,
-                                append=FALSE)
-                  } else {
-                    createAlert(session, "rhrReproject", "rhrReproject1",
-                                "Reproject",
-                                message="Output EPSG not valid, won't reproject data", 
-                                type="error", 
-                                dismiss=TRUE,
-                                append=FALSE)
-                    
-                  }
+        ## Epsg can be used later
+        if (!is.null(dat2)) {
+          if (!is.null(input$configOutEpsg)) {
+            if (!is.na(input$configOutEpsg)) {
+              if (!is.na(input$configInEpsg)) {
+                if (rhrValidEpsg(input$configOutEpsg)) {
+                  ## should I also reproject
+                  proj4string(dat2$dat) <- CRS(paste0("+init=epsg:", input$configInEpsg))
+                  dat2$dat <- spTransform(dat2$dat, CRS(paste0("+init=epsg:", input$configOutEpsg)))
+                  dat2$dat <- as.data.frame(dat2$dat)
+                  names(dat2$dat) <- c("lon", "lat", "id", "timestamp")
+                  dat2$dat <- dat2$dat[, c("id", "lon", "lat", "timestamp")]
+                  ## successfully reporjected
+                  createAlert(session, "rhrReproject", "rhrReproject1",
+                              "Reproject",
+                              message="Data successfully reprojected", 
+                              type="success", 
+                              dismiss=TRUE,
+                              append=FALSE)
+                } else {
+                  createAlert(session, "rhrReproject", "rhrReproject1",
+                              "Reproject",
+                              message="Output EPSG not valid, won't reproject data", 
+                              type="error", 
+                              dismiss=TRUE,
+                              append=FALSE)
+                  
                 }
               }
             }
           }
-          
+        }
+        
         return(dat2)
       } else {
         return(NULL)
@@ -293,24 +298,25 @@ shinyServer(function(input, output, session) {
 
   output$mfUI <- renderUI({
     if (!is.null(data2())) {
-        if (debug) cat(str(data2()),  "\n")
-        ## ugly workaround to get date displayed properly
-        dat2Temp <- head(data2()$dat, 25)
-        dat2Temp$timestamp <- as.character(dat2Temp$timestamp)
+      if (debug) cat("str mfUI ---------- \n")
+      if (debug) cat(str(data2()),  "\n")
+      ## ugly workaround to get date displayed properly
+      dat2Temp <- head(as.data.frame(data2()$dat), 25)
+      dat2Temp$timestamp <- as.character(dat2Temp$timestamp)
 
-          
-        list(
-          h2("Missing and duplicated cases"),
-          renderDataTable(missingAndDuplicated()), 
-          h2("Preview of data"),
-          p("The frist 25 relocations the data are shown below"), 
-          renderTable(dat2Temp)
-        )
+      
+      list(
+        h2("Missing and duplicated cases"),
+        renderDataTable(missingAndDuplicated()), 
+        h2("Preview of data"),
+        p("The frist 25 relocations the data are shown below"), 
+        renderTable(dat2Temp)
+      )
     } else {
       list(
         h2("Data not remapped yet"),
         helpText("Please remap the data first using the panel on the left hand side")
-        )
+      )
     }
   })
 
@@ -339,22 +345,22 @@ shinyServer(function(input, output, session) {
 
   observe({
     if (!hasTime()) {
-        createAlert(session, "generalNoTimeTTSI", "generalNoTimeTTSI1",
-                    "Please provide date and time",
-                    message="This method requires date and time of relocations, but it was not provided", 
-                    type="error", 
-                    dismiss=FALSE,
-                    append=FALSE)
+      createAlert(session, "generalNoTimeTTSI", "generalNoTimeTTSI1",
+                  "Please provide date and time",
+                  message="This method requires date and time of relocations, but it was not provided", 
+                  type="error", 
+                  dismiss=FALSE,
+                  append=FALSE)
 
-        createAlert(session, "generalNoTimeBBMM", "generalNoTimeBBMM1",
-                    "Please provide date and time",
-                    message="This method requires date and time of relocations, but it was not provided", 
-                    type="error", 
-                    dismiss=FALSE,
-                    append=FALSE)
+      createAlert(session, "generalNoTimeBBMM", "generalNoTimeBBMM1",
+                  "Please provide date and time",
+                  message="This method requires date and time of relocations, but it was not provided", 
+                  type="error", 
+                  dismiss=FALSE,
+                  append=FALSE)
     } else {
-        closeAlert(session, "generalNoTimeTTSI1")
-        closeAlert(session, "generalNoTimeBBMM1")
+      closeAlert(session, "generalNoTimeTTSI1")
+      closeAlert(session, "generalNoTimeBBMM1")
       
     }
   })
@@ -369,7 +375,7 @@ shinyServer(function(input, output, session) {
       uis <- list(
         sliderInput("subsetXSlider", "X-Range", bbx[1, 1], bbx[1, 2], value=bbx[1, ]), 
         sliderInput("subsetYSlider", "Y-Range", bbx[2, 1], bbx[2, 2], value=bbx[2, ])
-        )
+      )
 
       if (!all(is.na(data2()$dat$timestamp))) {
         uis <- c(uis, list(dateRangeInput("subsetDatePicker", "Date range:",
@@ -390,7 +396,7 @@ shinyServer(function(input, output, session) {
         hr() 
         ## actionButton("subsetReset", "Reset")
         ## helpText("Reset button to come here")
-        ))
+      ))
       return(uis)
     } else {
       return(NULL)
@@ -411,12 +417,13 @@ shinyServer(function(input, output, session) {
   })
 
   subsetSelectedIds <- reactive({
-      input$subsetSelectedIds
+    input$subsetSelectedIds
   })
 
   ## data 3
   data3 <- reactive({
     if(!is.null(data2())) {
+      if (debug) cat("starting to create data3----\n\n")
 
       if (length(subsetSelectedIds()) == 0L) {
         checked <- unique(data2()$dat$id)
@@ -431,22 +438,30 @@ shinyServer(function(input, output, session) {
 
       dat <- data2()$dat
       bbx <- if (!is.null(subsetXSliderValues()[1])) {
-        gEnvelope(readWKT(
+        rgeos::gEnvelope(rgeos::readWKT(
           paste0("MULTIPOINT((", subsetXSliderValues()[1], " ", subsetYSliderValues()[1], "), (",
                  subsetXSliderValues()[2], " ", subsetYSliderValues()[2], "))")))
       } else {
-        gEnvelope(dat)
+        rgeos::gEnvelope(dat)
       }
 
+      cat("[f] ===========================\n")
       if (!all(is.na(data2()$dat$timestamp))) {
+        b <- subsetDatePicker()
+        if (debug) cat("## subset date picker \n\n")
+        if (debug) cat(str(b))
+        if (length(b) == 0) {
+          b <- c("1900-1-1", "2050-1-1")
+        }
         dat <- dat[dat$id %in% checked & 
-                   dat$timestamp >= ymd(subsetDatePicker()[1]) &
-                   dat$timestamp <= ymd(subsetDatePicker()[2]), ]
+                     dat$timestamp >= ymd(b[1]) &
+                     dat$timestamp <= ymd(b[2]), ]
       } else {
         dat <- dat[dat$id %in% checked , ]
       }
+      cat("[g] ===========================\n")
 
-      dat <- dat[which(gContains(bbx, dat, byid=TRUE)), ]
+      dat <- dat[which(rgeos::gContains(bbx, dat, byid=TRUE)), ]
 
       dataNew <- data2()
       dataNew$dat <- dat
@@ -455,6 +470,8 @@ shinyServer(function(input, output, session) {
       if (nrow(dat) == 0) {
         NULL
       } else {
+        if (debug) cat(str(dataNew))
+        if (debug) cat("exiting data3 without error----\n\n")
         dataNew
       }
 
@@ -573,24 +590,24 @@ shinyServer(function(input, output, session) {
 
 
   ## Check for MCP
-  # observe({
-#    input$btnModalMCPSave
-#
-#    isolate({
-#      x <- as.numeric(input$modalMCPInputLevel)
-#      
-#      ## This will change the value of input$inText, based on x
-#      if (!is.na(x) & x > 1 & x <= 100) {
-#        y <- x
-#      } else {
-#        y <- 95
-#      }
-#      updateTextInput(session, "modalMCPInputLevel", value = y)
-#    })
-#  })
-#
-#
-#
+                                        # observe({
+                                        #    input$btnModalMCPSave
+                                        #
+                                        #    isolate({
+                                        #      x <- as.numeric(input$modalMCPInputLevel)
+                                        #      
+                                        #      ## This will change the value of input$inText, based on x
+                                        #      if (!is.na(x) & x > 1 & x <= 100) {
+                                        #        y <- x
+                                        #      } else {
+                                        #        y <- 95
+                                        #      }
+                                        #      updateTextInput(session, "modalMCPInputLevel", value = y)
+                                        #    })
+                                        #  })
+                                        #
+                                        #
+                                        #
 
   ## ------------------------------------------------------------------------------ ##  
   ## Generate output grid
@@ -619,7 +636,7 @@ shinyServer(function(input, output, session) {
       uis <- list(
         sliderInput("bufferXSlider", "X-Buffer", 0, xrange, xrange * 0.5), 
         sliderInput("bufferYSlider", "Y-Buffer", 0, yrange, yrange * 0.5)
-        )
+      )
     } else {
       return(NULL)
     }
@@ -639,10 +656,10 @@ shinyServer(function(input, output, session) {
 
   output$gridResUi <- renderUI({
     if (!is.null(data4())) {
-        rgs <- apply(bbox(data4()$dat), 1, diff)
-        rgs <- c(rgs / 10, rgs / 500)
-        sliderInput("gridResSlider", "Resolution", min(rgs), max(rgs), mean(rgs))
-      }
+      rgs <- apply(bbox(data4()$dat), 1, diff)
+      rgs <- c(rgs / 10, rgs / 500)
+      sliderInput("gridResSlider", "Resolution", min(rgs), max(rgs), mean(rgs))
+    }
   })
 
   trast <- reactive({
@@ -683,21 +700,21 @@ shinyServer(function(input, output, session) {
     if (input$configLOCOHtypeK == "inclm") {
       list(
         numericInput("configLOCOHtypeKmanN", "Manual n", value=10)
-       ## helpText("Several values are possible with '10,40,20', a range of values is possible with '10:40:10' to evaluate LoCoH at 10, 20, 30 and 40.")
-        )
+        ## helpText("Several values are possible with '10,40,20', a range of values is possible with '10:40:10' to evaluate LoCoH at 10, 20, 30 and 40.")
+      )
     } else {
-        NULL
+      NULL
     }
   })
-                                          
+  
   output$configLOCOHtypeAField <- renderUI({
     if (input$configLOCOHtypeA == "inclm") {
       list(
         numericInput("configLOCOHtypeAmanN", "Manual n", value=10)
-       ## helpText("Several values are possible with '10,40,20', a range of values is possible with '10:40:10' to evaluate LoCoH at 10, 20, 30 and 40.")
-        )
+        ## helpText("Several values are possible with '10,40,20', a range of values is possible with '10:40:10' to evaluate LoCoH at 10, 20, 30 and 40.")
+      )
     } else {
-        NULL
+      NULL
     }
   })
 
@@ -705,10 +722,10 @@ shinyServer(function(input, output, session) {
     if (input$configLOCOHtypeR == "inclm") {
       list(
         numericInput("configLOCOHtypeRmanN", "Manual n", value=10)
-       ## helpText("Several values are possible with '10,40,20', a range of values is possible with '10:40:10' to evaluate LoCoH at 10, 20, 30 and 40.")
-        )
+        ## helpText("Several values are possible with '10,40,20', a range of values is possible with '10:40:10' to evaluate LoCoH at 10, 20, 30 and 40.")
+      )
     } else {
-        NULL
+      NULL
     }
   })
 
@@ -797,13 +814,13 @@ shinyServer(function(input, output, session) {
             rangesigma1=input$configBBMMRangeSigma1), 
           rhrMCP=list(
             levels=rhrCorrectLevels(input$configGlobalLevel)
-            ), 
+          ), 
           rhrTTSI=list(
             init=input$configTTSIInit,
             consec=input$configTTSISampling,
             ntimes=input$configTTSINTimes,
             alpha=input$configTTSIAlpha
-            ),
+          ),
           rhrLoCoH=list(
             levels=rhrCorrectLevels(input$configGlobalLevel),
             n=do.call(c, list(
@@ -818,26 +835,26 @@ shinyServer(function(input, output, session) {
               switch(input$configLOCOHtypeK, "incla" = "k", "inclm" = "k", "not" = NULL),
               switch(input$configLOCOHtypeA, "incla" = "a", "inclm" = "a", "not" = NULL),
               switch(input$configLOCOHtypeR, "incla" = "r", "inclm" = "r", "not" = NULL)))
-            ), 
+          ), 
           rhrAsymptote=list(
-            estimators=input$configAsymptoteEstimators,
             minNP=input$configAsymptoteMinNP,
             si=input$configAsymptoteSI,
             nrep=input$configAsymptoteNRep,
             tolTotArea=input$configAsymptoteTolToA,
             nTimes=input$configAsymptoteNTimes,
             sampling=input$configAsymptoteSampling
-            ),
-           rhrUniNorm=list(
-             levels=rhrCorrectLevels(input$configGlobalLevel),
-             trast=trast()
-             ),
-           rhrBiNorm=list(
-             levels=rhrCorrectLevels(input$configGlobalLevel),
-             trast=trast()
-             )
+          ),
+          rhrUniNorm=list(
+            levels=rhrCorrectLevels(input$configGlobalLevel),
+            trast=trast()
+          ),
+          rhrBiNorm=list(
+            levels=rhrCorrectLevels(input$configGlobalLevel),
+            trast=trast()
           )
+        )
 
+        if (debug) cat("str anaylsis\n\n")
         if (debug) cat(str(args))
         
         createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress1",
@@ -856,17 +873,18 @@ shinyServer(function(input, output, session) {
           } else {
             files <- system.file("guiTemp", package="rhr")
           }
-            
-        createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress2",
-                    "Starting Calculations",
-                    message=paste0("[", Sys.time(), "] Starting with calculations, this may take some time"), 
-                    type="info", 
-                    dismiss=FALSE,
-                    append=TRUE)
+          
+          createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress2",
+                      "Starting Calculations",
+                      message=paste0("[", Sys.time(), "] Starting with calculations, this may take some time"), 
+                      type="info", 
+                      dismiss=FALSE,
+                      append=TRUE)
 
           ## ------------------------------------------------------------------------------ ##  
           ## Run the whole analysis
           if (debug) cat("===========\n", c(input$runSteps, input$runSteps2), "\n")
+          starttime <- Sys.time()
           runtime <- system.time(res <- rhrHrAnalysis(data4(),
                                                       what=c(input$runSteps, input$runSteps2), 
                                                       args=args,
@@ -877,12 +895,12 @@ shinyServer(function(input, output, session) {
           ## ------------------------------------------------------------------------------ ##  
           ## Brew html
 
-        createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress3",
-                    "Report",
-                    message=paste0("[", Sys.time(), "] Generating report"), 
-                    type="info", 
-                    dismiss=FALSE,
-                    append=TRUE)
+          createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress3",
+                      "Report",
+                      message=paste0("[", Sys.time(), "] Generating report"), 
+                      type="info", 
+                      dismiss=FALSE,
+                      append=TRUE)
 
           brewEnv <- list2env(list(
             config=config(), 
@@ -896,8 +914,9 @@ shinyServer(function(input, output, session) {
             methodLookup=methodLookup,
             epsgs=list(
               input=input$configInEpsg, 
-              output=input$configOutEpsg)
-            ))
+              output=input$configOutEpsg),
+            starttime = starttime
+          ))
 
           knitEnv <- list2env(list(
             config=config(), 
@@ -906,13 +925,10 @@ shinyServer(function(input, output, session) {
             data3=data3(),
             subsetTable=subsetTable(),
             relocTable=missingAndDuplicated()
-            ))
+          ))
 
           setProgress(message="Creating html file")
-          src <- capture.output(brew(file=normalizePath(file.path(files, "body.brew"), winslash="/", mustWork=FALSE), output=stdout(),
-                                     envir=brewEnv))
-          
-
+          src <- capture.output(brew(file=normalizePath(file.path(files, "body.brew"), winslash="/", mustWork=FALSE), output=stdout(), envir=brewEnv))
           if (debug) cat(str(input$selectStep))
 
 
@@ -926,7 +942,7 @@ shinyServer(function(input, output, session) {
             stylesheet=normalizePath(file.path(files, "style.css"), mustWork=FALSE, winslash="/"),
             template=normalizePath(file.path(files, "index.html"), mustWork=FALSE, winslash="/"))
 
-          ### pdf
+### pdf
           if (config()$general$content$doPdf) {
             setProgress(message="Generating PDF", detail="may take a some time")
             brew(file=normalizePath(file.path(files, "report_brew.tex"), mustWork=FALSE, winslash="/"),
@@ -969,21 +985,21 @@ shinyServer(function(input, output, session) {
           ##   setwd(ow)
           ## }
 
-          if (config()$general$content$doCp) {
-            dir.create(normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/"))
-            filesNames <- list.files(outDir, full.names=TRUE, recursive=FALSE, ignore.case=TRUE)
-            sapply(filesNames, function(x)
-                   file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/")))
+          ## if (config()$general$content$doCp) {
+          ##   dir.create(normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/"))
+          ##   filesNames <- list.files(outDir, full.names=TRUE, recursive=FALSE, ignore.case=TRUE)
+          ##   sapply(filesNames, function(x)
+          ##          file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/")))
 
-            for (f in c("data", "plots", "vector", "raster")) {
-              dir.create(normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/"))
-              filesNames <- list.files(normalizePath(file.path(outDir, "results", f), mustWork=FALSE, winslash="/"), full.names=TRUE, recursive=TRUE,
-                                       ignore.case=TRUE)
-              sapply(filesNames, function(x)
-                     file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/")))
-            }
-            
-          }
+          ##   for (f in c("data", "plots", "vector", "raster")) {
+          ##     dir.create(normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/"))
+          ##     filesNames <- list.files(normalizePath(file.path(outDir, "results", f), mustWork=FALSE, winslash="/"), full.names=TRUE, recursive=TRUE,
+          ##                              ignore.case=TRUE)
+          ##     sapply(filesNames, function(x)
+          ##            file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/")))
+          ##   }
+          ##   
+          ## }
 
           createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress5",
                       "Finish",
