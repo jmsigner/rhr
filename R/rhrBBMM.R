@@ -125,13 +125,12 @@ rhrData.RhrBBMM <- function(x, ...) {
 }
 
 ##' @export
-##' @rdname rhrHasUD
 rhrHasUD.RhrBBMM <- function(x, ...) {
   TRUE
 }
 
-##' @method plot RhrBBMM
 ##' @export
+##' @method plot RhrBBMM
 plot.RhrBBMM <- function(x, addIsopleths=TRUE, levels=95, ...) {
   if (addIsopleths) {
     tempol <- rhrIsopleths(x, levels, ...)

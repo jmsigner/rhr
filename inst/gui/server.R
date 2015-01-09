@@ -683,7 +683,7 @@ shinyServer(function(input, output, session) {
     cat(
       " Number of rows:    ", nrow(trast()), "\n",
       "Number of columns: ", ncol(trast()), "\n",
-      "Resolution:        ", paste0(res(trast()), collapse=", "))
+      "Resolution:        ", paste0(raster::res(trast()), collapse=", "))
   })
 
   output$gridPlot <- renderPlot({
@@ -823,15 +823,15 @@ shinyServer(function(input, output, session) {
           ),
           rhrLoCoH=list(
             levels=rhrCorrectLevels(input$configGlobalLevel),
-            n=do.call(c, list(
+            n=do.call(base::c, list(
               switch(input$configLOCOHtypeK, "inclm" = input$configLOCOHtypeKmanN, "incla" = 10),
               switch(input$configLOCOHtypeA, "inclm" = input$configLOCOHtypeAmanN, "incla" = 10),
               switch(input$configLOCOHtypeR, "inclm" = input$configLOCOHtypeRmanN, "incla" = 10))), 
-            autoN=do.call(c, list(
+            autoN=do.call(base::c, list(
               switch(input$configLOCOHtypeK, "incla" = TRUE, "inclm" = FALSE),
               switch(input$configLOCOHtypeA, "incla" = TRUE, "inclm" = FALSE),
               switch(input$configLOCOHtypeR, "incla" = TRUE, "inclm" = FALSE))),
-            type=do.call(c, list(
+            type=do.call(base::c, list(
               switch(input$configLOCOHtypeK, "incla" = "k", "inclm" = "k", "not" = NULL),
               switch(input$configLOCOHtypeA, "incla" = "a", "inclm" = "a", "not" = NULL),
               switch(input$configLOCOHtypeR, "incla" = "r", "inclm" = "r", "not" = NULL)))
@@ -868,11 +868,7 @@ shinyServer(function(input, output, session) {
 
           setProgress(message="Preparing calculations", detail="creating output files .....")
 
-          if (debug) {
-            files <- "/home/johannes/Documents/20_phd/201_projects/rhr2/pkg/rhr/inst/guiTemp"
-          } else {
-            files <- system.file("guiTemp", package="rhr")
-          }
+          files <- system.file("guiTemp", package="rhr")
           
           createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress2",
                       "Starting Calculations",
@@ -928,6 +924,9 @@ shinyServer(function(input, output, session) {
           ))
 
           setProgress(message="Creating html file")
+          if (debug) cat("files are: \n")
+          if (debug) cat(files)
+          if (debug) cat("\n\n")
           src <- capture.output(brew(file=normalizePath(file.path(files, "body.brew"), winslash="/", mustWork=FALSE), output=stdout(), envir=brewEnv))
           if (debug) cat(str(input$selectStep))
 

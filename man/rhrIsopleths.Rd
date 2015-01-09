@@ -8,7 +8,7 @@ rhrIsopleths(x, ...)
 \arguments{
   \item{x}{object of class RhrEst}
 
-  \item{...}{not implemented}
+  \item{...}{see description}
 }
 \value{
 SpatialPolygonsDataFrame

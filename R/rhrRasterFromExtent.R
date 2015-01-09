@@ -1,10 +1,13 @@
-##' rasterFromXYVect
+##' Create \code{RasterLayer} from the extent of points.
 ##' 
-##' Creates empty raster
-##' @param xy a data.frame or matrix. The first column are x coordinates and the second column are y coordinates
-##' @param xrange range of x
-##' @param yrange range of y
+##' Function to create an empty \code{RasterLayer} from bounding box of points defined by x and y coordinates.
+##' 
+##' Takes x and y coordinates of points as input and creates a \code{RasterLayer} with the input coordiantes. The range in either direction can be provided, otherwise it will be obtained from the data.
+##' @param xy A two columned \code{data.frame} or \code{matrix} containing the x and y coordinates of the points.
+##' @param xrange,yrange Optional numeric vector of length providing the range.
 ##' @param res resolution
+##' @export
+##' @example inst/examples/rasterFromXYVect.R
 
 rasterFromXYVect <- function(xy, xrange=NA, yrange=NA, res=100) {
 

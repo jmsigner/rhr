@@ -1,31 +1,31 @@
-## ============================================================================== ##  
-## This program is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
-## 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-## 
-## You should have received a copy of the GNU General Public License
-## along with this program.  If not, see <http://www.gnu.org/licenses/>.
-## ============================================================================== ##
-
-##' Calculate home rnage asymptote for an object of class RhrHREstimator
+##' Asymptote of Home Range estimate
 ##' 
-##' calculate home range asymptote
-##' @param x RhrEst object
-##' @param ns numeric vector of the number of samples to be taken at each step
-##' @param nrep the number of replicates for each sample size
-##' @param tolTotArea tolerance to the total area (that is the area using all points)
-##' @param nTimes the number of times the confidence interval is required to be within tolerated total area
-##' @param sampling this should be either random or sequential. See notes for details.
-##' @note Bootstrapped home ranges are calculated for different sample sizes. Starting from very few samples until the sample size approaches the total number of points. Home range sizes are then plotted against the sample sizes. Laver (2005, 2005) suggested to use the following cutoff value: the number of location estimates at which the 95 \% confidence interval of the bootstrapped home-range estimates is within a specified percentage of the total home range size (that is the size of the home range with all relocations) for at least n times. Harris 1990 suggested to use random sampling for discontinuous radio tracking data and sequential sampling for continuous radio tracking data. 
+##' Function calculates asymptote of the area of a home range estimate.
+##'
+##' Bootstrapped home ranges are calculated for different sample sizes. Starting
+##' from few relocations until the sample size approaches the total number of
+##' points. Home range areas are then plotted against the sample sizes.
+##' Laver (2005, 2005) suggested to use the following cutoff value: the number
+##' of location at which estimates of the 95 \% confidence interval of the
+##' bootstrapped home-range area is within a specified percentage of the
+##' total home range area (that is the area of the home range with all
+##' relocations) for at least n times. Harris 1990 suggested to use random
+##' sampling for discontinuous radio tracking data and sequential sampling for
+##' continuous radio tracking data. 
+##'
+##' @param x Object of class RhrEst, the home-range estimate.
+##' @param ns Numeric vector of the number of samples to be taken at each step.
+##' @param nrep Numeric value,  number of bootstrap replicates for each sample size.
+##' @param tolTotArea Numeric value, tolerance to the total area (that is the area using all relocations).
+##' @param nTimes Numeric value, number of times the confidence interval is required to be within tolerated total area
+##' @param sampling Character value, either random or sequential. See below for details.
+
 ##' @return An object of class \code{RhrHRAsymptote}
+
+##' @references Harris, S., et al. "Home‐range analysis using radio‐tracking data–a review of problems and techniques particularly as applied to the study of mammals." Mammal review 20.2‐3 (1990): 97-123.
 ##' @references Peter N Laver. Cheetah of the serengeti plains: a home range analysis. Master's thesis, Virginia Polytechnic Institute and State University, 2005
 ##' @references Peter N. Laver and Marcella J. Kelly. A critical review of home range studies. The Journal of Wildlife Management, 72(1):290-298, 2008
+
 ##' @export
 ##' @examples
 ##' \dontrun{
@@ -153,10 +153,6 @@ rhrAsymptote <- function(x, ns=seq(100, nrow(rhrData(x)), 500), nrep=10, tolTotA
 }
 
 
-##' print object of rhrHRAsymptote
-##' 
-##' @param x RhrHRAsymptote
-##' @param ... none implemented
 ##' @method print RhrHRAsymptote
 ##' @export
 
@@ -170,11 +166,6 @@ print.RhrHRAsymptote <- function(x, ...) {
 }
 
 
-##' plot for RhrHRAsymptote
-##' 
-##' generic plot for RhrHRAsymptote
-##' @param x RhrHRAsymptote
-##' @param ... none implemented
 ##' @method plot RhrHRAsymptote
 ##' @export
 

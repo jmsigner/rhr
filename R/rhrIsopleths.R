@@ -2,7 +2,7 @@
 ##'
 ##' @title rhrIsopleths
 ##' @param x object of class RhrEst
-##' @param ... not implemented 
+##' @param ... see description
 ##' @return SpatialPolygonsDataFrame
 ##' @export
 ##' @author Johannes Signer
