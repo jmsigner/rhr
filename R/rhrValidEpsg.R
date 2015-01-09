@@ -5,14 +5,15 @@
 ##' @param epsg EPSG code
 ##' @export
 rhrValidEpsg <- function(epsg) {
-  rhrEPSGs <- NULL
-  data(rhrEPSGs)
+  rhrEPSGs <- rgdal::make_EPSG()
   if (is.null(epsg)) {
     return(FALSE)
   }
-  if (epsg %in% rhrEPSGs) {
+  if (as.character(epsg) %in% rhrEPSGs$code) {
     return(TRUE)
   } else {
     return(FALSE)
   }
 }
+
+

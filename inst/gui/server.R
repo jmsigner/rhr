@@ -16,6 +16,7 @@ library(brew)
 library(lubridate)
 library(knitr)
 library(markdown)
+library(rgdal)
 library(rhr)
 library(shinyBS)
 library(shiny)
@@ -184,7 +185,8 @@ shinyServer(function(input, output, session) {
   output$reproject <- renderUI({
     if (rhrValidEpsg(input$configInEpsg)) {
       return(list(
-        helpText("Optionally you can reproject your data"),
+        helpText(paste0("Optionally you can reproject your data (Input EPSG is: ",
+                        input$configInEpsg, ")")), 
         numericInput("configOutEpsg", "Output EPSG", NA), 
         textOutput("rhrReproject")))
     } else {
@@ -247,11 +249,7 @@ shinyServer(function(input, output, session) {
                 if (rhrValidEpsg(input$configOutEpsg)) {
                   ## should I also reproject
                   proj4string(dat2$dat) <- CRS(paste0("+init=epsg:", input$configInEpsg))
-                  dat2$dat <- spTransform(dat2$dat, CRS(paste0("+init=epsg:", input$configOutEpsg)))
-                  dat2$dat <- as.data.frame(dat2$dat)
-                  names(dat2$dat) <- c("lon", "lat", "id", "timestamp")
-                  dat2$dat <- dat2$dat[, c("id", "lon", "lat", "timestamp")]
-                  ## successfully reporjected
+                  dat2$dat <- sp::spTransform(dat2$dat, CRS(paste0("+init=epsg:", input$configOutEpsg)))
                   createAlert(session, "rhrReproject", "rhrReproject1",
                               "Reproject",
                               message="Data successfully reprojected", 
