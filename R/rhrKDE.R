@@ -185,9 +185,9 @@ rhrHasUD.RhrKDE <- function(x, ...) {
 
 ##' @method plot RhrKDE
 ##' @export
-plot.RhrKDE <- function(x, addIsopleths=TRUE, ...) {
+plot.RhrKDE <- function(x, levels = 95, addIsopleths=TRUE, ...) {
   if (addIsopleths) {
-    tempol <- rhrIsopleths(x, ...)
+    tempol <- rhrIsopleths(x, levels, ...)
   }
   plot(rhrUD(x))
   if (addIsopleths) {

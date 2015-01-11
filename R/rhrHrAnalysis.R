@@ -328,7 +328,8 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
       file.path(outDirs$data, paste0("animal_", animal$id[1], "_", scn$basename, "_tbl_ca.Rds")),
       mustWork=FALSE, winslash="/")
     t1 <- data.frame(a)
-    names(t1) <- c("Level", "Area")
+
+      names(t1) <- c("Level", "Area")
     t1$Area <- rhrConvertUnit(t1$Area, inUnit, outUnit)
     saveRDS(t1, file=fnTbl1)
 
