@@ -1,18 +1,3 @@
-## ============================================================================== ##  
-## This program is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
-## 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-## 
-## You should have received a copy of the GNU General Public License
-## along with this program.  If not, see <http://www.gnu.org/licenses/>.
-## ============================================================================== ##
-
 ##' Kernel Density Estimation (KDE)
 ##'
 ##' A function to estimate home ranges with kernel density estimation. 
@@ -20,6 +5,7 @@
 ##' @param xy \code{data.frame} with two columns: x and y coordinates.
 ##' @param h character ("href" or "hlscv") specifying the method to estimate the bandwidth or numeric value specifying the bandwidth.
 ##' @param trast a \code{RasterLayer} used as an template for the output grid.
+##' @param levels A numeric vector, indicating isopleths of KDE. 
 
 ##' @details The size and resolution of the resulting utilization distribution (UD) grid is influenced by \code{traster, xrange, yrange, increaseExtent, buffer, res, gridsize}. The size of the grid can be set either through a template raster (\code{traster}), \code{xrange} and \code{yrange} or \code{increaseExtent}. \code{traster} takes precedence over \code{xrange} and \code{yrange}, \code{buffer} and \code{grid}. If none of the previous arguments are provided, \code{xrange} and \code{yrange} are taken from the data.
 ##'
@@ -57,7 +43,7 @@
 ##' }
 
 rhrKDE <- function(xy,
-                   h=rhrHref(xy)$h, 
+                   h=rhrHref(xy)$h, levels = 95, 
                    trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
   ## Capture input arguments
@@ -73,6 +59,7 @@ rhrKDE <- function(xy,
     sp::CRS(NA_character_)
   }
   xy <- rhrCheckData(xy, returnSP=FALSE)
+  levels <- rhrCheckLevels(levels)
 
   ## ---------------------------------------------------------------------------- #
   ## Check bandwidth
@@ -185,12 +172,14 @@ rhrHasUD.RhrKDE <- function(x, ...) {
 
 ##' @method plot RhrKDE
 ##' @export
-plot.RhrKDE <- function(x, levels = 95, addIsopleths=TRUE, ...) {
-  if (addIsopleths) {
-    tempol <- rhrIsopleths(x, levels, ...)
-  }
+plot.RhrKDE <- function(x, levels = NULL, addIsopleths=TRUE, ...) {
+
+  if (is.null(levels)) {
+    levels <- x$args$levels
+  } 
+  
   plot(rhrUD(x))
   if (addIsopleths) {
-    plot(rhrIsopleths(x), add=TRUE)
+    plot(rhrIsopleths(x, levels), add=TRUE)
   }
 }

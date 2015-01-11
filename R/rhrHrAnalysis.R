@@ -644,7 +644,8 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
           hres$msg <- "sorry, h input not understood, this calculation will be skipped"
         }
 
-        kde <- tryCatch(rhrKDE(animal, h=hres$h, trast=args[[thisEst]]$trast), error=function(e) e)
+        kde <- tryCatch(rhrKDE(animal, h=hres$h, trast=args[[thisEst]]$trast,
+                               levels = args[[thisEst]]$levels), error=function(e) e)
 
         if (inherits(kde, "error")) {
           return(list(est = rhrRes(kde, animal, scn, outDirs, msg = list(list(name="Error", message=kde$message)))))
@@ -663,7 +664,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                 } else {
                   NULL
                 }
-              }else {
+              } else {
                 NULL
               }
             )

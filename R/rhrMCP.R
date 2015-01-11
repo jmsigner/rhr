@@ -63,12 +63,6 @@ rhrMCP <- function(xy, levels=95) {
     expr=list(msg=NULL, exitStatus=0, res=.rhrMCP(xy, levels)),
     error=function(e) list(msg=e, exitStatus=1))
 
-  oong <- lat <- group <- level <- lon <- NULL
-  long <- lat <- group <- level <- lon <- NULL
-  long <- lat <- group <- level <- lon <- NULL
-  long <- lat <- group <- level <- lon <- NULL
-  long <- lat <- group <- level <- lon <- NULL
-  long <- lat <- group <- level <- lon <- NULL
   long <- lat <- group <- level <- lon <- NULL
   if (bb$exitStatus == 0) {
     sp::proj4string(bb$res) <- projString
