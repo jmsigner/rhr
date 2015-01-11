@@ -655,19 +655,16 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
           msgs <- list(
             list(name = "Tuning parameter (bandwidth)",
                  msg = paste0("The used value for bandwidth (h) is: ", paste0(round(hres$h, 2), collapse=", "))), 
-            list(
               if (!is.null(hres$converged)) {
                 if (!hres$converged) {
-                  list(
                     list(name = "LSCV: convergence", 
-                         message = "Caution, bandwidth with least square cross validation did not converge, defaulted back to the smallest value in search range"))
+                         msg = "Caution, bandwidth with least square cross validation did not converge, defaulted back to the smallest value in search range")
                 } else {
                   NULL
                 }
               } else {
                 NULL
               }
-            )
           )
 
           res <-  rhrRes(kde, animal, scn, outDirs, msgs)

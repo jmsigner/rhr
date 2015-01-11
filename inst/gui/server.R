@@ -886,6 +886,7 @@ shinyServer(function(input, output, session) {
                                                       inUnit=input$configOutputInUnits, 
                                                       outUnit=input$configOutputOutUnits, 
                                                       inGUI=TRUE), gcFirst=TRUE)
+          if (debug) cat(str(res))
           ## ------------------------------------------------------------------------------ ##  
           ## Brew html
 
