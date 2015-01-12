@@ -1,9 +1,13 @@
-##' Generic Function to calculate UD
+##' Utilization distribution
+##'
+##' Function to obtain the utilization distribution (UD) of a home range estimate.
 ##' 
-##' @param x an object of class RhrHrEstimator*
-##' @param ... further arguments, none implemented
+##' For probabilistic estimators home range estimator this functions returns the UD.
+##' @param x An object of class RhrProbEst.
+##' @param ... none implemented.
 ##' @export
-##' @return an object of class raster
+##' @return An object of class RasterLayer.
+##' @example inst/examples/rhrUD.R
 
 rhrUD <- function(x, ...) {
   UseMethod("rhrUD", x)

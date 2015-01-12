@@ -7,8 +7,8 @@
 ##' an additional argument, \code{levels}, that determines at which isopleth levels
 ##' of the UD the area is evaluated. 
 ##'
-##' @param x object of class RhrEst
-##' @param ... see details
+##' @param x Object of class RhrEst.
+##' @param ... see details.
 ##' @return \code{data.frame} with the isopleth level and area in units of the coordinate system. 
 ##' @export
 ##' @example inst/examples/rhrArea.R
