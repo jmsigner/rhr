@@ -22,7 +22,7 @@
 
 ##' @return An object of class \code{RhrHRAsymptote}
 
-##' @references Harris, S., et al. "Home‐range analysis using radio‐tracking data–a review of problems and techniques particularly as applied to the study of mammals." Mammal review 20.2‐3 (1990): 97-123.
+##' @references Harris, S., et al. "Home-range analysis using radio-tracking data-a review of problems and techniques particularly as applied to the study of mammals." Mammal review 20.2-3 (1990): 97-123.
 ##' @references Peter N Laver. Cheetah of the serengeti plains: a home range analysis. Master's thesis, Virginia Polytechnic Institute and State University, 2005
 ##' @references Peter N. Laver and Marcella J. Kelly. A critical review of home range studies. The Journal of Wildlife Management, 72(1):290-298, 2008
 

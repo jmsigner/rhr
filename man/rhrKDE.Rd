@@ -3,8 +3,9 @@
 \alias{rhrKDE}
 \title{Kernel Density Estimation (KDE)}
 \usage{
-rhrKDE(xy, h = rhrHref(xy)$h, trast = rhrRasterFromExt(rhrExtFromPoints(xy,
-  extendRange = 0.2), nrow = 100, res = NULL))
+rhrKDE(xy, h = rhrHref(xy)$h, levels = 95,
+  trast = rhrRasterFromExt(rhrExtFromPoints(xy, extendRange = 0.2), nrow =
+  100, res = NULL))
 }
 \arguments{
   \item{xy}{\code{data.frame} with two columns: x and y
@@ -13,6 +14,9 @@ rhrKDE(xy, h = rhrHref(xy)$h, trast = rhrRasterFromExt(rhrExtFromPoints(xy,
   \item{h}{character ("href" or "hlscv") specifying the
   method to estimate the bandwidth or numeric value
   specifying the bandwidth.}
+
+  \item{levels}{A numeric vector, indicating isopleths of
+  KDE.}
 
   \item{trast}{a \code{RasterLayer} used as an template for
   the output grid.}
@@ -25,30 +29,7 @@ A function to estimate home ranges with kernel density
 estimation.
 }
 \details{
-The size and resolution of the resulting utilization
-distribution (UD) grid is influenced by \code{traster,
-xrange, yrange, increaseExtent, buffer, res, gridsize}. The
-size of the grid can be set either through a template
-raster (\code{traster}), \code{xrange} and \code{yrange} or
-\code{increaseExtent}. \code{traster} takes precedence over
-\code{xrange} and \code{yrange}, \code{buffer} and
-\code{grid}. If none of the previous arguments are
-provided, \code{xrange} and \code{yrange} are taken from
-the data.
-
-The resolution of the resulting UD grid can be set through
-either \code{res} or \code{gridsize}. \code{res} takes
-precedence over \code{gridsize}. If none of the previous
-arguments is provided the grid is set by default to a 100
-by 100 grid. The bandwidth can be provided by the user or
-estimated through the reference bandwidth (this method is
-often refered to as the ad hoc method), plug in the euqtion
-method or the least square cross validation method.
-Reference bandwidth estimation is implemented as suggested
-by Silverman 1986. Plugin the equation method is wrapped
-from \code{KernSmooth::dpki} and a simple binned version
-Silverman's suggestion for least square cross validation is
-implemented. Kernels densities are estimated with
+Kernels densities are estimated with
 \code{KernSmooth::bkde2d}. This is a binned approximation
 of 2D kernel density estimates (see
 \code{?KernSmooth::bkde2d} for more details.
@@ -71,12 +52,8 @@ plot(k2)
 k2$parameters$h
 }
 }
-\author{
-Johannes Signer
-}
 \seealso{
-\code{KernSmooth::bkde2d}, \code{KernSmooth::dpik},
-\code{rhr::rhrHref}, \code{rhr::rhrHlscv},
-\code{rhr::rhrHpi}
+\code{KernSmooth::bkde2d}, \code{rhr::rhrHref},
+\code{rhr::rhrHlscv}, \code{rhr::rhrHpi}
 }
 

@@ -6,16 +6,16 @@
 rhrArea(x, ...)
 }
 \arguments{
-  \item{x}{object of class RhrEst}
+  \item{x}{Object of class RhrEst.}
 
-  \item{...}{see details}
+  \item{...}{see details.}
 }
 \value{
 \code{data.frame} with the isopleth level and area in units
 of the coordinate system.
 }
 \description{
-Function calculate the area of a Home Range estimator.
+Function to calculate the area of a Home Range estimator.
 }
 \details{
 For geometric estimators the isopleth levels at which the
