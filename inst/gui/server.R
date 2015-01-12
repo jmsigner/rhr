@@ -5,7 +5,7 @@
 
 ## clean everything 
 rm(list=ls())
-debug <- TRUE
+debug <- FALSE
 if (debug) {
   .datFromR <- NULL
   outDir <- "/tmp"
@@ -460,7 +460,7 @@ shinyServer(function(input, output, session) {
       }
       cat("[g] ===========================\n")
 
-      dat <- dat[which(rgeos::gContains(bbx, dat, byid=TRUE)), ]
+      dat <- dat[which(rgeos::gCovers(bbx, dat, byid=TRUE)), ]
 
       dataNew <- data2()
       dataNew$dat <- dat
