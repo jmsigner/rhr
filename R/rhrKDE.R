@@ -131,7 +131,11 @@ rhrCUD.RhrKDE <- function(x, ...) {
 }
 
 ##' @export
-rhrIsopleths.RhrKDE <- function(x, levels=95, ...) {
+rhrIsopleths.RhrKDE <- function(x, levels=NULL, ...) {
+
+  if (is.null(levels)) {
+    levels <- x$args$levels
+  } 
 
   levels <- rhrCheckLevels(levels)
   cud <- rhrCUD(x)
