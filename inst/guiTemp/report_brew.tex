@@ -1,4 +1,4 @@
-\documentclass[a4,oneside,garamond,11.5pt]{scrreprt}
+\documentclass[a4,oneside,garamond,11.5pt]{scrartcl}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{fixltx2e}
@@ -35,22 +35,6 @@
 \usepackage{placeins}
 \usepackage[font=small,labelfont=bf]{caption}
 \newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
-\lstset{basicstyle=\ttfamily,
-showstringspaces=false,
-commentstyle=\color{red},
-keywordstyle=\color{blue},
-breaklines=true,
-numberstyle=\tiny,
-backgroundcolor=\color{black!5},
-frame=rb,
-framesep=2pt,
-framerule=0.5pt,
-fillcolor=\color{black!0}
-}
-\hypersetup{
-colorlinks=false,
-linkbordercolor={white},
-citebordercolor={white}}
 
 % Start renumbering sections within each part
 \makeatletter
@@ -59,7 +43,7 @@ citebordercolor={white}}
 
 % Makes the TOC nicer, spaces are better allocated
 \titlecontents{section}[2.3em]{}{\contentslabel{2.3em}}{\hspace*{-2.3em}}{\titlerule*[1pc]{.}\contentspage}
-\author{R}
+\author{<%=Sys.info()['user']%>}
 \date{\today}
 \title{Home Range analysis with rhr}
 \begin{document}
@@ -68,7 +52,7 @@ citebordercolor={white}}
 \tableofcontents
 
 
-<<r setup, include=FALSE>>=
+<<setup, include=FALSE>>=
 library(knitr)
 opts_chunk$set(warning=FALSE, message=FALSE, echo=FALSE)
 opts_knit$set(base.dir="<%=normalizePath(baseDir)%>")
@@ -80,40 +64,34 @@ options(width=65)
     General Information
   # #################################### -%>
 
-\chapter{General Information}
-\section{Relocations}
-<<result='asis'>>=
+\section{General Information}
+\subsection{Relocations}
+<<results='asis'>>=
 bktbs <- xtable(relocTable)
 hlns <- c(-1, 0, nrow(bktbs))
 print(bktbs, booktabs=TRUE, hline.after=hlns, table.placement="!h", include.rownames=FALSE)
 @
 
-\section{Spatial Reference System}
+\subsection{Spatial Reference System}
 The input SRS was: <%=epsgs$input %>. The output SRS was: <%=epsgs$output %>.
 
-\section{Plot of relocation}
-
-<<>>=
-plot(data2[, c("lon", "lat")], col=adjustcolor("black", 0.1), pch=19, asp=1)
-points(data3[ , c("lon", "lat")], col="red")
-@
-
-
+  
 <%# ####################################
-    Estimators
+    Cycle over all estimators
   # #################################### -%>
 
 <%# -------------------------- START CYCLE OVER ALL ESTIMATORS -%>
 <% for (step in methodLookup$short) { %>
 
-\chapter{<%=methodLookup[methodLookup$short == step, 'long']%>}
+\section{<%=methodLookup[methodLookup$short == step, 'long']%>}
 
 <% if (step %in% names(res$est)) { %>
 
 <% if (!is.null(res$est[[step]]$parameters)) { %>
-\section{Parameter values used}
+\subsection{Parameter values used}
+
 <<results="asis">>=
-bktbs <- xtable(readRDS("<%=normalizePath(res$est[[step]]$parameters)%>"))
+bktbs <- xtable(readRDS("<%=normalizePath(res$est[[step]]$parameters, winslash="/")%>"))
 hlns <- c(-1, 0, nrow(bktbs))
 print(bktbs, booktabs=TRUE, hline.after=hlns, table.placement="!htb", include.rownames=FALSE)
 @
@@ -121,104 +99,160 @@ print(bktbs, booktabs=TRUE, hline.after=hlns, table.placement="!htb", include.ro
 
 <%}%>
 
-
 <%# -------------------------- START CYCLE OVER ALL ANIMALS -%>
-<% for (animal in unique(dat$id)) { %>
+<% for (animal in names(res$est[[step]]$res)) { %>
 
-\section{Results for <%=animal%>}
+\subsection{Results for <%=animal%>}
 
 
 <%# -------------------------- START CYCLE OVER ALL SCENARIOS OF AN ANIMAL -%>
 <% for (scenario in 1:length(res$est[[step]]$res[[animal]])) { %>
 
 <% if (length(res$est[[step]]$res[[animal]]) > 1) { %>
-\subsection{ Scenario: <%=res$est[[step]]$scenarios$name[scenario]%>}
+\subsubsection{Scenario: <%=res$est[[step]]$scenarios$name[scenario]%>}
 <%}%>
 
 <%# ========================== Check if I can continue, that means no error occured during calculation %>
-<% if (is(readRDS(normalizePath(res$est[[step]]$res[[animal]][[scenario]]$rds)), "error")) { %>
-Terminated with error: <%=readRDS(normalizePath(res$est[[step]]$res[[animal]][[scenario]])$rds)$message %>
+<% if (is(readRDS(normalizePath(res$est[[step]]$res[[animal]][[scenario]]$est$rds)), "error")) { %>
+Terminated with error: <%=readRDS(normalizePath(res$est[[step]]$res[[animal]][[scenario]]$rds))$message %>
 <% } else { %>
 
 <%# -------------------------- plots -%>
-<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$plots)) { %>
+<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$est$plts)) { %>
 
-<% for (plt in seq_along(res$est[[step]]$res[[animal]][[scenario]]$plots)) { %>
-
-\subsubsection{ <%=res$est[[step]]$res[[animal]][[scenario]]$plots[[plt]]$name%>}
+<% for (plt in seq_along(res$est[[step]]$res[[animal]][[scenario]]$est$plts)) { %>
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=0.7\textwidth]{<%=normalizePath(res$est[[step]]$res[[animal]][[scenario]]$plots[[plt]]$plotPDF) %>}
+\includegraphics[width=0.7\textwidth]{<%=normalizePath(res$est[[step]]$res[[animal]][[scenario]]$est$plts[[plt]]$plotPDF, winslash="/")%>}
+  \caption{<%=res$est[[step]]$res[[animal]][[scenario]]$est$plts[[plt]]$name%>}
 \end{figure}
 \FloatBarrier
-  
-<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$plots[[plt]]$legend)) { %>
-<%=res$est[[step]]$res[[animal]][[scenario]]$plots[[plt]]$legend %>
-<%}%>
 
 <% } %>
 <% } %>
 
-<%# -------------------------- table -%>
-<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$tables)) { %>
-
-<% for (tbl in seq_along(res$est[[step]]$res[[animal]][[scenario]]$tables)) { %>
-
-\subsubsection{ <%=res$est[[step]]$res[[animal]][[scenario]]$tables[[tbl]]$name%>}
-
-<<results="asis">>=
-bktbs <- xtable(readRDS("<%=normalizePath(res$est[[step]]$res[[animal]][[scenario]]$tables[[tbl]]$path)%>"))
-hlns <- c(-1, 0, nrow(bktbs))
-print(bktbs, booktabs=TRUE, hline.after=hlns, table.placement="!h", include.rownames=FALSE)
-@
-
-\FloatBarrier
-<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$table[[tbl]]$legend)) { %>
-<%=res$est[[step]]$res[[animal]][[scenario]]$tables[[tbl]]$legend %>
-<%}%>
-
-<% } %>
-<% } %>
 
 <%# -------------------------- message -%>
-<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$messages)) { %>
+<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$est$msgs)) { %>
 
-<% for (msg in seq_along(res$est[[step]]$res[[animal]][[scenario]]$messages)) { %>
+<% for (msg in seq_along(res$est[[step]]$res[[animal]][[scenario]]$est$msgs)) { %>
 
-\subsubsection{ <%=res$est[[step]]$res[[animal]][[scenario]]$messages[[msg]]$name%>}
+<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$est$msgs[[msg]]$name)) { %>
+
+\paragraph{ <%=res$est[[step]]$res[[animal]][[scenario]]$est$msgs[[msg]]$name%>}
 
 <<r, results="asis">>=
-cat(readRDS("<%=res$est[[step]]$res[[animal]][[scenario]]$messages[[msg]]$message%>"))
+cat("<%=res$est[[step]]$res[[animal]][[scenario]]$est$msgs[[msg]]$msg%>")
 @
 
 <% } %>
+
+<% } %>
+<% } %> 
+
+
+<%# ========================== Properties %>
+<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$properties)) { %>
+<% for (p in res$est[[step]]$res[[animal]][[scenario]]$properties) { %>
+
+<% if (!is.null(p$name)) { %>
+
+\subsubsection{<%=propertyLookup[propertyLookup$short == p$name, 'long']%>}
+
+
+<%# -------------------------- message -%>
+<% if (!is.null(p$mgs)) { %>
+
+<% for (msg in seq_along(p$mgs)) { %>
+
+<% if (!is.null(p$mgs[[msg]]$name)) { %>
+
+\paragraph{ <%=p$msgs[[msg]]$message%>}
+<<r, results="asis">>=
+cat(readRDS("<%=p$mgs[[msg]]$name%>"))
+@
+
+<% } %>
+
+<% } %>
 <% } %>
 
 
+
+<%# -------------------------- plots -%>
+<% if (!is.null(p$plots)) { %>
+
+<% for (plt in seq_along(p$plots)) { %>
+\begin{figure}[!htb]
+\centering
+  \includegraphics[width=0.7\textwidth]{<%=normalizePath(p$plots[[plt]]$plotPNG, winslash="/")%>}
+  \caption{<%=p$plots[[plt]]$name%>}
+\end{figure}
+\FloatBarrier
+
+
 <% } %>
+<% } %>
+
+
+<%# -------------------------- table -%>
+<% if (!is.null(p$tables)) { %>
+
+<% for (tbl in seq_along(p$tables)) { %>
+
+<<results="asis">>=
+bktbs <- xtable(readRDS("<%=normalizePath(p$tables[[tbl]]$path, winslash="/")%>"), 
+caption = "<%=p$tables[[tbl]]$name%>")
+hlns <- c(-1, 0, nrow(bktbs))
+print(bktbs, booktabs=TRUE, hline.after=hlns, table.placement="!h", include.rownames=FALSE, 
+)
+@
+\FloatBarrier
+
+<% } %>
+<% } %>
+
+<% } # end of properties %> 
+
+
+<% } %>
+<% } %> 
 
 <%# END CYCLE OVER ALL SCENARIOS %>
 <% } %>
 
 <%# END CYCLE OVER ALL ANIMALS %>
+<% } %>
 
 <% } %>
 
-\newpage
 <%} else { %>
-Method was not requested
+\textit{Method was not requested}
 <% } %>
 
 
 <%}%>
 <%# END CYCLE OVER ALL METHODS %>
 
-\chapter{Summary}
-\section{Timing}
-The analysis started at and took 123 mins.
 
-\section{Session Info}
+\section{Summary}
+\subsection{Timing}
+The analysis started at and took <%=runtime[1]%> seconds to run.
+
+\subsection{Run configurations}
+
+<<results="asis">>=
+kable(data.frame(Parameter=names(config$general$content), value=unlist(config$general$content)), row.names=FALSE, format='latex')
+@
+
+\subsection{Fields}
+
+<<results="asis">>=
+kable(data.frame(Parameter=names(config$fields$content), value=gsub('_', '\\\\_', unlist(config$fields$content))), row.names=FALSE, format = 'latex')
+@
+
+\subsection{Session Info}
 For the sake of reproducibility, you should always include your session info. This shows which version of R and different packages you were using. 
 
 <<>>=
@@ -234,6 +268,5 @@ Request for help should be directed to the corresponding user group (rhr-discuss
 
 \subsection{Printing}
 We hope that reports generated with this package will be useful make analysis easier and research more reproducible. By design quiet large pdf can be generated with this package. Please think twice before printing endless pages of preliminary results. 
-
 
 \end{document}

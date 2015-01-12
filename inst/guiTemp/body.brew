@@ -31,9 +31,6 @@ The following table gives an overview of all data that was used for the analysis
 kable(subsetTable)
 ```
 
-
-
-
 ## Spatial Reference System
 The input SRS is: <%=epsgs$input %>. The output SRS is: <%= if (is.na(epsgs$input)) " the same as the input EPSG" else epsgs$output %>.
 

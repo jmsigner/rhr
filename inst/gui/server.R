@@ -20,6 +20,7 @@ library(rgdal)
 library(rhr)
 library(shinyBS)
 library(shiny)
+library(xtable)
 
 shinyServer(function(input, output, session) {
   ## ============================================================================== ##  
@@ -959,9 +960,11 @@ shinyServer(function(input, output, session) {
 
           ## ------------------------------------------------------------------------------ ##  
           ## Clean up
-          file.remove(normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"))
-          file.remove(normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"))
-          file.remove(normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"))
+          if (!debug) {
+            file.remove(normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"))
+            file.remove(normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"))
+            file.remove(normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"))
+          }
           unlink(normalizePath(file.path(outDir, "figure"), mustWork=FALSE, winslash="/"), recursive=TRUE)
 
 
