@@ -27,14 +27,7 @@
 ##' @references Peter N. Laver and Marcella J. Kelly. A critical review of home range studies. The Journal of Wildlife Management, 72(1):290-298, 2008
 
 ##' @export
-##' @examples
-##' \dontrun{
-##' ## calculate home range asymptote for kernel density estimation
-##' ## first calculate the home range
-##' hr <- rhrKDE(datSH[, 2:3], h="href")
-##' hra <- rhrAsymptote(hr)
-##' plot(hra)
-##' }
+##' @example inst/examples/rhrAsymptote.R
 
 
 rhrAsymptote <- function(x, ns=seq(100, nrow(rhrData(x)), 500), nrep=10, tolTotArea=0.05, nTimes=5, sampling="sequential") {

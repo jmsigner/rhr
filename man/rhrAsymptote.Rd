@@ -48,13 +48,25 @@ use random sampling for discontinuous radio tracking data
 and sequential sampling for continuous radio tracking data.
 }
 \examples{
-\dontrun{
-## calculate home range asymptote for kernel density estimation
-## first calculate the home range
-hr <- rhrKDE(datSH[, 2:3], h="href")
-hra <- rhrAsymptote(hr)
-plot(hra)
-}
+library(rhr)
+data(datSH)
+
+kde <- rhrKDE(datSH[, 2:3])
+kdeA <- rhrAsymptote(kde)
+plot(kdeA)
+
+## This takes some time
+kdeA <- rhrAsymptote(kde, ns = seq(10, nrow(datSH), 20), nrep = 20)
+plot(kdeA)
+
+## With MCP
+mcp <- rhrMCP(datSH[, 2:3])
+mcpA <- rhrAsymptote(mcp)
+plot(mcpA)
+
+## This takes some time
+mcpA <- rhrAsymptote(mcp, ns = seq(10, nrow(datSH), 20), nrep = 20)
+plot(mcpA)
 }
 \references{
 Harris, S., et al. "Home-range analysis using
