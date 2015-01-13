@@ -5,7 +5,7 @@
 
 ## clean everything 
 rm(list=ls())
-debug <- FALSE
+debug <- TRUE
 if (debug) {
   .datFromR <- NULL
   outDir <- "/tmp"
@@ -370,7 +370,8 @@ shinyServer(function(input, output, session) {
 
   output$subsetUI <- renderUI({
     if (succesfullyFinishedS2()) {
-      bbx <- bbox(data2()$dat)
+      bbx <- bbox(rgeos::gBuffer(data2()$dat,
+                                 width = max(apply(bbox(data2()$dat), 1, diff)) * 0.01))
       uis <- list(
         sliderInput("subsetXSlider", "X-Range", bbx[1, 1], bbx[1, 2], value=bbx[1, ]), 
         sliderInput("subsetYSlider", "Y-Range", bbx[2, 1], bbx[2, 2], value=bbx[2, ])
@@ -480,7 +481,9 @@ shinyServer(function(input, output, session) {
 
   output$subsetPlot <- renderPlot({
     if (!is.null(data3())) {
-      plot(data2()$dat, col=adjustcolor("black", 0.1), pch=19, asp=1)
+      plot(rgeos::gBuffer(rgeos::gEnvelope(data2()$dat),
+                          width = max(apply(bbox(data2()$dat), 1, diff)) * 0.01), border = NA)
+      points(data2()$dat, col=adjustcolor("black", 0.1), pch=19)
       points(data3()$dat, col="red")
       axis(1)
       axis(2)
