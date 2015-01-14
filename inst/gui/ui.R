@@ -78,7 +78,7 @@ shinyUI(
                                                          helpText("This requires a working LaTeX installation on your machine"), 
                                                          hr(), 
                                                          checkboxInput("configOutputCpWd", "Copy all results to the current working directory",
-                                                                       value=TRUE),
+                                                                       value=FALSE),
                                                          helpText("All files will be copied into a new directory in current working directory"), 
                                                          hr()
                                                          ## checkboxInput("configOutputZip", "Compress all results into a zip file", value=TRUE)

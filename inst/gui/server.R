@@ -370,7 +370,7 @@ shinyServer(function(input, output, session) {
 
   output$subsetUI <- renderUI({
     if (succesfullyFinishedS2()) {
-      bbx <- bbox(rgeos::gBuffer(data2()$dat,
+      bbx <- bbox(rgeos::gBuffer(rgeos::gEnvelope(data2()$dat),
                                  width = max(apply(bbox(data2()$dat), 1, diff)) * 0.01))
       uis <- list(
         sliderInput("subsetXSlider", "X-Range", bbx[1, 1], bbx[1, 2], value=bbx[1, ]), 
@@ -989,21 +989,21 @@ shinyServer(function(input, output, session) {
           ##   setwd(ow)
           ## }
 
-          ## if (config()$general$content$doCp) {
-          ##   dir.create(normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/"))
-          ##   filesNames <- list.files(outDir, full.names=TRUE, recursive=FALSE, ignore.case=TRUE)
-          ##   sapply(filesNames, function(x)
-          ##          file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/")))
+           if (config()$general$content$doCp) {
+             dir.create(normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/"))
+             filesNames <- list.files(outDir, full.names=TRUE, recursive=FALSE, ignore.case=TRUE)
+             sapply(filesNames, function(x)
+                    file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/")))
 
-          ##   for (f in c("data", "plots", "vector", "raster")) {
-          ##     dir.create(normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/"))
-          ##     filesNames <- list.files(normalizePath(file.path(outDir, "results", f), mustWork=FALSE, winslash="/"), full.names=TRUE, recursive=TRUE,
-          ##                              ignore.case=TRUE)
-          ##     sapply(filesNames, function(x)
-          ##            file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/")))
-          ##   }
-          ##   
-          ## }
+             for (f in c("data", "plots", "vector", "raster")) {
+               dir.create(normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/"))
+               filesNames <- list.files(normalizePath(file.path(outDir, "results", f), mustWork=FALSE, winslash="/"), full.names=TRUE, recursive=TRUE,
+                                        ignore.case=TRUE)
+               sapply(filesNames, function(x)
+                      file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/")))
+             }
+             
+           }
 
           createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress5",
                       "Finish",
