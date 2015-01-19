@@ -1,40 +1,16 @@
-## ============================================================================== ##  
-## This program is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
-## 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-## 
-## You should have received a copy of the GNU General Public License
-## along with this program.  If not, see <http://www.gnu.org/licenses/>.
-## ============================================================================== ##
-
 ##' Minimum Convex Polygon (MCP)
 ##'
-##' Computes the minimum convex polygon of a subset of points. First the centroid of the home range is found with \code{rgeos::gCentroid} and then the `100 - levels` points are used to calculate a minimum convex polygon. 
-##' @title rhrMCP
-##' @param xy data.frame with two columns. The first column contains x coordinates and the second column contains y coordinates
-##' @param levels vector with the percentage of closest points to the centroid that are used to calculated MCP
-##' @return object of class \code{RhrMCP}
+##' Function to estimate the minimum convex polygon (MCP) home range. 
+##'
+##' Computes the minimum convex polygon of a subset of points. First the centroid of the home range is found with \code{rgeos::gCentroid} and then the `%-levels` points are used to calculate a minimum convex polygon. 
+##'
+##' @template xy
+##' @template levels
+##' @return Object of class \code{RhrMCP}.
 ##' @export
-##' @author Johannes Signer inspired from \code{adehabitatHR::mcp}
 ##' @seealso \code{adehabitatHR::mcp}, \code{rgeos::gConvexHull}
-##' @examples
-##' data(datSH)
-##' ## Calculate mcp at one level
-##' mcp1 <- rhrMCP(datSH[, 2:3], levels=95)
-##' ## Calculate mcp at several levels
-##' mcp2 <- rhrMCP(datSH[, 2:3], levels=c(50, 90, 95))
-##'
-##' ## Area at each isopleth level
-##' rhrArea(mcp2)
-##'
-##' ## SptialPolygonsDataFrame of isopleth
-##' rhrIsopleths(mcp2)
+##' @example inst/examples/rhrMCP.R
+
 rhrMCP <- function(xy, levels=95) {
 
   ## ============================================================================== ##  

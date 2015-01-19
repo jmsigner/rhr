@@ -8,15 +8,20 @@ rhrKDE(xy, h = rhrHref(xy)$h, levels = 95,
   100, res = NULL))
 }
 \arguments{
-  \item{xy}{\code{data.frame} with two columns: x and y
-  coordinates.}
+  \item{xy}{Instance of \code{data.frame},
+  \code{SpatialPoints}, \code{SpatialPointsDataFrame} or
+  \code{RhrMappedData}. If \code{xy} is is a
+  \code{data.frame}, then the first two columns are assumed
+  to be the \code{x} and \code{y} coordinates of the
+  relocations.}
 
   \item{h}{character ("href" or "hlscv") specifying the
   method to estimate the bandwidth or numeric value
   specifying the bandwidth.}
 
-  \item{levels}{A numeric vector, indicating isopleths of
-  KDE.}
+  \item{levels}{Numeric \code{vector} indicating
+  percentages at which the home range estimates should be
+  evaluated.}
 
   \item{trast}{a \code{RasterLayer} used as an template for
   the output grid.}

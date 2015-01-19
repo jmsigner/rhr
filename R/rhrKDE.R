@@ -4,11 +4,10 @@
 ##'
 ##' Kernels densities are estimated with \code{KernSmooth::bkde2d}. This is a binned approximation of 2D kernel density estimates (see \code{?KernSmooth::bkde2d} for more details. 
 ##'
-##' @param xy \code{data.frame} with two columns: x and y coordinates.
+##' @template xy
+##' @template levels
 ##' @param h character ("href" or "hlscv") specifying the method to estimate the bandwidth or numeric value specifying the bandwidth.
 ##' @param trast a \code{RasterLayer} used as an template for the output grid.
-##' @param levels A numeric vector, indicating isopleths of KDE. 
-##'
 ##' @seealso \code{KernSmooth::bkde2d}, \code{rhr::rhrHref}, \code{rhr::rhrHlscv}, \code{rhr::rhrHpi}
 ##' @return object of class \code{RhrHREstimator}
 ##' @import Rcpp ggplot2 grid maptools methods rgdal

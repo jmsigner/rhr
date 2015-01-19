@@ -1,11 +1,13 @@
-##' Returns the levels of RhrEst object
+##' Level(s) of Home Range Estimate
 ##'
-##' @title rhrLevels
-##' @param x object of class RhrEst
-##' @param ... not implemented 
-##' @return vector
+##' Function to retrieve the levels of a home range estimate. 
+##'
+##' @template RhrEst
+##' @param ... none implemented.
+##' @return Numeric \code{vector} with the levels.
 ##' @export
-##' @author Johannes Signer
+##' @example inst/examples/rhrLevels.R
+
 rhrLevels <- function (x , ...) {
   UseMethod ("rhrLevels", x)
 }
@@ -17,5 +19,9 @@ rhrLevels.default <- function (x , ...) {
 
 ##' @export
 rhrLevels.RhrProbEst <- function (x , ...) {
-  message("Probabilistic estimators: to get home range at specific level call 'rhrArea(est, level=95)', or 'rhrIsopleths(est, level=95)' to get contour lines.")
+  if (is.null(x$args$levels)) {
+    message("Probabilistic estimators: to get home range at specific level call 'rhrArea(est, level=95)', or 'rhrIsopleths(est, level=95)' to get contour lines.")
+  } else {
+    x$args$levels
+  }
 }

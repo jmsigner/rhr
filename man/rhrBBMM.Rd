@@ -8,11 +8,11 @@ rhrBBMM(xy, time, rangesigma1 = c(0, 10000), sigma2 = 123,
   100, res = NULL))
 }
 \arguments{
-  \item{xy}{\code{data.frame} with two columns: x and y
-  coordinates.}
+  \item{xy}{\code{Data.frame} with two columns containing x
+  and y coordinates.}
 
   \item{time}{a vector with time stamps for each
-  relocation.}
+  relocation, must be of the same length as \code{xy}.}
 
   \item{rangesigma1}{parameter 1}
 
@@ -25,8 +25,7 @@ rhrBBMM(xy, time, rangesigma1 = c(0, 10000), sigma2 = 123,
 object of class \code{RhrBBMM}
 }
 \description{
-A function to estimate home ranges with kernel density
-estimation.
+A wrapper around \code{adehabitatHR::kernelbb}.
 }
 \author{
 Johannes Signer
