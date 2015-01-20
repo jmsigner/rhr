@@ -1,11 +1,17 @@
-##' Returns the isopleths of RhrEst object
+##' Isopleths of Home Range Estimate
 ##'
-##' @title rhrIsopleths
-##' @param x object of class RhrEst
-##' @param ... see description
-##' @return SpatialPolygonsDataFrame
+##' Function to retrieve isopleths of a home range estimate. 
+##'
+##' Probabilistic estimators take (i.e. kernel density estimates) take
+##' an additional argument, \code{levels}, that determines which isopleth are
+##' returned.
+##'
+##' @template RhrEst
+##' @param ... see details.
+##' @return \code{SpatialPolygonsDataFrame} 
 ##' @export
-##' @author Johannes Signer
+##' @example inst/examples/rhrIsopleths.R
+
 rhrIsopleths <- function (x, ...) {
   UseMethod ("rhrIsopleths", x)
 }

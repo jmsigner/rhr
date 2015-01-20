@@ -1,35 +1,19 @@
 ##' Kernel Density Estimation (KDE)
 ##'
-##' A function to estimate home ranges with kernel density estimation. 
+##' Function to estimate home ranges with kernel density estimation. 
 ##'
 ##' Kernels densities are estimated with \code{KernSmooth::bkde2d}. This is a binned approximation of 2D kernel density estimates (see \code{?KernSmooth::bkde2d} for more details. 
 ##'
 ##' @template xy
 ##' @template levels
-##' @param h character ("href" or "hlscv") specifying the method to estimate the bandwidth or numeric value specifying the bandwidth.
-##' @param trast a \code{RasterLayer} used as an template for the output grid.
+##' @param h Numeric \code{vector} with the bandwidth of the kernel. A scalar value will be applied to both dimensions.
+##' @template trast
 ##' @seealso \code{KernSmooth::bkde2d}, \code{rhr::rhrHref}, \code{rhr::rhrHlscv}, \code{rhr::rhrHpi}
-##' @return object of class \code{RhrHREstimator}
+##' @return Object of class \code{RhrKDE}
 ##' @import Rcpp ggplot2 grid maptools methods rgdal
 ##' @export
 ##' 
-##' @examples
-##' data(datSH)
-##' \dontrun{ 
-##' # Kernel with href bandwidth estimation
-##' k1 <- rhrKDE(datSH[, 2:3], h="href", res=100)
-##' plot(k1)
-##' 
-##' # what is the actually estimated bandwidth?
-##' k1$parameters$h
-##' 
-##' # Kernel with href bandwidth estimation
-##' k2 <- rhrKDE(datSH[, 2:3], h="lscv", res=100)
-##' plot(k2)
-##' 
-##' # what is the actually estimated bandwidth?
-##' k2$parameters$h
-##' }
+##' @example inst/examples/rhrKDE.R
 
 rhrKDE <- function(xy,
                    h=rhrHref(xy)$h, levels = 95, 
@@ -133,7 +117,7 @@ rhrCUD.RhrKDE <- function(x, ...) {
 rhrIsopleths.RhrKDE <- function(x, levels=NULL, ...) {
 
   if (is.null(levels)) {
-    levels <- x$args$levels
+    levels <- rhrLevels(x)
   } 
 
   levels <- rhrCheckLevels(levels)
@@ -171,7 +155,7 @@ plot.RhrKDE <- function(x, levels = NULL, addIsopleths=TRUE, ...) {
     levels <- x$args$levels
   } 
   
-  plot(rhrUD(x))
+  plot(rhrUD(x), ...)
   if (addIsopleths) {
     plot(rhrIsopleths(x, levels), add=TRUE)
   }

@@ -1,12 +1,14 @@
-##' Returns the area of RhrEst object
+##' Return Data
 ##'
-##' @title rhrData
-##' @param x object of class RhrEst
-##' @param spatial logical value indicating whether or not to return spatial points
-##' @param ... not implemented
-##' @return data.frame
+##' Function to retrieve data that were used generate the estimate.
+##'
+##' @template RhrEst
+##' @param ... none implemented.
+##' @param spatial Logical value indicating whether or not to return \code{SpatialPoints}.
+##' @return Depending on the argument, either a \code{data.frame} or \code{SpatialPointsDataFrame}.
 ##' @export
-##' @author Johannes Signer
+##' @example inst/examples/rhrData.R
+
 rhrData <- function (x, spatial=FALSE, ...) {
   UseMethod ("rhrData", x)
 }

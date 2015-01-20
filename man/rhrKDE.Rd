@@ -15,22 +15,22 @@ rhrKDE(xy, h = rhrHref(xy)$h, levels = 95,
   to be the \code{x} and \code{y} coordinates of the
   relocations.}
 
-  \item{h}{character ("href" or "hlscv") specifying the
-  method to estimate the bandwidth or numeric value
-  specifying the bandwidth.}
+  \item{h}{Numeric \code{vector} with the bandwidth of the
+  kernel. A scalar value will be applied to both
+  dimensions.}
 
   \item{levels}{Numeric \code{vector} indicating
   percentages at which the home range estimates should be
   evaluated.}
 
-  \item{trast}{a \code{RasterLayer} used as an template for
-  the output grid.}
+  \item{trast}{Instance of \code{RasterLayer} that serves
+  as a template for the resulting grid of the estimation.}
 }
 \value{
-object of class \code{RhrHREstimator}
+Object of class \code{RhrKDE}
 }
 \description{
-A function to estimate home ranges with kernel density
+Function to estimate home ranges with kernel density
 estimation.
 }
 \details{
@@ -40,22 +40,20 @@ of 2D kernel density estimates (see
 \code{?KernSmooth::bkde2d} for more details.
 }
 \examples{
+library(rhr)
 data(datSH)
-\dontrun{
-# Kernel with href bandwidth estimation
-k1 <- rhrKDE(datSH[, 2:3], h="href", res=100)
-plot(k1)
 
-# what is the actually estimated bandwidth?
-k1$parameters$h
+## KDE with default settings. h defaults to reference bandwidth
+kde1 <- rhrKDE(datSH[, 2:3])
+kde2 <- rhrKDE(datSH[, 2:3], h = rhrHpi(datSH[, 2:3])$h)
+kde3 <- rhrKDE(datSH[, 2:3], h = rhrHlscv(datSH[, 2:3])$h)
+kde4 <- rhrKDE(datSH[, 2:3], h = rhrHrefScaled(datSH[, 2:3])$h)
 
-# Kernel with href bandwidth estimation
-k2 <- rhrKDE(datSH[, 2:3], h="lscv", res=100)
-plot(k2)
-
-# what is the actually estimated bandwidth?
-k2$parameters$h
-}
+par(mfrow = c(2, 2))
+plot(kde1, main = "h = ref")
+plot(kde2, main = "h = plug-in-the-equation")
+plot(kde3, main = "h = least-square-cross validation")
+plot(kde4, main = "h = ad hoc")
 }
 \seealso{
 \code{KernSmooth::bkde2d}, \code{rhr::rhrHref},
