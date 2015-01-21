@@ -1,40 +1,28 @@
-## ============================================================================== ##  
-## This program is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
-## 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-## 
-## You should have received a copy of the GNU General Public License
-## along with this program.  If not, see <http://www.gnu.org/licenses/>.
-## ============================================================================== ##
-
 ##' Local Convex Hull (LoCoH)
 ##'
-##' This function estimates an animals home range using Local Convex Hulls (LoCoH).
+##' Function to estimate home ranges with local convex hulls.
 ##'
-##' @param xy data.frame with two columns. The first column contains x coordinates and the second column contains y coordinates.
-##' @param type character value, one of k, r, a. Three methods to select which neighbours are used for local hulls are availabe: i) k-nearest neighbours; ii) neighbours within a radius r; iii) neighbours within a cummulative dististance a.
-##' @param n numeric value, if type is k it is the number of neaerst neibhers, if type is r it is the radius that is searched and if type is a it is the cummulative distance to be used.
-##' @param minPts numeric value, the minimum number of neighbours required.
-##' @param autoN boolean, determine \code{n} automatically. This take precedence over n, but is set to \code{FALSE} by default.
-##' @param levels numeric vector, indicating desired isopleths.
-##' @details Three different types available for determining the number of neighbors:
+##' Three different methods to determine the neighboring points are available:
 ##' \itemize{
-##'  \item{"k"}{uses the k nearest neighbours}
-##'  \item{"r"}{uses all neighbours within a radius r}
-##'  \item{"a"}{uses all neighbours that can be reached within a distance a. The distance to all points is calculated and then the cummulatively summed starting from the smallest until \code{a} is reached.}}.
-##' \code{autoN} is the square root of all locations, if \code{type} is "k". If \code{type} is "a" then "n" will be the maximum distance between any two relocations. If \code{type} is "r" the distance of "n" will be 5% of the maximum distance between any two points.
-##' @return object of class \code{RhrHREstimator}
-##' @author Johannes Signer 
+##'  \item{"k"}{uses k-nearest neighbors}
+##'  \item{"r"}{uses all neighbors within a radius r}
+##'  \item{"a"}{uses all neighbors that can be reached within a distance a. The distance to all points is calculated and then cummulatively summed starting from the smallest until \code{a} is reached.}}.
+##' \code{autoN} attempts to estimate values for the tuning parameters k,r,a.
+##' If \code{type} is \code{"k"} then \code{"n"} is the square root of all locations.
+##' If \code{type} is \code{"a"} then \code{"n"} is the maximum distance between any two relocations.
+##' If \code{type} is \code{"r"} then \code{"n"} is 5 % of the maximum distance between any two relocations.
+##'
+##' @template xy 
+##' @param type Scalar character, one of "k", "r", "a". Method to determine the tuning parameter \code{n}. 
+##' @param n Numeric scalar, value of the tuning parameter.
+##' @param minPts Numeric scalar, the minimum number of neighbors required.
+##' @param autoN Boolean scalar, whether or not \code{n} should be determined automatically.
+##' @template levels 
+##' @return Object of class \code{RhrLoCoH}
 ##' @references Getz, W. M., & Wilmers, C. C. (2004). A local nearest-neighbor convex-hull construction of home ranges and utilization distributions. _Ecography_, 27(4), 489-505.
 ##' @references Getz, W. M., Fortmann-Roe, S., Cross, P. C., Lyons, A. J., Ryan, S. J., & Wilmers, C. C. (2007). LoCoH: nonparameteric kernel methods for constructing home ranges and utilization distributions. _PloS one_, 2(2), e207.
 ##' @export
-##' @examples
+##' @example inst/examples/rhrLoCoH.R
 ##' \dontrun{
 ##' data(datSH)
 ##' locoh <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
