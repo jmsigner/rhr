@@ -1,4 +1,4 @@
-library(datSH)
+library(rhr)
 data(datSH)
 
 kde <- rhrKDE(datSH[, 2:3])
