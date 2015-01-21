@@ -26,9 +26,6 @@
 
 rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
 
-  ## ============================================================================== ##  
-  ## Start
-
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
@@ -41,9 +38,9 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
   } else {
     sp::CRS(NA_character_)
   }
+
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
-  ## input checking
   ## type
   if (!type %in% c("a", "k", "r")) {
     stop("rhrLocoh: incorrect type")
@@ -60,15 +57,14 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
   ## determine n automatically and overwrite
   if (autoN) {
     if (type == "k") {
-      n <- round(sqrt(nrow(xy)))
+      args$n <- n <- round(sqrt(nrow(xy)))
     }
     if (type == "a") {
-      n <- round(max(dist(xy)))
+      args$n <- n <- round(max(dist(xy)))
     }
     if (type == "r") {
-      n <- round(max(dist(xy)) * 0.05)
+      args$n <- n <- round(max(dist(xy)) * 0.05)
     }
-    
   }
   
   ## calculation

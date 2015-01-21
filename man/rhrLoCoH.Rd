@@ -62,16 +62,13 @@ plot(rhrIsopleths(locoh1))
 plot(rhrIsopleths(locoh2), border = "red", add = TRUE)
 plot(rhrIsopleths(locoh3), border = "blue", add = TRUE)
 
-locoh4 <- rhrLoCoH(datSH[, 2:3], type="k", n=10, autoN = TRUE)
-locoh4
-locoh5 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
-locoh7 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
-locoh8 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
-locoh9 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
-locoh10 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
+locoh4 <- rhrLoCoH(datSH[, 2:3], type = "k", autoN = TRUE)
+rhrTuningParameter(locoh4)
+rhrTuningParameter(locoh4, msg = TRUE)
 
-## area at isopleths
-rhrArea(locoh)
+locoh5 <- rhrLoCoH(datSH[, 2:3], type="a", autoN = TRUE)
+rhrTuningParameter(locoh5)
+
 }
 \references{
 Getz, W. M., & Wilmers, C. C. (2004). A local
