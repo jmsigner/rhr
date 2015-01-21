@@ -160,3 +160,13 @@ plot.RhrKDE <- function(x, levels = NULL, addIsopleths=TRUE, ...) {
     plot(rhrIsopleths(x, levels), add=TRUE)
   }
 }
+
+##' @export
+rhrTuningParameter.RhrKDE <- function (x, msg = FALSE, digits = 3, ...) {
+  if (msg) {
+    paste0("Value of tuning parameter h: ", paste0(round(x$args$h, digits), collapse = ", "))
+  } else {
+    list(name = "h",
+         value = x$args$h)
+  }
+}

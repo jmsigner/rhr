@@ -23,19 +23,6 @@
 ##' @references Getz, W. M., Fortmann-Roe, S., Cross, P. C., Lyons, A. J., Ryan, S. J., & Wilmers, C. C. (2007). LoCoH: nonparameteric kernel methods for constructing home ranges and utilization distributions. _PloS one_, 2(2), e207.
 ##' @export
 ##' @example inst/examples/rhrLoCoH.R
-##' \dontrun{
-##' data(datSH)
-##' locoh <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
-##'
-##' ## area at isopleths
-##' rhrArea(locoh)
-##'
-##' ## get isopleths
-##' iso <- isopleths(locoh)
-##'
-##' ## Which parameter were used?
-##' parameters(locoh)
-##' }
 
 rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
 
@@ -221,6 +208,16 @@ rhrArea.RhrLoCoH <- function(x, ...) {
 ##' @export
 rhrLevels.RhrLoCoH <- function(x, ...) {
   x$args$levels
+}
+
+##' @export
+rhrTuningParameter.RhrLoCoH <- function (x, msg = FALSE, digits = 3, ...) {
+  if (msg) {
+    paste0("Value of tuning parameter ", x$args$type, ": ", round(x$args$n, digits))
+  } else {
+    list(name = x$args$type,
+         value = x$args$n)
+  }
 }
 
 ##' @export

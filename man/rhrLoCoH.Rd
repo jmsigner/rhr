@@ -7,69 +7,71 @@ rhrLoCoH(xy, type = "k", n = 10, levels = 95, minPts = 3,
   autoN = FALSE)
 }
 \arguments{
-  \item{xy}{data.frame with two columns. The first column
-  contains x coordinates and the second column contains y
-  coordinates.}
+  \item{xy}{Instance of \code{data.frame},
+  \code{SpatialPoints}, \code{SpatialPointsDataFrame} or
+  \code{RhrMappedData}. If \code{xy} is is a
+  \code{data.frame}, then the first two columns are assumed
+  to be the \code{x} and \code{y} coordinates of the
+  relocations.}
 
-  \item{type}{character value, one of k, r, a. Three
-  methods to select which neighbours are used for local
-  hulls are availabe: i) k-nearest neighbours; ii)
-  neighbours within a radius r; iii) neighbours within a
-  cummulative dististance a.}
+  \item{type}{Scalar character, one of "k", "r", "a".
+  Method to determine the tuning parameter \code{n}.}
 
-  \item{n}{numeric value, if type is k it is the number of
-  neaerst neibhers, if type is r it is the radius that is
-  searched and if type is a it is the cummulative distance
-  to be used.}
+  \item{n}{Numeric scalar, value of the tuning parameter.}
 
-  \item{levels}{numeric vector, indicating desired
-  isopleths.}
+  \item{levels}{Numeric \code{vector} indicating
+  percentages at which the home range estimates should be
+  evaluated.}
 
-  \item{minPts}{numeric value, the minimum number of
-  neighbours required.}
+  \item{minPts}{Numeric scalar, the minimum number of
+  neighbors required.}
 
-  \item{autoN}{boolean, determine \code{n} automatically.
-  This take precedence over n, but is set to \code{FALSE}
-  by default.}
+  \item{autoN}{Boolean scalar, whether or not \code{n}
+  should be determined automatically.}
 }
 \value{
-object of class \code{RhrHREstimator}
+Object of class \code{RhrLoCoH}
 }
 \description{
-This function estimates an animals home range using Local
-Convex Hulls (LoCoH).
+Function to estimate home ranges with local convex hulls.
 }
 \details{
-Three different types available for determining the number
-of neighbors: \itemize{ \item{"k"}{uses the k nearest
-neighbours} \item{"r"}{uses all neighbours within a radius
-r} \item{"a"}{uses all neighbours that can be reached
-within a distance a. The distance to all points is
-calculated and then the cummulatively summed starting from
-the smallest until \code{a} is reached.}}. \code{autoN} is
-the square root of all locations, if \code{type} is "k". If
-\code{type} is "a" then "n" will be the maximum distance
-between any two relocations. If \code{type} is "r" the
-distance of "n" will be 5% of the maximum distance between
-any two points.
+Three different methods to determine the neighboring points
+are available: \itemize{ \item{"k"}{uses k-nearest
+neighbors} \item{"r"}{uses all neighbors within a radius r}
+\item{"a"}{uses all neighbors that can be reached within a
+distance a. The distance to all points is calculated and
+then cummulatively summed starting from the smallest until
+\code{a} is reached.}}. \code{autoN} attempts to estimate
+values for the tuning parameters k,r,a. If \code{type} is
+\code{"k"} then \code{"n"} is the square root of all
+locations. If \code{type} is \code{"a"} then \code{"n"} is
+the maximum distance between any two relocations. If
+\code{type} is \code{"r"} then \code{"n"} is 5 % of the
+maximum distance between any two relocations.
 }
 \examples{
-\dontrun{
+library(rhr)
 data(datSH)
-locoh <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
+
+locoh1 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
+locoh2 <- rhrLoCoH(datSH[, 2:3], type="a", n=1000)
+locoh3 <- rhrLoCoH(datSH[, 2:3], type="r", n=100)
+
+plot(rhrIsopleths(locoh1))
+plot(rhrIsopleths(locoh2), border = "red", add = TRUE)
+plot(rhrIsopleths(locoh3), border = "blue", add = TRUE)
+
+locoh4 <- rhrLoCoH(datSH[, 2:3], type="k", n=10, autoN = TRUE)
+locoh4
+locoh5 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
+locoh7 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
+locoh8 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
+locoh9 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
+locoh10 <- rhrLoCoH(datSH[, 2:3], type="k", n=10)
 
 ## area at isopleths
 rhrArea(locoh)
-
-## get isopleths
-iso <- isopleths(locoh)
-
-## Which parameter were used?
-parameters(locoh)
-}
-}
-\author{
-Johannes Signer
 }
 \references{
 Getz, W. M., & Wilmers, C. C. (2004). A local
