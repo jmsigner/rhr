@@ -3,7 +3,6 @@
 ##' Likelihood Cross Validation
 ##'
 ##' @param xy data.frame with two columns: x and y coordinates
-#
 ##' @return \code{vector} of length two
 ##' 
 ##' @author Johannes Signer 

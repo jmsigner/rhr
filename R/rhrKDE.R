@@ -40,10 +40,10 @@ rhrKDE <- function(xy,
     stop("rhrKDE: bandwidth should be numeric")
   } else if (length(h) > 2) {
     warning("rhrKDE: h only first 2 elements used")
-    h <- h[1:2]
+    args$h <- h <- h[1:2]
   } else if(length(h) < 2) {
     warning("rhrKDE: same bandwidth is used in x and y direction")
-    h <- rep(h, 2)
+    args$h <- h <- rep(h, 2)
   }
 
   ## ---------------------------------------------------------------------------- #

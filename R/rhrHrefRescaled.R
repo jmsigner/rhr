@@ -1,22 +1,31 @@
-##' Select a Bandwidth for Kernel Density Estimation
+##' Select a bandwidth for Kernel Density Estimation
 ##'
-##' Find bandwidth that results in n polygons (usually n=1) for a Kernel Density Estimate.
+##' Use two dimensional reference bandwidth to select a bandwidth for kernel density estimation. 
+##' Find the smallest value for bandwidth (h) that results in n polygons
+##' (usually n=1) contiguous polygons at a given level.
 ##'
-##' @param xy A numeric data.frame with columns: x and y coordinates.
-##' @param range A numeric vector of length two, indicating the range of the search area. Be careful, if the search range is to large and trast to small, the algorithm will fail.
-##' @param trast A raster, to act as a template for kernel density estimates. 
-##' @param numOfParts A numeric value indicating the number of polygons desired. This will usually be one.
-##' @param level A numeric value that specifies at which home range level the analysis should be performed.
-##' @param tol A numeric value indicating when the algorithm stops.
-##' @param maxIt A numeric value giving the maximum number of iterations acceptable.
-##' @return list with the found bandwidth and whether or not the methods was successful.
-##' @references Kie, John G. "A rule-based ad hoc method for selecting a bandwidth in kernel home-range analyses." Animal Biotelemetry 1.1 (2013): 1-12. 
-##' @author Johannes Signer
+##' This implementation uses a bisection algorithm to the find the smallest value
+##' value for the kernel bandwidth within \code{range} that produces an home-range
+##' isopleth at \code{level} consisting of \code{n} polygons. Note, no difference is
+##' is made between the two dimensions. 
+##'
+##' @template xy 
+##' @template trast 
+##' @param range Numeric vector, indicating the lower and upper bound of the search range. If \code{range} is to large with regard to \code{trast}, the algorithm will fail.
+##' @param numOfParts Numeric numeric scalar, indicating the number of contiguous  polygons desired. This will usually be one.
+##' @template levels
+##' @param tol Numeric scalar, indicating which difference of to stop.
+##' @param maxIt Numeric scalar, indicating the maximum number of acceptable iterations. 
+##' @return \code{list} with the calculated bandwidth, exit status and the number of iteration.
 ##' @export
+##' @references Kie, John G. "A rule-based ad hoc method for selecting a bandwidth in kernel home-range analyses." Animal Biotelemetry 1.1 (2013): 1-12. 
+##' 
+##' @example inst/examples/rhrHrefScaled.R
+
 rhrHrefScaled <- function(xy,
                           range=rhrHref(xy)$h * c(0.01, 2), 
-                          trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.4), nrow=100, res=NULL),
-                          numOfParts=1, level=95,
+                          trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL),
+                          numOfParts=1, levels=95,
                           tol=0.1,
                           maxIt=500) {
 
@@ -31,8 +40,14 @@ rhrHrefScaled <- function(xy,
     stop("rhrHrefScaled: trast should be a RasterLayer")
   }
 
+  levels <- rhrCheckLevels(levels)
 
-  ## We could use Newton-Raphson type of optimisation here
+  if (length(levels) > 1) {
+    levels <- levels[1]
+    warning("rhrHrefScaled: only first element of levels was used")
+  }
+    
+
 
   hmin <-min(range)
   hmax <- max(range)
@@ -43,7 +58,7 @@ rhrHrefScaled <- function(xy,
     if (i > 1) {
       hcur <- hnew
     }
-    tmpEst <- rhrIsopleths(rhrKDE(xy, h=hcur, trast=trast), levels=level)
+    tmpEst <- rhrIsopleths(rhrKDE(xy, h=hcur, trast=trast, levels=levels))
     allPolys <- slot(slot(tmpEst, "polygons")[[1]], "Polygons")
     nHoles <- sum(!sapply(allPolys, slot, "hole"))
 
@@ -55,12 +70,12 @@ rhrHrefScaled <- function(xy,
       hmin <- hcur
     }
     hnew <- mean(c(hmax, hmin))
-    if (abs(hcur - hnew) <= tol) {
+    if (abs(hcur - hnew) <= tol && nHoles <= numOfParts) {
       success=TRUE
       break
     }
   }
 
-  return(list(h=hcur, success=success))
+  return(list(h=hcur, success=success, niter = i))
 
 }
