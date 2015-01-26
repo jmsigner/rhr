@@ -1,0 +1,8 @@
+library(rhr)
+data(datSH)
+rhrHpi(datSH[, 2:3])
+rhrHpi(datSH[, 2:3], correct = FALSE)
+rhrHpi(datSH[, 2:3], rescale = "unitvar", correct = FALSE)
+rhrHpi(datSH[, 2:3], rescale = "xvar", correct = FALSE)
+rhrHpi(datSH[, 2:3], rescale = "unitvar", correct = TRUE)
+rhrHpi(datSH[, 2:3], rescale = "xvar", correct = TRUE)
