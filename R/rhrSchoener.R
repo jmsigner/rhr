@@ -1,9 +1,9 @@
 ##' Schoener's ratio
-
+##'
 ##' Function to calculate Schoeners V.
-
+##'
 ##' This implementation uses the normal distribution as a sampling distribution. Relocations are ordered by timestamp and then relocations are sampled based on \code{interval}. If relocations are not equally spaced the nearest relocation forward is used.
-
+##'
 ##' @param dat \code{data.frame} with 3 columns. The first column contains x coordinates, the second column contains y coordinates and the third column contains a timestamp as \code{POSIXct}. 
 ##' @param interval Numeric scalar, the interval in seconds.
 ##' @param alpha Numeric scalar, alpha value used to calculate the critical value.
