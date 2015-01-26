@@ -1,16 +1,16 @@
-##' rhrTTSI
+##' Estimate time to statistical independence (TTSI)
 
 ##' This a wrapper around \code{rhrSchoener} to calculate time to statistical indpendence from a series of intervals.
 
-##' @param dat data.frame, with three columns: x and y coordinates and a timestamp in seconds.
-##' @param interval numeric value, the initial interval considered
-##' @param ntimes numeric value, the number of times the critical value needs to be exceeded in order to reach independence.
-##' @param time vector with time stamp for each relocation.
+##' @template xy
+##' @param interval Numeric scalar, initial interval considered.
+##' @param ntimes Numeric scalar, number of times the critical value needs to be exceeded in order to reach independence.
+##' @param time Vector with time stamp for each relocation.
 ##' @param ... further arguments passed to \code{rhrSchoener}.
-##' @return \code{vector} vector of length three. V is Schoeners v, n the number of points and m the number of point pairs considered to calculated t2.
+##' @return \code{list} with the original data, the intervals considered, if and when time to statistical independence was reached and the call.
 ##' @export
-##' @author Johannes Signer 
 ##' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, Ecology, 66(4), 1176 - 1184
+##' @example  inst/examples/exrhrTTSI.R
 
 rhrTTSI <- function(dat, time, interval, ntimes=3, ...) {
 

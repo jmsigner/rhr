@@ -19,16 +19,14 @@ rhrHpi(xy, rescale = "none", correct = TRUE, ...)
   y coordinate to variance of x and \code{none}, the
   default, uses the raw data.}
 
-  \item{correct}{logical value that indicates whether or
+  \item{correct}{Logical scalar that indicates whether or
   not the estimate should be correct for the two
-  dimensional case, see details.}
+  dimensional case.}
 
   \item{...}{additional arguments passed to
   \code{KernSmooth::dpik}.}
 }
 \value{
-\code{vector} of length two
-
 \code{list} with the calculated bandwidth, the
 standardization method and \code{correction}.
 }

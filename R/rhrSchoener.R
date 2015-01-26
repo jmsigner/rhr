@@ -1,11 +1,14 @@
 ##' Schoener's ratio
 
-##' @param dat data.frame with 3 columns. The first column contains x coordinates, the second column contains y coordinates and the third column contains a timestamp as \code{POSIXct}. 
-##' @param interval numeric value, the interval in seconds.
-##' @param alpha numeric value, alpha value used to calculate the critical value.
-##' @param minM numeric value, the minimum number of pairs required, if m is smaller than this argument it will return \code{NA}.
-##' @param consec locagical value, indicates whether or not the observations are consecutive or not.
-##' @note This implementation uses the normal distribution as a sampling distribution. Relocations are ordered by timestamp and then relocations are sampled based on \code{interval}. In cases when relocations are not spaced equally, i.e. no relocation is available exactly at the interval, the relocation directly thereafter is used.
+##' Function to calculate Schoeners V.
+
+##' This implementation uses the normal distribution as a sampling distribution. Relocations are ordered by timestamp and then relocations are sampled based on \code{interval}. If relocations are not equally spaced the nearest relocation forward is used.
+
+##' @param dat \code{data.frame} with 3 columns. The first column contains x coordinates, the second column contains y coordinates and the third column contains a timestamp as \code{POSIXct}. 
+##' @param interval Numeric scalar, the interval in seconds.
+##' @param alpha Numeric scalar, alpha value used to calculate the critical value.
+##' @param minM Numeric scalar, the minimum number of pairs required, if m is smaller than this argument it will return \code{NA}.
+##' @param consec Locagical scalar, indicates whether or not the observations are consecutive or not.
 ##' @return \code{vector} vector of length six. 
 ##' \itemize{
 ##'  \item{"V"}{Schoeners V}
@@ -17,8 +20,8 @@
 ##' }
 ##' @useDynLib rhr
 ##' @export
-##' @author Johannes Signer 
 ##' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, _Ecology_, 66(4), 1176 - 1184
+##' @example inst/examples/exrhrSchoener.R
 
 rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
 
