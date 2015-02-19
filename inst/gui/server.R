@@ -660,7 +660,7 @@ shinyServer(function(input, output, session) {
     if (!is.null(data4())) {
       rgs <- apply(bbox(data4()$dat), 1, diff)
       rgs <- c(rgs / 10, rgs / 500)
-      sliderInput("gridResSlider", "Resolution", min(rgs), max(rgs), mean(rgs))
+      sliderInput("gridResSlider", "Resolution", if(min(rgs) < 100) 1 else min(rgs), max(rgs), mean(rgs))
     }
   })
 
@@ -683,15 +683,15 @@ shinyServer(function(input, output, session) {
 
   output$printGrid <- renderPrint({
     cat(
-      " Number of rows:    ", nrow(trast()), "\n",
+      "Number of rows:    ", nrow(trast()), "\n",
       "Number of columns: ", ncol(trast()), "\n",
       "Resolution:        ", paste0(raster::res(trast()), collapse=", "))
   })
 
   output$gridPlot <- renderPlot({
     if (!is.null(data4())) {
-      plot(rhrUD(rhrKDE(data4()$dat[if (length(data4()$dat) < 100) sample(length(data4()$dat, 100)) else 1:length(data4()$dat), ],
-                        trast=trast())))
+      xx <- if (length(data4()$dat) < 100) sample(length(data4()$dat), 100) else TRUE
+      plot(rhrUD(rhrKDE(data4()$dat[xx), ], trast=trast()))
     }
   })
 
