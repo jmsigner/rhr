@@ -98,7 +98,7 @@ shinyUI(
                                                          helpText("The buffer is in output units"), 
                                                          h3("Currently used buffer"), 
                                                          plotOutput("configOuputGridBufferPlot"), 
-                                                         h2("Currently selected grid"),
+                                                         h2("Specify resolution and number of rows/columns"),
                                                          helpText("A grid can be created based on either number of rows and number of columns, or based on a provided resolution. Note, at the moment only quadratic pixels are supported, this means that the actual number of rows/columns, maybe slightly different to the one provided."),
                                                          selectInput("configOutputGridGrid", "Create output grid based on:", choices=c("number of rows and columns" = "pixel", "resolution" = "res"), 
                                                                      selectize=FALSE),
