@@ -660,7 +660,7 @@ shinyServer(function(input, output, session) {
     if (!is.null(data4())) {
       rgs <- apply(bbox(data4()$dat), 1, diff)
       rgs <- c(rgs / 10, rgs / 500)
-      sliderInput("gridResSlider", "Resolution", if(min(rgs) < 100) 1 else min(rgs), max(rgs), mean(rgs))
+      sliderInput("gridResSlider", "Resolution", if(min(rgs) < 100) 0.5 else min(rgs), max(rgs), mean(rgs))
     }
   })
 
@@ -673,7 +673,7 @@ shinyServer(function(input, output, session) {
       if (input$configOutputGridGrid == "pixel") {
         return(rhrRasterFromExt(ext, nrow=input$gridNColSlider, ncol=input$gridNRowSlider, res=NULL))
       } else {
-        return(rhrRasterFromExt(ext, nrow=NULL, ncol=NULL, res=input$gridResSlider))
+        return(rhrRasterFromExt(ext, nrow=NULL, ncol=NULL, res=ceiling(input$gridResSlider)))
       }
     } else {
       return(NULL)
@@ -683,7 +683,7 @@ shinyServer(function(input, output, session) {
 
   output$printGrid <- renderPrint({
     cat(
-      "Number of rows:    ", nrow(trast()), "\n",
+      " Number of rows:    ", nrow(trast()), "\n",
       "Number of columns: ", ncol(trast()), "\n",
       "Resolution:        ", paste0(raster::res(trast()), collapse=", "))
   })
@@ -691,7 +691,7 @@ shinyServer(function(input, output, session) {
   output$gridPlot <- renderPlot({
     if (!is.null(data4())) {
       xx <- if (length(data4()$dat) < 100) sample(length(data4()$dat), 100) else TRUE
-      plot(rhrUD(rhrKDE(data4()$dat[xx), ], trast=trast()))
+      plot(rhrUD(rhrKDE(data4()$dat[xx, ], trast=trast())))
     }
   })
 
