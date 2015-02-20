@@ -82,7 +82,7 @@ rhrExtFromPoints <- function(xy, buffer=NULL, extendRange=NULL) {
     }
 
     if (length(buffer) == 2) {
-      warning("rhrExtFromPoints: first element used as xbuffer and second as ybuffer")
+      message("rhrExtFromPoints: first element used as xbuffer and second as ybuffer")
     } else {
       buffer <- rep(buffer, 2)
     }
