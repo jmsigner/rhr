@@ -112,8 +112,6 @@ shinyUI(
                                                            uiOutput("gridResUi")
                                                            ), 
                                                          h3("Currently used grid"),
-                                                         helpText("Kernel density estimate (href) of 100 randomly selected points (among all ids) to preview the chosen grid."), 
-                                                         plotOutput("gridPlot"), 
                                                          verbatimTextOutput("printGrid")
                                                          ), 
                                                 tabPanel("Levels",
