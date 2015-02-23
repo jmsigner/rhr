@@ -683,9 +683,11 @@ shinyServer(function(input, output, session) {
 
   output$printGrid <- renderPrint({
     cat(
-      " Number of rows:    ", nrow(trast()), "\n",
+      " Number of rows:   ", nrow(trast()), "\n",
       "Number of columns: ", ncol(trast()), "\n",
-      "Resolution:        ", paste0(raster::res(trast()), collapse=", "))
+      "Resolution:        ", paste0(raster::res(trast()),  collapse=", "), "\n",
+      "Number of cells:   ", raster::ncell(trast())
+    )
   })
 
 
