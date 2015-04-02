@@ -1,0 +1,1 @@
+##' @param rescale Scalar character, indicating if and if how data are rescaled. \code{unitvar} rescales x and y coordinates to unit variance, \code{xvar} rescales x and y coordinate to variance of x and \code{none}, the default, uses the raw data.
