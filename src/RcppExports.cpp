@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // t2cpp3
 NumericVector t2cpp3(NumericVector t, int interval);
-RcppExport SEXP rhrBase_t2cpp3(SEXP tSEXP, SEXP intervalSEXP) {
+RcppExport SEXP rhr_t2cpp3(SEXP tSEXP, SEXP intervalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -19,7 +19,7 @@ END_RCPP
 }
 // binnedCV
 NumericVector binnedCV(NumericVector xs, NumericVector ys, NumericVector freq, NumericVector hs);
-RcppExport SEXP rhrBase_binnedCV(SEXP xsSEXP, SEXP ysSEXP, SEXP freqSEXP, SEXP hsSEXP) {
+RcppExport SEXP rhr_binnedCV(SEXP xsSEXP, SEXP ysSEXP, SEXP freqSEXP, SEXP hsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -33,7 +33,7 @@ END_RCPP
 }
 // unbinnedCV
 NumericVector unbinnedCV(NumericVector xs, NumericVector ys, NumericVector hs);
-RcppExport SEXP rhrBase_unbinnedCV(SEXP xsSEXP, SEXP ysSEXP, SEXP hsSEXP) {
+RcppExport SEXP rhr_unbinnedCV(SEXP xsSEXP, SEXP ysSEXP, SEXP hsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -46,7 +46,7 @@ END_RCPP
 }
 // meanSquaredDistance
 NumericVector meanSquaredDistance(NumericVector x, NumericVector y, double mx, double my);
-RcppExport SEXP rhrBase_meanSquaredDistance(SEXP xSEXP, SEXP ySEXP, SEXP mxSEXP, SEXP mySEXP) {
+RcppExport SEXP rhr_meanSquaredDistance(SEXP xSEXP, SEXP ySEXP, SEXP mxSEXP, SEXP mySEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -60,7 +60,7 @@ END_RCPP
 }
 // simpleRandomWalk
 List simpleRandomWalk(float sx, float sy, NumericVector sinA, NumericVector cosA, NumericVector d);
-RcppExport SEXP rhrBase_simpleRandomWalk(SEXP sxSEXP, SEXP sySEXP, SEXP sinASEXP, SEXP cosASEXP, SEXP dSEXP) {
+RcppExport SEXP rhr_simpleRandomWalk(SEXP sxSEXP, SEXP sySEXP, SEXP sinASEXP, SEXP cosASEXP, SEXP dSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;

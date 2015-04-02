@@ -25,8 +25,6 @@
 
 rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
 
-  ## Debugging
-
   if (ncol(dat) < 3) {
     stop("rhrSchoener: dat: three columns are required")
   }
@@ -46,7 +44,7 @@ rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
     warning("In rhrSchoener: removed duplicates")
   }
 
-  which <- rhrBase::rhrBaseIntervalSubset(as.numeric(dat[,3]), interval)
+  which <- rhrBaseIntervalSubset(as.numeric(dat[,3]), interval)
 
   dat <- dat[as.logical(which),]
   m <- nrow(dat) - 1
