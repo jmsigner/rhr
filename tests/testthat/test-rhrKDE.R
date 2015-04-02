@@ -47,7 +47,7 @@ test_that("KDE works", {
   expect_true(all(sapply(ests, function(x) class(x$args)) == "list"))
   expect_true(all(sapply(ests, function(x) class(x$res)) == "list"))
   expect_true(all(sapply(ests, function(x) inherits(x$res$hr, "RasterLayer"))))
-  expect_equal(sum(sapply(ests, function(x) tryCatch(rhrLevels(x), message=function(m) return(TRUE)))), 7)
+  expect_true(all((xx <- sapply(ests, function(x) rhrLevels(x))) == mean(xx)))
   expect_equal(sd(unlist(sapply(ests, rhrArea)[2, ])), 0)
   expect_equal(sum(sapply(lapply(ests, function(x) proj4string(x$res$hr)), is.na)), 5)
   expect_equal(sum(sapply(lapply(ests, function(x) proj4string(rhrUD(x))), is.na)), 5)
