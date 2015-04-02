@@ -10,6 +10,7 @@
 ##' @param inUnit character; units of the input
 ##' @param outUnit character; units of the output
 ##' @param outDir character; path to the directory where the results are saved.
+##' @param report logica; indicating if a report should be created. 
 ##' @return List
 ##' @export
 ##' @author Johannes Signer
@@ -18,7 +19,9 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                           outDir=file.path(tempdir(), paste0("rhr", format(Sys.time(), "%Y%m%d%H%M%S"))),
                           inGUI=FALSE,
                           inUnit="ido",
-                          outUnit="ius" 
+                          outUnit="ius", 
+                          report = TRUE, 
+                          createPDF = FALSE
                           ## dataMan = NULL
                           ## vectorFormats=c("shp", "kml"),
                           ## rasterFormats=c("tif")
@@ -44,6 +47,8 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
   ## ------------------------------------------------------------------------------ ##  
   ## Functions
+  
+  startTime <- Sys.time()
 
   ## check args and fill with default one
   checkArgs <- function(args, defaultArgs, toCheck) {
@@ -189,7 +194,21 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
     saveRDS(sfp, file=fnRDS)
     return(fnRDS)
   }
-
+  
+  ## ------------------------------------------------------------------------------ ##  
+  ## Lookup
+  
+  methodLookup <- data.frame(
+    short=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrLoCoH", "rhrBBMM", "rhrUniNorm", "rhrBiNorm"),
+    long=c("Site Fidelity", "Time to Statistical Independence", "Minimum Convex Polygon", "Kernel Density Estimation",
+           "Local Convex Hull", "Brownian Bridges", "Unimodal bivariate Normal", "Bimodal bivariate Normal"),
+    stringsAsFactors=FALSE)
+  
+  propertyLookup <- data.frame(
+    short=c("area", "asymptote", "corearea"),
+    long=c("Home Range Area", "Home Range Asymptote", "Home Range Core Area"), 
+    stringsAsFactors=FALSE)
+  
   ## ------------------------------------------------------------------------------ ##  
   ## Properties of a HR-Estimate
 
@@ -460,19 +479,6 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
   ## ============================================================================== ##  
   ## Summary of data
-
-  ## ------------------------------------------------------------------------------ ##  
-  ## Prep data
-
-  ## if (!is.null(dataMan)) {
-    ## Spatial
-
-    ## Temproal
-
-    ## Id
-
-    ## Reproject
-  ## }
 
   resList$summary <- list()
 
@@ -889,5 +895,68 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
     ## Parameters
     resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
   }
+  
+  runtime <- Sys.time() - startTime
+  
+  ## ------------------------------------------------------------------------------ ##  
+  ## ------------------------------------------------------------------------------ ##  
+  
+  if (report) {
+    ## html report
+    files <- system.file("guiTemp", package="rhr")
+    brewEnv <- list2env(list(
+      config=args, 
+      runtime=runtime,
+      res=resList,
+      baseDir=outDir,
+      steps=what, 
+      dat=datIn,
+      methodLookup=methodLookup, 
+      startTime = startTime
+    ))
+
+    knitEnv <- list2env(list(
+      config=args, 
+      dat=datIn
+    ))
+
+    src <- capture.output(brew::brew(file=normalizePath(file.path(files, "body.brew"), winslash="/", mustWork=FALSE), 
+                                     output=stdout(), envir=brewEnv))
+    
+    foo <- knitr::knit(text=src, output=normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"), quiet=TRUE,
+                envir=knitEnv)
+    
+    markdown::markdownToHTML(
+      output=normalizePath(file.path(outDir, "rhrReport.html"), mustWork=FALSE, winslash="/"), 
+      file=normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"), 
+      stylesheet=normalizePath(file.path(files, "style.css"), mustWork=FALSE, winslash="/"),
+      template=normalizePath(file.path(files, "index.html"), mustWork=FALSE, winslash="/"))
+    
+    ### pdf
+    if (createPDF) {
+      brew::brew(file=normalizePath(file.path(files, "report_brew.tex"), mustWork=FALSE, winslash="/"),
+                 output=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
+                 envir=brewEnv)
+      
+      knitr::knit(input=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
+                  output=normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"), 
+                  quiet=TRUE,
+                  envir=knitEnv)
+      
+      ow <- setwd(outDir)
+      createPDF <- tools::texi2pdf("rhrReport.tex", clean=TRUE)
+      setwd(ow)
+    }
+    
+    ## ------------------------------------------------------------------------------ ##  
+    ## Clean up
+    for (file in c("rhrReport.Rnw", "rhrReport.Rmd", "rhrReport.tex")) {
+      if (file.exists(normalizePath(file.path(outDir, file), mustWork = FALSE, winslash = "/"))) 
+        file.remove(normalizePath(file.path(outDir, file), mustWork = FALSE, winslash = "/"))
+    }
+    
+    unlink(normalizePath(file.path(outDir, "figure"), mustWork=FALSE, winslash="/"), recursive=TRUE)
+  }
+  
   return(resList)
 }

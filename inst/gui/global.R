@@ -46,13 +46,3 @@ config <- list(
     )
   )
 
-methodLookup <- data.frame(
-  short=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrLoCoH", "rhrBBMM", "rhrUniNorm", "rhrBiNorm"),
-  long=c("Site Fidelity", "Time to Statistical Independence", "Minimum Convex Polygon", "Kernel Density Estimation",
-    "Local Convex Hull", "Brownian Bridges", "Unimodal bivariate Normal", "Bimodal bivariate Normal"),
-  stringsAsFactors=FALSE)
-
-propertyLookup <- data.frame(
-  short=c("area", "asymptote", "corearea"),
-  long=c("Home Range Area", "Home Range Asymptote", "Home Range Core Area"), 
-  stringsAsFactors=FALSE)

@@ -23,7 +23,7 @@ set.seed(123)
 x <- rnorm(500)
 y <- rnorm(500)
 
-msd <- rhrBaseMSD(x, y)
+msd <- rhr:::rhrBaseMSD(x, y)
 }
 \references{
 \url{http://www.esajournals.org/doi/abs/10.2307/1937590}

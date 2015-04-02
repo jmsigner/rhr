@@ -4,6 +4,7 @@
 
 ```{r setup, include=FALSE}
 library(knitr)
+library(xtable)
 opts_chunk$set(warning=FALSE, message=FALSE, echo=FALSE)
 opts_knit$set(base.dir="<%=normalizePath(baseDir, winslash="/")%>")
 ```
@@ -13,7 +14,7 @@ opts_knit$set(base.dir="<%=normalizePath(baseDir, winslash="/")%>")
   # #################################### -%>
 
 <header><h1>Home range analysis with rhr</h1>
-	<p>This is an automatically generated report summarizing from a range analysis with rhr started: [<%=starttime%>]</p>
+	<p>This is an automatically generated report summarizing from a range analysis with rhr started: [<%=as.character(startTime)%>]</p>
 </header>
 
 # General Information
@@ -31,8 +32,6 @@ The following table gives an overview of all data that was used for the analysis
 kable(subsetTable)
 ```
 
-## Spatial Reference System
-The input SRS is: <%=epsgs$input %>. The output SRS is: <%= if (is.na(epsgs$input)) " the same as the input EPSG" else epsgs$output %>.
 
 
 <%# ####################################

@@ -66,14 +66,11 @@ options(width=65)
 
 \section{General Information}
 \subsection{Relocations}
-<<results='asis'>>=
-bktbs <- xtable(relocTable)
-hlns <- c(-1, 0, nrow(bktbs))
-print(bktbs, booktabs=TRUE, hline.after=hlns, table.placement="!h", include.rownames=FALSE)
-@
-
-\subsection{Spatial Reference System}
-The input SRS was: <%=epsgs$input %>. The output SRS was: <%=epsgs$output %>.
+%<<results='asis'>>=
+%bktbs <- xtable(relocTable)
+%hlns <- c(-1, 0, nrow(bktbs))
+%print(bktbs, booktabs=TRUE, hline.after=hlns, table.placement="!h", include.rownames=FALSE)
+%@
 
   
 <%# ####################################
@@ -242,9 +239,9 @@ The analysis started at and took <%=runtime[1]%> seconds to run.
 
 \subsection{Run configurations}
 
-<<results="asis">>=
-kable(data.frame(Parameter=names(config$general$content), value=unlist(config$general$content)), row.names=FALSE, format='latex')
-@
+%<<results="asis">>=
+%kable(data.frame(Parameter=names(config$general$content), value=unlist(config$general$content)), row.names=FALSE, format='latex')
+%@
 
 \subsection{Fields}
 
