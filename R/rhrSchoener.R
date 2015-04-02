@@ -31,7 +31,7 @@ rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
     stop("rhrSchoener: dat: three columns are required")
   }
 
-  ## User my not provide fixes in the right order, reorder them
+  ## User may not provide fixes in the right order, reorder them
   dat <- dat[order(dat[, 3]), ]
 
   alpha <- rhrCheckNumber(alpha, "alpha", from=0, to=1)
@@ -46,7 +46,7 @@ rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
     warning("In rhrSchoener: removed duplicates")
   }
 
-  which <- t2cpp3(as.numeric(dat[,3]), interval)
+  which <- rhrBase::rhrBaseIntervalSubset(as.numeric(dat[,3]), interval)
 
   dat <- dat[as.logical(which),]
   m <- nrow(dat) - 1

@@ -117,7 +117,7 @@ shinyUI(
                                                 tabPanel("Levels",
                                                          h2("Specify levels"), 
                                                          helpText("Some estimators (e.g. Kernel Density Estimation) require a grid for the results. Here you can specify this grid. The same grid will be used for all animals in the analysis."), 
-                                                         helpText("Levels"),
+                                                         helpText("Levels can be specified either as single number or comma seperated lists (e.g., '10,50,95'). Range from 1 to 100 is permitted, all other values will default back to 95"),
                                                          textInput("configGlobalLevel", "Levels:", "50,95")
                                                          ), 
                                                 well=FALSE)
@@ -258,7 +258,7 @@ shinyUI(
                                checkboxGroupInput("runSteps2", "Select Steps",
                                                   choices=c(
                                                     "Core Area" = "rhrCoreArea" )), 
-                               bsActionButton("rhrAnalyze", label="Analyze", disabled=TRUE, size="large", style="primary")
+                               bsButton("rhrAnalyze", label="Analyze", disabled=TRUE, size="large", style="primary")
                                ),
                         column(width=5,
                                bsAlert("rhrAnalyzeInfo"), 

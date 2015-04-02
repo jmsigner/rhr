@@ -11,7 +11,6 @@
 ##' @return A list of class \code{RhrMappedData}. The list contains the following elements: \code{dat} (SpatialPointsDataFrame, with the data), \code{hasTS} (logical vector indicating if there is a timestamp) and a list that gives information about the number of missing and duplicated points. 
 ##' @export 
 ##' @example examples/exrhrMapFields.R
-##' @author Johannes Signer
 rhrMapFields <- function(dat, fields=list(lon=NA, lat=NA, id=NA, date=NA, time=NA),
                          projString=NULL, dateFormat="ymd", timeFormat="hms",
                          defaultId="Animal_1") {

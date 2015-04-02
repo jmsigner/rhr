@@ -6,7 +6,6 @@
 ##' @param range numeric vector with different candidate h values. 
 ##' @param whichMin A character indicating if the \code{global} or \code{local} minimum should be searched for.
 ##' @param rescale A character, indicating if and if how data are rescaled. \code{unitvar} rescales x and y coordinates to unit variance, \code{xvar} rescales x and y coordinate to variance of x and \code{none} uses the raw data.
-##' @param binned whether or not a binned version is used or not. 
 ##' @param trast A RasterLayer with the desired extent and resolution.
 
 
@@ -42,7 +41,7 @@
 ##' }
 
 rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2), length.out=100))), 
-                     whichMin="global", rescale="none", binned=FALSE,
+                     whichMin="global", rescale="none",
                      trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
   ## Some input validation
@@ -58,13 +57,6 @@ rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
 
   if (!rescale %in% c("unitvar", "xvar", "none")) {
     stop("rhrHlscv: scale: not one of unit, sd or none")
-  }
-
-  if (binned) {
-    ## count
-    wei <- raster::rasterize(xy, trast, fun="count")
-    wei <- raster::rasterToPoints(wei)
-    xy <- data.frame(wei[, 1:2])
   }
 
 
@@ -86,11 +78,7 @@ rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
 
   converged <- TRUE
 
-  if (binned) {
-    res <- binnedCV(xs, ys, wei[, 3], range)
-  } else {
-    res <- unbinnedCV(xs, ys, range)
-  }
+  res <- rhrBase::rhrBaseLSCV(xs, ys, range)
 
 
   if (whichMin == "global") {

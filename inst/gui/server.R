@@ -83,8 +83,8 @@ shinyServer(function(input, output, session) {
   observe({
     createAlert(session, "alertLoadData", "a1",
                 "Reading Input Data",
-                message=data()$message,
-                type=if(data()$exitStatus == 1) "error" else "success",
+                content=data()$message,
+                style=if(data()$exitStatus == 1) "error" else "success",
                 dismiss=TRUE,
                 append=FALSE)
   })
@@ -155,8 +155,8 @@ shinyServer(function(input, output, session) {
     if (!succesfullyFinishedS1()) {
       createAlert(session, "alertMapFields", "remapFieldsA1",
                   "Mapping Fields",
-                  message="Data must be read before remapping", 
-                  type="info", 
+                  content = "Data must be read before remapping", 
+                  style="info", 
                   dismiss=FALSE,
                   append=FALSE)
     } else {
@@ -253,15 +253,15 @@ shinyServer(function(input, output, session) {
                   dat2$dat <- sp::spTransform(dat2$dat, CRS(paste0("+init=epsg:", input$configOutEpsg)))
                   createAlert(session, "rhrReproject", "rhrReproject1",
                               "Reproject",
-                              message="Data successfully reprojected", 
-                              type="success", 
+                              content ="Data successfully reprojected", 
+                              style="success", 
                               dismiss=TRUE,
                               append=FALSE)
                 } else {
                   createAlert(session, "rhrReproject", "rhrReproject1",
                               "Reproject",
-                              message="Output EPSG not valid, won't reproject data", 
-                              type="error", 
+                              content = "Output EPSG not valid, won't reproject data", 
+                              style="error", 
                               dismiss=TRUE,
                               append=FALSE)
                   
@@ -346,15 +346,15 @@ shinyServer(function(input, output, session) {
     if (!hasTime()) {
       createAlert(session, "generalNoTimeTTSI", "generalNoTimeTTSI1",
                   "Please provide date and time",
-                  message="This method requires date and time of relocations, but it was not provided", 
-                  type="error", 
+                  content ="This method requires date and time of relocations, but it was not provided", 
+                  style="error", 
                   dismiss=FALSE,
                   append=FALSE)
 
       createAlert(session, "generalNoTimeBBMM", "generalNoTimeBBMM1",
                   "Please provide date and time",
-                  message="This method requires date and time of relocations, but it was not provided", 
-                  type="error", 
+                  content = "This method requires date and time of relocations, but it was not provided", 
+                  style="error", 
                   dismiss=FALSE,
                   append=FALSE)
     } else {
@@ -690,6 +690,19 @@ shinyServer(function(input, output, session) {
     )
   })
 
+  ## -------------------------------------------------------------------------- ##
+  ## levels
+
+  observe({
+    xx <- tryCatch(all(is.numeric(rhr:::rhrCheckLevels(
+      strsplit(input$configGlobalLevel, ",")[[1]]))), 
+                   error = function(e) return(FALSE))
+    
+    if (!xx) {
+      updateTextInput(session, "configGlobalLevel", value = "95")
+    }
+  })
+
 
   ## ------------------------------------------------------------------------------ ##  
   ## locoh
@@ -752,8 +765,8 @@ shinyServer(function(input, output, session) {
         if ("rhrTTSI" %in% c(input$runSteps, input$runSteps2) & !hasTime()) {
           createAlert(session, "rhrRunNoTimeTTSI", "rhrRunNoTimeTTSI1",
                       "Time to statistical independence",
-                      message="Date and time are required", 
-                      type="error", 
+                      content = "Date and time are required", 
+                      style="error", 
                       dismiss=FALSE,
                       append=FALSE)
           updateButton(session, "rhrAnalyze", disable=TRUE)
@@ -763,8 +776,8 @@ shinyServer(function(input, output, session) {
         if ("rhrBBMM" %in% c(input$runSteps, input$runSteps2) & !hasTime()) {
           createAlert(session, "rhrRunNoTimeBBMM", "rhrRunNoTimeBBMM1",
                       "Brownian Bridges Movement Model",
-                      message="Date and time are required", 
-                      type="error", 
+                      content = "Date and time are required", 
+                      style="error", 
                       dismiss=FALSE,
                       append=FALSE)
           updateButton(session, "rhrAnalyze", disable=TRUE)
@@ -857,8 +870,8 @@ shinyServer(function(input, output, session) {
         
         createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress1",
                     "Starting Analysis",
-                    message=paste0("[", Sys.time(), "] Preparing the analysis"), 
-                    type="info", 
+                    content = paste0("[", Sys.time(), "] Preparing the analysis"), 
+                    style="info", 
                     dismiss=FALSE,
                     append=FALSE)
 
@@ -871,7 +884,7 @@ shinyServer(function(input, output, session) {
           createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress2",
                       "Starting Calculations",
                       message=paste0("[", Sys.time(), "] Starting with calculations, this may take some time"), 
-                      type="info", 
+                      style="info", 
                       dismiss=FALSE,
                       append=TRUE)
 
@@ -892,8 +905,8 @@ shinyServer(function(input, output, session) {
 
           createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress3",
                       "Report",
-                      message=paste0("[", Sys.time(), "] Generating report"), 
-                      type="info", 
+                      content = paste0("[", Sys.time(), "] Generating report"), 
+                      style="info", 
                       dismiss=FALSE,
                       append=TRUE)
 
@@ -972,7 +985,7 @@ shinyServer(function(input, output, session) {
           ## createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress4",
           ##             "Zip-file",
           ##             message=paste0("[", Sys.time(), "] Zipping all results"), 
-          ##             type="info", 
+          ##             style="info", 
           ##             dismiss=FALSE,
           ##             append=TRUE)
 
@@ -1003,8 +1016,8 @@ shinyServer(function(input, output, session) {
 
           createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress5",
                       "Finish",
-                      message=paste0("[", Sys.time(), "] Finished analysis"), 
-                      type="info", 
+                      content =paste0("[", Sys.time(), "] Finished analysis"), 
+                      style="info", 
                       dismiss=FALSE,
                       append=TRUE)
           
@@ -1013,8 +1026,8 @@ shinyServer(function(input, output, session) {
       } else {
         createAlert(session, "rhrAnalyzeInfo", "rhrAnalyzeInfo1",
                     "Not ready yet",
-                    message="Please load and remap the data before you try to run an analysis", 
-                    type="error", 
+                    content ="Please load and remap the data before you try to run an analysis", 
+                    style="error", 
                     dismiss=TRUE,
                     append=FALSE)
       }
