@@ -9,101 +9,77 @@ using namespace Rcpp;
 List rcpp_hello_world();
 RcppExport SEXP rhr_rcpp_hello_world() {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        List __result = rcpp_hello_world();
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(rcpp_hello_world());
+    return __result;
 END_RCPP
 }
 // binnedCV
 NumericVector binnedCV(NumericVector xs, NumericVector ys, NumericVector freq, NumericVector hs);
 RcppExport SEXP rhr_binnedCV(SEXP xsSEXP, SEXP ysSEXP, SEXP freqSEXP, SEXP hsSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type xs(xsSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type ys(ysSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type freq(freqSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type hs(hsSEXP );
-        NumericVector __result = binnedCV(xs, ys, freq, hs);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type xs(xsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type ys(ysSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type freq(freqSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type hs(hsSEXP);
+    __result = Rcpp::wrap(binnedCV(xs, ys, freq, hs));
+    return __result;
 END_RCPP
 }
 // unbinnedCV
 NumericVector unbinnedCV(NumericVector xs, NumericVector ys, NumericVector hs);
 RcppExport SEXP rhr_unbinnedCV(SEXP xsSEXP, SEXP ysSEXP, SEXP hsSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type xs(xsSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type ys(ysSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type hs(hsSEXP );
-        NumericVector __result = unbinnedCV(xs, ys, hs);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type xs(xsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type ys(ysSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type hs(hsSEXP);
+    __result = Rcpp::wrap(unbinnedCV(xs, ys, hs));
+    return __result;
 END_RCPP
 }
 // t2cpp3
 NumericVector t2cpp3(NumericVector t, int interval);
 RcppExport SEXP rhr_t2cpp3(SEXP tSEXP, SEXP intervalSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP );
-        Rcpp::traits::input_parameter< int >::type interval(intervalSEXP );
-        NumericVector __result = t2cpp3(t, interval);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< int >::type interval(intervalSEXP);
+    __result = Rcpp::wrap(t2cpp3(t, interval));
+    return __result;
 END_RCPP
 }
 // simpleRandomWalk
 List simpleRandomWalk(NumericVector sx, NumericVector sy, NumericVector sinA, NumericVector cosA, NumericVector d);
 RcppExport SEXP rhr_simpleRandomWalk(SEXP sxSEXP, SEXP sySEXP, SEXP sinASEXP, SEXP cosASEXP, SEXP dSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type sx(sxSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type sy(sySEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type sinA(sinASEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type cosA(cosASEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type d(dSEXP );
-        List __result = simpleRandomWalk(sx, sy, sinA, cosA, d);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type sx(sxSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type sy(sySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type sinA(sinASEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type cosA(cosASEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type d(dSEXP);
+    __result = Rcpp::wrap(simpleRandomWalk(sx, sy, sinA, cosA, d));
+    return __result;
 END_RCPP
 }
 // meanSquaredDistance
 NumericVector meanSquaredDistance(NumericVector x, NumericVector y, double mx, double my);
 RcppExport SEXP rhr_meanSquaredDistance(SEXP xSEXP, SEXP ySEXP, SEXP mxSEXP, SEXP mySEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP );
-        Rcpp::traits::input_parameter< double >::type mx(mxSEXP );
-        Rcpp::traits::input_parameter< double >::type my(mySEXP );
-        NumericVector __result = meanSquaredDistance(x, y, mx, my);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type mx(mxSEXP);
+    Rcpp::traits::input_parameter< double >::type my(mySEXP);
+    __result = Rcpp::wrap(meanSquaredDistance(x, y, mx, my));
+    return __result;
 END_RCPP
 }
