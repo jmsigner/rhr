@@ -21,6 +21,13 @@ rhrSiteFidelity <- function(dat, n=100, alpha=0.05) {
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
+  
+  ## functin for later
+  li <- function(x, y) {
+    line.distance   <- sqrt((x[1] - x[length(x)])^2 + (y[1] - y[length(y)])^2)
+    walked.distance <- sum(sqrt((x[-1] - x[-length(x)])^2 + (y[-1] - y[-length(y)])^2))
+    return(line.distance / walked.distance)
+  }
 
   ## --------------------------------------------------------------------------- #
   ## Some argument checking
@@ -33,7 +40,7 @@ rhrSiteFidelity <- function(dat, n=100, alpha=0.05) {
   y <- dat[, 2]
   
   ## simulate n random walks
-  a <- replicate(n, rhrBase::rhrBasePRW(x, y), simplify=FALSE)
+  a <- replicate(n, rhrBasePRW(x, y), simplify=FALSE)
 
   ## msd 
   msdDat <- rhrBaseMSD(x, y)
@@ -101,12 +108,3 @@ plot.RhrSiteFidelity <- function(x, plotit=TRUE, ...) {
 
  
 
-## ------------------------------------------------------------------------------ ##  
-## Function to calc linearity
-
-li <- function(x, y) {
-  d               <- cumdist(x,y)
-  line.distance   <- sqrt((x[1] - x[length(x)])^2 + (y[1] - y[length(y)])^2)
-  walked.distance <- sum(d)
-  return(line.distance / walked.distance)
-}

@@ -68,7 +68,7 @@ rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
 
   converged <- TRUE
 
-  res <- rhrBase::rhrBaseLSCV(xs, ys, range)
+  res <- rhrBaseLSCV(xs, ys, range)
 
 
   if (whichMin == "global") {

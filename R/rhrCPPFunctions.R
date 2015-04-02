@@ -4,8 +4,6 @@
 #'
 #' @param ts Numeric vector, the time stamps in seconds.
 #' @param int Numeric scalar, the minimum time in seconds that two observations need to be separated.
-#' @export
-#' @import Rcpp
 #' @return A logcial vector of length \code{length(ts)}, indicating if a given observation is seperated from the last chosen one by int.
 #' @example inst/examples/rhrBaseIntervalSubset.R
 
@@ -31,9 +29,6 @@ rhrBaseIntervalSubset <- function(ts, int) {
 #' @param x Numeric vector, the x coordinates.
 #' @param y Numeric vector, the y cooridnates.
 #' @param h Numeric vector, candidate bandwidth.
-#' @export
-#' @import Rcpp
-#' @useDynLib rhrBase
 #' @return Numeric vector, the score value for each of the proposed candidate bandwidths.
 #' @references \url{http://www.esajournals.org/doi/abs/10.2307/2265701}
 #'
@@ -61,8 +56,6 @@ rhrBaseLSCV <- function(x, y, h) {
 #' @param y Numeric vector, the y coordinates
 #' @return Numeric matrix with the x and y coordinates of the new path.
 #' @references \url{http://www.esajournals.org/doi/abs/10.2307/1937590}
-
-#' @export
 #' @example inst/examples/rhrBaseMSD.R
 
 rhrBaseMSD <- function(x, y) {
@@ -88,8 +81,6 @@ rhrBaseMSD <- function(x, y) {
 #' @param y Numeric vector, the y coordinates.
 #' @return Numeric matrix with the x and y coordinates of the new path.
 #' @references \url{http://www.esajournals.org/doi/abs/10.2307/1939170}
-
-#' @export
 #' @example inst/examples/rhrBasePRW.R
 
 rhrBasePRW <- function(x, y) {

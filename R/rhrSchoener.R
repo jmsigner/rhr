@@ -56,7 +56,7 @@ rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
 
   t2 <- 1/m * (sum((dat[1:(nrow(dat) - 1), 1] - dat[2:nrow(dat), 1])^2) +
                sum((dat[1:(nrow(dat) - 1), 2] - dat[2:nrow(dat), 2])^2))
-  r2 <- msd(dat[,1], dat[,2])
+  r2 <- rhrBaseMSD(dat[,1], dat[,2])
   V <- t2/r2
   
   ## Eccentricity (as defined in Swihart and Slade 1985, p. 1177)
