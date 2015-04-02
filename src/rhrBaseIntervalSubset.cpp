@@ -1,11 +1,10 @@
 #include <Rcpp.h>
 #include <cmath>
-
 using namespace Rcpp;
 
 // [[Rcpp::export]]
 NumericVector t2cpp3(NumericVector t, int interval) {
-     
+
   int n = t.size();
   NumericVector included(n);
   included[0] = 1;

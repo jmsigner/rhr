@@ -23,23 +23,23 @@ NumericVector binnedCV(NumericVector xs, NumericVector ys, NumericVector freq, N
   for (int i = 0; i < n1; ++i) {
     n3 += freq[i];
   }
-		
+
   // Calculate distances and weights, only once
   for(int i = 0; i < n1; ++i) {
     for (int j = 0; j < n1; ++j) {
       if (i <= j) {
-	dists[at] = sqrt(pow(xs[i] - xs[j], 2.0) + pow(ys[i] - ys[j], 2.0));
+        dists[at] = sqrt(pow(xs[i] - xs[j], 2.0) + pow(ys[i] - ys[j], 2.0));
 
-	if (i != j) {
-	  fdists[at] = (2 * freq[i] * freq[j]);
-	} else {
-	  fdists[at] = freq[i] * freq[j];
-	}
-	at++;
+        if (i != j) {
+          fdists[at] = (2 * freq[i] * freq[j]);
+        } else {
+          fdists[at] = freq[i] * freq[j];
+        }
+        at++;
       }
     }
   }
-	
+
 
   // Cycle over all h's
   for (int i = 0; i < nh; ++i) {
@@ -52,7 +52,7 @@ NumericVector binnedCV(NumericVector xs, NumericVector ys, NumericVector freq, N
       double ft = exp(-pow(d, 2.0) / (4.0 * pow(h, 2.0)));
       double st = 4.0 * exp(-pow(d, 2.0)/(2.0 * pow(h, 2.0)));
       out += ((ft - st) * fdists[j]);
-    	
+
     }
 
     // ft: first term
@@ -72,28 +72,25 @@ NumericVector unbinnedCV(NumericVector xs, NumericVector ys, NumericVector hs) {
 
   double pi = 3.13149265358; // just a constant pi
   int n = ys.size();
-  int n1 = (ys.size() * (ys.size() - 1)) / 2;
+  int n1 = (ys.size() * (ys.size() - 1)) / 2;  // number of pairs
 
-  int at = 0;
-
-  int nh = hs.size();
+  int nh = hs.size();  // candidate h's
+  int at = 0;  // the h I am testing now
 
   NumericVector outh(nh);
   NumericVector dists(n1);
   NumericVector fdists(n1);
 
-  // Calculate distances 
+  // Calculate distances
   for(int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       if (i < j) {
-	dists[at] = sqrt(pow(xs[i] - xs[j], 2.0) + pow(ys[i] - ys[j], 2.0));
-	at++;
+        dists[at] = sqrt(pow(xs[i] - xs[j], 2.0) + pow(ys[i] - ys[j], 2.0));
+        at++;
       }
     }
   }
-	
 
- 
   // Cycle over all h's
   for (int i = 0; i < nh; ++i) {
 

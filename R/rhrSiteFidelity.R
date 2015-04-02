@@ -32,18 +32,12 @@ rhrSiteFidelity <- function(dat, n=100, alpha=0.05) {
   x <- dat[, 1]
   y <- dat[, 2]
   
-  ## cumulative distance
-  d <- cumdist(x, y)
-
-  ## resample
-  d <- sample(d)
-
   ## simulate n random walks
-  a <- replicate(n, randomWalk(x[1], y[1], d, runif(length(d), 0, 360)), simplify=FALSE)
+  a <- replicate(n, rhrBase::rhrBasePRW(x, y), simplify=FALSE)
 
   ## msd 
-  msdDat <- msd(x, y)
-  msdSim <- sapply(a, function(x) msd(x[,1], x[,2]))
+  msdDat <- rhrBase::rhrBaseMSD(x, y)
+  msdSim <- sapply(a, function(x) rhrBase::rhrBaseMSD(x[, 1], x[, 2]))
 
   ## li
   liDat <- li(x, y)
@@ -108,29 +102,7 @@ plot.RhrSiteFidelity <- function(x, plotit=TRUE, ...) {
  
 
 ## ------------------------------------------------------------------------------ ##  
-## Some functions
-
-cumdist <- function(x,y) {
-  return(sqrt((x[-1] - x[-length(x)])^2 + (y[-1] - y[-length(y)])^2))
-}
-
-
-randomWalk <- function(sx, sy, d, rA) {
-  rA  <- rA # runif(n, 0, 360)
-  sinrA <- sin(rA * pi/180)
-  cosrA <- cos(rA * pi/180)
-
-  res <- simpleRandomWalk(sx, sy, sinrA, cosrA, d)
-
-  return(cbind(res[["rx"]], res[["ry"]]))
-}
-
-
-msd <- function(x, y) {
-  mx  <- mean(x)
-  my  <- mean(y)
-  meanSquaredDistance(x, y, mx, my)
-}
+## Function to calc linearity
 
 li <- function(x, y) {
   d               <- cumdist(x,y)
