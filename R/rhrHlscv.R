@@ -9,7 +9,7 @@
 ##' @param trast A RasterLayer with the desired extent and resolution.
 
 
-##' @details Function to calcualte least square cross validation bandwidth. This implementation is based on Seaman and Powell (1996). Additionally a binned version of the algorithm is available. This should be faster for large datasets containing serval thousands of relocations. If \code{whichMin} is \code{"global"} the global minimum is returned, else the local minimum with the largest candidate bandwidth is returned.
+##' @details Function to calcualte least square cross validation bandwidth. This implementation is based on Seaman and Powell (1996).  If \code{whichMin} is \code{"global"} the global minimum is returned, else the local minimum with the largest candidate bandwidth is returned.
 
 ##' @return \code{vector} of length two
 ##' @export
@@ -21,7 +21,6 @@
 
 ##' @examples 
 ##' \dontrun{
-##' ## Unbinned version
 ##' data(datSH)
 ##' hlscv <- rhrHlscv(datSH[1:1000, 2:3])
 ##'
@@ -29,15 +28,6 @@
 ##' x <- datSH[, 2]
 ##' y <- datSH[, 3]
 ##' 
-##' ## Create a binned grid
-##' trast <- raster(xmn=round(min(x)) - 100, xmx=round(max(x)) + 100,
-##'                 ymn=round(min(y)) - 100, ymx=round(max(y)) + 100,
-##'                 nrow=250, ncol=250)
-##' 
-##' freq <- rasterize(cbind(xs, ys), trast, fun="count")
-##' freq <- rasterToPoints(freq)
-##' hlscvb <- rhrHlscv(datSH[1:1000, 2:3], binned=TRUE)
-##'
 ##' }
 
 rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2), length.out=100))), 
@@ -99,7 +89,7 @@ rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
   } else {
     h <- c(h, h)
   }
-  list(h=h, converged=converged, res=res, whichMin=whichMin, rescale=rescale, binned=binned, range=range)
+  list(h=h, converged=converged, res=res, whichMin=whichMin, rescale=rescale, range=range)
 }
 
 ## Helper function from: http://stackoverflow.com/questions/6836409/finding-local-maxima-and-minima
