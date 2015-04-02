@@ -36,8 +36,8 @@ rhrSiteFidelity <- function(dat, n=100, alpha=0.05) {
   a <- replicate(n, rhrBase::rhrBasePRW(x, y), simplify=FALSE)
 
   ## msd 
-  msdDat <- rhrBase::rhrBaseMSD(x, y)
-  msdSim <- sapply(a, function(x) rhrBase::rhrBaseMSD(x[, 1], x[, 2]))
+  msdDat <- rhrBaseMSD(x, y)
+  msdSim <- sapply(a, function(x) rhrBaseMSD(x[, 1], x[, 2]))
 
   ## li
   liDat <- li(x, y)
