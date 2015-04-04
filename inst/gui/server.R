@@ -883,7 +883,7 @@ shinyServer(function(input, output, session) {
           
           createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress2",
                       "Starting Calculations",
-                      message=paste0("[", Sys.time(), "] Starting with calculations, this may take some time"), 
+                      content = paste0("[", Sys.time(), "] Starting with calculations, this may take some time"), 
                       style="info", 
                       dismiss=FALSE,
                       append=TRUE)
@@ -898,7 +898,9 @@ shinyServer(function(input, output, session) {
                                                       outDir=outDir,
                                                       inUnit=input$configOutputInUnits, 
                                                       outUnit=input$configOutputOutUnits, 
-                                                      inGUI=TRUE), gcFirst=TRUE)
+                                                      inGUI=TRUE, 
+                                                      report = TRUE, 
+                                                      createPDF = config()$general$content$doPdf), gcFirst=TRUE)
           if (debug) cat(str(res))
           ## ------------------------------------------------------------------------------ ##  
           ## Brew html
@@ -909,76 +911,78 @@ shinyServer(function(input, output, session) {
                       style="info", 
                       dismiss=FALSE,
                       append=TRUE)
-
-          brewEnv <- list2env(list(
-            config=config(), 
-            runtime=runtime,
-            debug=TRUE, 
-            res=res,
-            baseDir=outDir,
-            steps=input$selectStep, 
-            dat=data4(),
-            subsetTable=subsetTable(),
-            methodLookup=methodLookup,
-            epsgs=list(
-              input=input$configInEpsg, 
-              output=input$configOutEpsg),
-            starttime = starttime
-          ))
-
-          knitEnv <- list2env(list(
-            config=config(), 
-            dat=data4(),
-            data2=data2()$dat,
-            data3=data3(),
-            subsetTable=subsetTable(),
-            relocTable=missingAndDuplicated()
-          ))
-
-          setProgress(message="Creating html file")
-          if (debug) cat("files are: \n")
-          if (debug) cat(files)
-          if (debug) cat("\n\n")
-          src <- capture.output(brew(file=normalizePath(file.path(files, "body.brew"), winslash="/", mustWork=FALSE), output=stdout(), envir=brewEnv))
-          if (debug) cat(str(input$selectStep))
-
-
-          foo <- knit(text=src, output=normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"), quiet=TRUE,
-                      envir=knitEnv)
-          
-          setProgress(message="Just opening files", detail="new tab :) .....")
-          markdownToHTML(
-            output=normalizePath(file.path(outDir, "rhrReport.html"), mustWork=FALSE, winslash="/"), 
-            file=normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"), 
-            stylesheet=normalizePath(file.path(files, "style.css"), mustWork=FALSE, winslash="/"),
-            template=normalizePath(file.path(files, "index.html"), mustWork=FALSE, winslash="/"))
-
-### pdf
-          if (config()$general$content$doPdf) {
-            setProgress(message="Generating PDF", detail="may take a some time")
-            brew(file=normalizePath(file.path(files, "report_brew.tex"), mustWork=FALSE, winslash="/"),
-                 output=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
-                 envir=brewEnv)
-
-            knit(input=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
-                 output=normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"), 
-                 quiet=TRUE,
-                 envir=knitEnv)
             
-            ow <- setwd(outDir)
-            createPDF <- tryCatch(tools::texi2pdf("rhrReport.tex", clean=TRUE), error=function(e) e)
-            setwd(ow)
+          if (FALSE) {  ## this can most likely go after some testing
+            brewEnv <- list2env(list(
+              config=config(), 
+              runtime=runtime,
+              debug=TRUE, 
+              res=res,
+              baseDir=outDir,
+              steps=input$selectStep, 
+              dat=data4(),
+              subsetTable=subsetTable(),
+              methodLookup=methodLookup,
+              epsgs=list(
+                input=input$configInEpsg, 
+                output=input$configOutEpsg),
+              starttime = starttime
+            ))
+            
+            knitEnv <- list2env(list(
+              config=config(), 
+              dat=data4(),
+              data2=data2()$dat,
+              data3=data3(),
+              subsetTable=subsetTable(),
+              relocTable=missingAndDuplicated()
+            ))
+            
+            setProgress(message="Creating html file")
+            if (debug) cat("files are: \n")
+            if (debug) cat(files)
+            if (debug) cat("\n\n")
+            src <- capture.output(brew(file=normalizePath(file.path(files, "body.brew"), winslash="/", mustWork=FALSE), output=stdout(), envir=brewEnv))
+            if (debug) cat(str(input$selectStep))
+            
+            
+            foo <- knit(text=src, output=normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"), quiet=TRUE,
+                        envir=knitEnv)
+            
+            setProgress(message="Just opening files", detail="new tab :) .....")
+            markdownToHTML(
+              output=normalizePath(file.path(outDir, "rhrReport.html"), mustWork=FALSE, winslash="/"), 
+              file=normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"), 
+              stylesheet=normalizePath(file.path(files, "style.css"), mustWork=FALSE, winslash="/"),
+              template=normalizePath(file.path(files, "index.html"), mustWork=FALSE, winslash="/"))
+            
+            ### pdf
+            if (config()$general$content$doPdf) {
+              setProgress(message="Generating PDF", detail="may take a some time")
+              brew(file=normalizePath(file.path(files, "report_brew.tex"), mustWork=FALSE, winslash="/"),
+                   output=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
+                   envir=brewEnv)
+              
+              knit(input=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
+                   output=normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"), 
+                   quiet=TRUE,
+                   envir=knitEnv)
+              
+              ow <- setwd(outDir)
+              createPDF <- tryCatch(tools::texi2pdf("rhrReport.tex", clean=TRUE), error=function(e) e)
+              setwd(ow)
+            }
+            
+            ## ------------------------------------------------------------------------------ ##  
+            ## Clean up
+            if (!debug) {
+              file.remove(normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"))
+              file.remove(normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"))
+              file.remove(normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"))
+            }
+            unlink(normalizePath(file.path(outDir, "figure"), mustWork=FALSE, winslash="/"), recursive=TRUE)
+            
           }
-
-          ## ------------------------------------------------------------------------------ ##  
-          ## Clean up
-          if (!debug) {
-            file.remove(normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"))
-            file.remove(normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"))
-            file.remove(normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"))
-          }
-          unlink(normalizePath(file.path(outDir, "figure"), mustWork=FALSE, winslash="/"), recursive=TRUE)
-
 
           ## ------------------------------------------------------------------------------ ##  
           ## Zip - Removed since it is not working on Windows
