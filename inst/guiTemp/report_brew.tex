@@ -64,6 +64,7 @@ options(width=65)
     General Information
   # #################################### -%>
 
+<%#
 \section{General Information}
 \subsection{Relocations}
 %<<results='asis'>>=
@@ -72,6 +73,7 @@ options(width=65)
 %print(bktbs, booktabs=TRUE, hline.after=hlns, table.placement="!h", include.rownames=FALSE)
 %@
 
+-%>
   
 <%# ####################################
     Cycle over all estimators
@@ -233,37 +235,27 @@ print(bktbs, booktabs=TRUE, hline.after=hlns, table.placement="!h", include.rown
 <%# END CYCLE OVER ALL METHODS %>
 
 
-\section{Summary}
-\subsection{Timing}
-The analysis started at and took <%=runtime[1]%> seconds to run.
+%\section{Summary}
+%\subsection{Timing}
+%The analysis started at and took <%=runtime[1]%> seconds to run.
 
-\subsection{Run configurations}
+% \subsection{Run configurations}
 
-%<<results="asis">>=
-%kable(data.frame(Parameter=names(config$general$content), value=unlist(config$general$content)), row.names=FALSE, format='latex')
-%@
 
-\subsection{Fields}
+% \subsection{Fields}
 
-<<results="asis">>=
+<<results="asis", include = FALSE, eval=FALSE>>=
 kable(data.frame(Parameter=names(config$fields$content), value=gsub('_', '\\\\_', unlist(config$fields$content))), row.names=FALSE, format = 'latex')
 @
 
-\subsection{Session Info}
+
+\section{Session Info}
 For the sake of reproducibility, you should always include your session info. This shows which version of R and different packages you were using. 
 
 <<>>=
 sessionInfo()
 @
 
-\section{About}
-\subsection{Licence}
-This report was generated as part of the rhr package for R. The package is licened uner GPLv3. This means you are free to use and modify the package. But the packages comes with NO WARRANTY whatsoever. 
-
-\subsection{Help and more information}
-Request for help should be directed to the corresponding user group (rhr-discussion on google groups). Please contact us (jsigner@gwdg.de) for bug reports. 
-
-\subsection{Printing}
-We hope that reports generated with this package will be useful make analysis easier and research more reproducible. By design quiet large pdf can be generated with this package. Please think twice before printing endless pages of preliminary results. 
+-%>
 
 \end{document}
