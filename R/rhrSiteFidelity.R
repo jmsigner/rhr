@@ -1,20 +1,14 @@
-##' rhrSiteFidelity
-##'
-##' @param dat a data.frame with at least 2 columns. The first column contains the x-coordinates, the second column contains the y-coordinates 
-##' @param n the number of simulated trajectories.
-##' @param alpha Numeric vector of length one, giving the alpha value.
-##' @useDynLib rhr
-##' @export
-##' @return object of class \code{RhrFidelity}, which is a list of length 4. \code{msd.dat} and \code{li.dat} is the mean square distance and linearity for the real date. \code{msd.sim} and \code{li.sim} are the mean square distances and linearities for the simulated trajectories. 
-##' @examples
-##' ## simulated data
-##' set.seed(123)
-##' dat <- data.frame(x=runif(1000, 0, 100), y=runif(1000, 0, 100))
-##' rhrSiteFidelity(dat, n=500)
-##'
-##' ## Example Data
-##' data(datSH)
-##' res <- rhrSiteFidelity(datSH[, 2:3])
+#' Test for site fidelity of animal movement.
+#'
+#' @template xy
+#' @param n Numeric scalar. The number of simulated trajectories.
+#' @param alpha Numeric scalar. The alpha value used for the bootstrapping.
+#' @useDynLib rhr
+#' @export
+#' @return object of class \code{RhrFidelity}, which is a list of length 4. \code{msd.dat} and \code{li.dat} is the mean square distance and linearity for the real date. \code{msd.sim} and \code{li.sim} are the mean square distances and linearities for the simulated trajectories. 
+#' 
+#' @references Spencer, S. R., Cameron, G. N., & Swihart, R. K. (1990). Operationally defining home range: temporal dependence exhibited by hispid cotton rats. Ecology, 1817-1822.
+#' @example inst/examples/ex-rhrSiteFidelity.R
 
 rhrSiteFidelity <- function(dat, n=100, alpha=0.05) {
 
@@ -82,7 +76,6 @@ print.RhrSiteFidelity <- function(x, ...) {
 
 ##' @export
 ##' @method plot RhrSiteFidelity
-## FIXME: remove plotit
 plot.RhrSiteFidelity <- function(x, plotit=TRUE, ...) {
   p1 <- ggplot(data.frame(x=x$msdSim), aes(x=x)) + geom_histogram() +
     expand_limits(x=range(c(x$msdSim, x$msdDat))) +
