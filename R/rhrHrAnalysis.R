@@ -729,10 +729,10 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
           res <-  rhrRes(bbmm, animal, scn, outDirs, msgs)
           pArea <- rhrPArea(bbmm, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
-          pCA <- rhrPCA(bbmm, thisEst, animal, scn, args, outDirs, what)
+    #      pCA <- rhrPCA(bbmm, thisEst, animal, scn, args, outDirs, what)
 
-          return(list(est = res, properties = list(area = pArea,
-                                   corearea = pCA)))
+          return(list(est = res, properties = list(area = pArea)))
+                                   # corearea = pCA)))
         }
       })
     })

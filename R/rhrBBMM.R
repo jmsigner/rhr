@@ -14,11 +14,10 @@
 ##' @return object of class \code{RhrBBMM}
 ##' @export
 ##' 
-##' @author Johannes Signer 
 
 rhrBBMM <- function(xy, time, 
                     rangesigma1=c(0, 10000), 
-                    sigma2=123,
+                    sigma2=100,
                     trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
   ## Capture input arguments
@@ -42,9 +41,12 @@ rhrBBMM <- function(xy, time,
                     y = xy[, 2],
                     timestamp = time)
 
+  if (any(duplicated(xyt$timestamp))) {
+    xyt <- xyt[!duplicated(xyt$timestamp), ]
+  }
   
   xyt <- adehabitatLT::as.ltraj(xyt[, 1:2], xyt[, 3], id=1)
-  sigma1 <- adehabitatHR::liker(xyt, rangesig1=c(0, 10000), sig2=sigma2, plotit=FALSE)[[1]]$sig1
+  sigma1 <- adehabitatHR::liker(xyt, rangesig1=rangesigma1, sig2=sigma2, plotit=FALSE)[[1]]$sig1
 
   raster::res(trast) <- rep(min(raster::res(trast)), 2)
   

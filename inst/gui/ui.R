@@ -213,8 +213,8 @@ shinyUI(
                                                          h2("Estimate home ranges with Brownian Bridges"),
                                                          bsAlert("generalNoTimeBBMM"), 
                                                          numericInput("configBBMMSigma2", "Location Error (Sigma 2)", value=10),
-                                                         sliderInput("configBBMMRangeSigma1", "Search range for sigma 1", value=c(1, 1e4),
-                                                                     min=1, max=1e4)
+                                                         sliderInput("configBBMMRangeSigma1", "Search range for sigma 1", value=c(0, 100),
+                                                                     min=0, max=1e4)
                                                          ), 
                                                 well=FALSE)
                                    )), 

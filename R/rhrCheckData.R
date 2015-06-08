@@ -3,9 +3,12 @@
 ##' Check if the provided data meets certain criteria
 ##' @param dat A data object.
 ##' @param returnSP A logical value indicating whether or not a \code{SpatialPoints} should be returned.
-##' @return \code{data.frame} or \code{SpatialPoints}
-##' @author Johannes Signer
+##' @return \code{data.frame}, \code{SpatialPoints} or \code{STI}
 rhrCheckData <- function(dat, returnSP=FALSE) {
+  
+  if (inherits(dat, "RhrTraj")) {
+    dat <- rhrTrajRelocations(dat)
+  }
   
   ## return data.frames
   if (!returnSP) {

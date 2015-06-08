@@ -10,6 +10,9 @@ if (debug) {
   .datFromR <- NULL
   outDir <- "/tmp"
 }
+
+## Max upload size
+options(shiny.maxRequestSize=30*1024^2)
 #####
 
 library(brew)
@@ -866,7 +869,10 @@ shinyServer(function(input, output, session) {
         )
 
         if (debug) cat("str anaylsis\n\n")
+        if (debug) cat("=======================\n\n")
         if (debug) cat(str(args))
+        if (debug) saveRDS(args, "/tmp/myrds.RDS")
+        if (debug) cat("=======================\n\n")
         
         createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress1",
                     "Starting Analysis",
