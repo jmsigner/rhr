@@ -50,6 +50,15 @@ class(trackS)
 ## Create an object of RhrTrackST (only space)
 trackST <- rhrTrack(sp, time)
 class(trackST)
+```
 
+## Working with tracks
+### Retrieving the relocations
+
+The function `rhrPoints` extracts the relocations from a track. 
+
+```{r}
+pts1 <- rhrPoints(trackS)
+pts2 <- rhrPoints(trackST)
 ```
 

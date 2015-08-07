@@ -7,19 +7,15 @@
 rhrBaseIntervalSubset(ts, int)
 }
 \arguments{
-  \item{ts}{Numeric vector, the time stamps in seconds.}
-  \item{int}{Numeric scalar, the minimum time in seconds that
-  two observations need to be separated.}
+\item{ts}{Numeric vector, the time stamps in seconds.}
+
+\item{int}{Numeric scalar, the minimum time in seconds that two observations need to be separated.}
 }
 \value{
-A logcial vector of length \code{length(ts)}, indicating if
-a given observation is seperated from the last chosen one by
-int.
+A logcial vector of length \code{length(ts)}, indicating if a given observation is seperated from the last chosen one by int.
 }
 \description{
-Checks if consecutive observations are separated by an
-interval or not. If \code{int} is used up, than the next
-observation is used.
+Checks if consecutive observations are separated by an interval or not. If \code{int} is used up, than the next observation is used.
 }
 \examples{
 ## sequence of 10 seconds

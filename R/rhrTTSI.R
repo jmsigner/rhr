@@ -1,23 +1,23 @@
-##' Estimate Time To Statistical Independence (TTSI)
-##'
-##' This a wrapper around \code{rhrSchoener} to calculate time to statistical indpendence from a series of intervals.
-##'
-##' 
-##'
-##' @template xy
-##' @param interval Numeric scalar, initial interval considered in seconds.
-##' @param ntimes Numeric scalar, the number of times the critical value needs to be exceeded in order to reach independence.
-##' @param time Vector with time stamp of each relocation.
-##' @param ... further arguments passed to \code{rhrSchoener}.
-##' @return \code{list} with the original data, the intervals considered, if and when time to statistical independence was reached and the call.
-##' @export
-##' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, Ecology, 66(4), 1176 - 1184
-##' @example  inst/examples/exrhrTTSI.R
+#' Estimate Time To Statistical Independence (TTSI)
+#'
+#' This a wrapper around \code{rhrSchoener} to calculate time to statistical indpendence from a series of intervals.
+#'
+#' 
+#'
+#' @template trackST
+#' @param interval Numeric scalar, initial interval considered in seconds.
+#' @param ntimes Numeric scalar, the number of times the critical value needs to be exceeded in order to reach independence.
+#' @param ... arguments passed to \code{rhrSchoener}.
+#' @return \code{list} with the original data, the intervals considered, if and when time to statistical independence was reached and the call.
+#' @export
+#' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, Ecology, 66(4), 1176 - 1184
+#' @example  inst/examples/ex-rhrTTSI.R
 
-rhrTTSI <- function(xy, time, interval, ntimes=3, ...) {
+rhrTTSI <- function(track, time, interval, ntimes=3, ...) {
 
   call <- match.call()
-  dat <- rhrCheckData(xy, returnSP=FALSE)
+  dat <- rhrCheckData(track, returnSP=FALSE)
+  time <- rhrTimes(track)
 
   if (nrow(dat) != length(time)) {
     stop("rhrTTSI: not every observation has a timestamp")

@@ -7,11 +7,15 @@
 rhrRasterFromExt(ext, nrow = NULL, ncol = NULL, res = 1, sameRes = TRUE)
 }
 \arguments{
-  \item{ext}{RhrRasterExt, giving the extent of the raster}
-  \item{nrow}{numeric; number of rows} \item{ncol}{numeric;
-  number of columns} \item{res}{numeric; the resolution}
-  \item{sameRes}{logical; indicating if the same resolution be
-  used in x and y direction}
+\item{ext}{RhrRasterExt, giving the extent of the raster}
+
+\item{nrow}{numeric; number of rows}
+
+\item{ncol}{numeric; number of columns}
+
+\item{res}{numeric; the resolution}
+
+\item{sameRes}{logical; indicating if the same resolution be used in x and y direction}
 }
 \value{
 raster
@@ -20,10 +24,7 @@ raster
 Create a raster layer from extent
 }
 \details{
-This function wraps \code{raster::rast} and adds
-functionality to a take control over the resolution.
-Resolution is given precedence over \code{nrow} and
-\code{ncol}.
+This function wraps \code{raster::rast} and adds functionality to a take control over the resolution. Resolution is given precedence over \code{nrow} and \code{ncol}.
 }
 \author{
 Johannes Signer

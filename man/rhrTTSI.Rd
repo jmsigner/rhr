@@ -2,43 +2,36 @@
 % Please edit documentation in R/rhrTTSI.R
 \name{rhrTTSI}
 \alias{rhrTTSI}
-\title{Estimate time to statistical independence (TTSI)}
+\title{Estimate Time To Statistical Independence (TTSI)}
 \usage{
-rhrTTSI(xy, time, interval, ntimes = 3, ...)
+rhrTTSI(track, time, interval, ntimes = 3, ...)
 }
 \arguments{
-  \item{xy}{Instance of \code{data.frame},
-  \code{SpatialPoints}, \code{SpatialPointsDataFrame}
-  or \code{RhrMappedData}. If \code{xy} is is a
-  \code{data.frame}, then the first two columns are
-  assumed to be the \code{x} and \code{y} coordinates of
-  the relocations.} \item{time}{Vector with time stamp for
-  each relocation.} \item{interval}{Numeric scalar, initial
-  interval considered.} \item{ntimes}{Numeric scalar, number
-  of times the critical value needs to be exceeded in order to
-  reach independence.} \item{...}{further arguments passed to
-  \code{rhrSchoener}.}
+\item{track}{Object inheriting from \code{RhrTrackST}.}
+
+\item{interval}{Numeric scalar, initial interval considered in seconds.}
+
+\item{ntimes}{Numeric scalar, the number of times the critical value needs to be exceeded in order to reach independence.}
+
+\item{...}{arguments passed to \code{rhrSchoener}.}
 }
 \value{
-\code{list} with the original data, the intervals
-considered, if and when time to statistical independence was
-reached and the call.
+\code{list} with the original data, the intervals considered, if and when time to statistical independence was reached and the call.
 }
 \description{
-This a wrapper around \code{rhrSchoener} to calculate time
-to statistical indpendence from a series of intervals.
+This a wrapper around \code{rhrSchoener} to calculate time to statistical indpendence from a series of intervals.
 }
 \examples{
 library(rhr)
-data(datSH)
+data(trackST)
 
-timestamp <- lubridate::ymd(datSH[, 4]) + lubridate::hms(datSH[, 5])
-
-ttsi <- rhrTTSI(datSH[, 2:3], timestamp, interval = 60 * 60 * 10)
+ttsi <- rhrTTSI(trackST, interval = 60 * 60 * 10)
 plot(ttsi)
 }
 \references{
-Swihart, R. and Slade N. 1985, Testing for indpendence of
-observations in animal movement, Ecology, 66(4), 1176 - 1184
+Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, Ecology, 66(4), 1176 - 1184
+}
+\seealso{
+\code{\link{rhrTrack}} for fruther details and examples on how to create a \code{RhrTrack*} object.
 }
 

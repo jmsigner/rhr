@@ -7,8 +7,9 @@
 rhrIsopleths(x, ...)
 }
 \arguments{
-  \item{x}{Instance of \code{RhrEst}.} \item{...}{see
-  details.}
+\item{x}{Instance of \code{RhrEst}.}
+
+\item{...}{see details.}
 }
 \value{
 \code{SpatialPolygonsDataFrame}
@@ -17,9 +18,9 @@ rhrIsopleths(x, ...)
 Function to retrieve isopleths of a home range estimate.
 }
 \details{
-Probabilistic estimators take (i.e. kernel density
-estimates) take an additional argument, \code{levels}, that
-determines which isopleth are returned.
+Probabilistic estimators take (i.e. kernel density estimates) take
+an additional argument, \code{levels}, that determines which isopleth are
+returned.
 }
 \examples{
 library(rhr)

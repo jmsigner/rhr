@@ -7,21 +7,17 @@
 rhrSiteFidelity(dat, n = 100, alpha = 0.05)
 }
 \arguments{
-  \item{n}{Numeric scalar. The number of simulated
-  trajectories.} \item{alpha}{Numeric scalar. The
-  alpha value used for the bootstrapping.} \item{xy}
-  {Instance of \code{data.frame}, \code{SpatialPoints},
-  \code{SpatialPointsDataFrame} or \code{RhrMappedData}.
-  If \code{xy} is is a \code{data.frame}, then the first
-  two columns are assumed to be the \code{x} and \code{y}
-  coordinates of the relocations.}
+\item{n}{Numeric scalar. The number of simulated trajectories.}
+
+\item{alpha}{Numeric scalar. The alpha value used for the bootstrapping.}
+
+\item{xy}{Instance of \code{data.frame}, \code{SpatialPoints},
+\code{SpatialPointsDataFrame} or \code{RhrMappedData}. If \code{xy} is
+is a \code{data.frame}, then the first two columns are assumed to be the
+\code{x} and \code{y} coordinates of the relocations.}
 }
 \value{
-object of class \code{RhrFidelity}, which is a list
-of length 4. \code{msd.dat} and \code{li.dat} is the
-mean square distance and linearity for the real date.
-\code{msd.sim} and \code{li.sim} are the mean square
-distances and linearities for the simulated trajectories.
+object of class \code{RhrFidelity}, which is a list of length 4. \code{msd.dat} and \code{li.dat} is the mean square distance and linearity for the real date. \code{msd.sim} and \code{li.sim} are the mean square distances and linearities for the simulated trajectories.
 }
 \description{
 Test for site fidelity of animal movement.
@@ -59,8 +55,6 @@ res
 plot(res)
 }
 \references{
-Spencer, S. R., Cameron, G. N., & Swihart, R. K. (1990).
-Operationally defining home range: temporal dependence
-exhibited by hispid cotton rats. Ecology, 1817-1822.
+Spencer, S. R., Cameron, G. N., & Swihart, R. K. (1990). Operationally defining home range: temporal dependence exhibited by hispid cotton rats. Ecology, 1817-1822.
 }
 

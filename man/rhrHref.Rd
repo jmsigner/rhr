@@ -7,31 +7,21 @@
 rhrHref(xy, rescale = "none")
 }
 \arguments{
-  \item{xy}{Instance of \code{data.frame},
-  \code{SpatialPoints}, \code{SpatialPointsDataFrame}
-  or \code{RhrMappedData}. If \code{xy} is is a
-  \code{data.frame}, then the first two columns are assumed
-  to be the \code{x} and \code{y} coordinates of the
-  relocations.} \item{rescale}{Scalar character, indicating if
-  and if how data are rescaled. \code{unitvar} rescales x and
-  y coordinates to unit variance, \code{xvar} rescales x and
-  y coordinate to variance of x and \code{none}, the default,
-  uses the raw data.}
+\item{xy}{Instance of \code{data.frame}, \code{SpatialPoints},
+\code{SpatialPointsDataFrame} or \code{RhrMappedData}. If \code{xy} is
+is a \code{data.frame}, then the first two columns are assumed to be the
+\code{x} and \code{y} coordinates of the relocations.}
+
+\item{rescale}{Scalar character, indicating if and if how data are rescaled. \code{unitvar} rescales x and y coordinates to unit variance, \code{xvar} rescales x and y coordinate to variance of x and \code{none}, the default, uses the raw data.}
 }
 \value{
-\code{list} with the calculated bandwidth and the
-standardization method.
+\code{list} with the calculated bandwidth and the standardization method.
 }
 \description{
-Use two dimensional reference bandwidth to select a
-bandwidth for kernel density estimation.
+Use two dimensional reference bandwidth to select a bandwidth for kernel density estimation.
 }
 \details{
-This implementation is based on Worton (1989). If variances
-differ greatly, it is advaisable to rescale the data using
-\code{rescale="unitvar"}. If the data is suspected to
-multimodal other bandwidth estimation methods may be more
-suitable.
+This implementation is based on Worton (1989). If variances differ greatly, it is advaisable to rescale the data using \code{rescale="unitvar"}. If the data is suspected to multimodal other bandwidth estimation methods may be more suitable.
 }
 \examples{
 library(rhr)
@@ -47,8 +37,6 @@ kde3 <- rhrKDE(datSH[, 2:3], h = rhrHref(datSH[, 2:3], "xvar")$h)
 lapply(list(kde1, kde2, kde3), rhrArea)
 }
 \references{
-Worton, B. J. (1989). Kernel methods for estimating the
-utilization distribution in home-range studies. _Ecology,
-70(1)_, 164-168.
+Worton, B. J. (1989). Kernel methods for estimating the utilization distribution in home-range studies. _Ecology, 70(1)_, 164-168.
 }
 

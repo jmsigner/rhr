@@ -7,24 +7,21 @@
 rhrRegularize(x, ...)
 }
 \arguments{
-  \item{x}{Object of class \code{RhrTrajS*}} \item{newTraj}
-  {Vector with objects of class \code{POSIXct}, providing
-  temporal spacing of new trajectory.} \item{side}{Character
-  scalar, indicating whether to consider relocations to
-  left (i.e., before), to the right (i.e., after) or on both
-  sides of a new relocation.} \item{windw}{Numeric scalar,
-  the time window in seconds that should be scanned for new
-  relocations.}
+\item{x}{Object of class \code{RhrTrajS*}}
+
+\item{newTraj}{Vector with objects of class \code{POSIXct}, providing temporal spacing of new trajectory.}
+
+\item{side}{Character scalar, indicating whether to consider relocations to left (i.e., before), to the right (i.e., after) or on both sides of a new relocation.}
+
+\item{windw}{Numeric scalar, the time window in seconds that should be scanned for new relocations.}
 }
 \value{
 Object of class \code{RhrTrajS*}
 }
 \description{
-Constructs a regular trajectory (i.e., with identical time
-intervals between relocations).
+Constructs a regular trajectory (i.e., with identical time intervals between relocations).
 }
 \details{
-If more than one relocation falls within the time window,
-the relocation closest in time is chosen.
+If more than one relocation falls within the time window, the relocation closest in time is chosen.
 }
 

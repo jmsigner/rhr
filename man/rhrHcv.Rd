@@ -7,7 +7,7 @@
 rhrHcv(xy)
 }
 \arguments{
-  \item{xy}{data.frame with two columns: x and y coordinates}
+\item{xy}{data.frame with two columns: x and y coordinates}
 }
 \value{
 \code{vector} of length two

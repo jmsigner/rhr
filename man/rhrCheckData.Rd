@@ -7,9 +7,9 @@
 rhrCheckData(dat, returnSP = FALSE)
 }
 \arguments{
-  \item{dat}{A data object.} \item{returnSP}{A logical value
-  indicating whether or not a \code{SpatialPoints} should be
-  returned.}
+\item{dat}{A data object.}
+
+\item{returnSP}{A logical value indicating whether or not a \code{SpatialPoints} should be returned.}
 }
 \value{
 \code{data.frame}, \code{SpatialPoints} or \code{STI}

@@ -7,7 +7,7 @@
 rhrBiCirc(xy)
 }
 \arguments{
-  \item{xy}{valid input data}
+\item{xy}{valid input data}
 }
 \description{
 Bimodal circular home range estimation

@@ -7,7 +7,7 @@
 rhrValidEpsg(epsg)
 }
 \arguments{
-  \item{epsg}{EPSG code}
+\item{epsg}{EPSG code}
 }
 \description{
 Validate EPSG code

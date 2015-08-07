@@ -7,35 +7,25 @@
 rhrHpi(xy, rescale = "none", correct = TRUE, ...)
 }
 \arguments{
-  \item{xy}{Instance of \code{data.frame},
-  \code{SpatialPoints}, \code{SpatialPointsDataFrame}
-  or \code{RhrMappedData}. If \code{xy} is is a
-  \code{data.frame}, then the first two columns are assumed
-  to be the \code{x} and \code{y} coordinates of the
-  relocations.} \item{rescale}{Scalar character, indicating if
-  and if how data are rescaled. \code{unitvar} rescales x and
-  y coordinates to unit variance, \code{xvar} rescales x and
-  y coordinate to variance of x and \code{none}, the default,
-  uses the raw data.} \item{correct}{Logical scalar that
-  indicates whether or not the estimate should be correct for
-  the two dimensional case.} \item{...}{additional arguments
-  passed to \code{KernSmooth::dpik}.}
+\item{xy}{Instance of \code{data.frame}, \code{SpatialPoints},
+\code{SpatialPointsDataFrame} or \code{RhrMappedData}. If \code{xy} is
+is a \code{data.frame}, then the first two columns are assumed to be the
+\code{x} and \code{y} coordinates of the relocations.}
+
+\item{rescale}{Scalar character, indicating if and if how data are rescaled. \code{unitvar} rescales x and y coordinates to unit variance, \code{xvar} rescales x and y coordinate to variance of x and \code{none}, the default, uses the raw data.}
+
+\item{correct}{Logical scalar that indicates whether or not the estimate should be correct for the two dimensional case.}
+
+\item{...}{additional arguments passed to \code{KernSmooth::dpik}.}
 }
 \value{
-\code{list} with the calculated bandwidth, the
-standardization method and \code{correction}.
+\code{list} with the calculated bandwidth, the standardization method and \code{correction}.
 }
 \description{
-Wraps \code{KernSmooth::dpik} to select bandwidth for kernel
-density estimation the plug-in-the-equation method in two
-dimensios.
+Wraps \code{KernSmooth::dpik} to select bandwidth for kernel density estimation the plug-in-the-equation method in two dimensios.
 }
 \details{
-This function calcualtes bandwidths for kernel density
-estimation by wrapping \code{KernSmooth::dpik}. If
-\code{correct} is \code{TRUE}, the bandwidth is trasformed
-with power 5/6 to correct for using an univariate
-implementation for bivariate data (Gitzen et. al 2006).
+This function calcualtes bandwidths for kernel density estimation by wrapping \code{KernSmooth::dpik}. If \code{correct} is \code{TRUE}, the bandwidth is trasformed with power 5/6 to correct for using an univariate implementation for bivariate data (Gitzen et. al 2006).
 }
 \examples{
 library(rhr)
@@ -48,10 +38,7 @@ rhrHpi(datSH[, 2:3], rescale = "unitvar", correct = TRUE)
 rhrHpi(datSH[, 2:3], rescale = "xvar", correct = TRUE)
 }
 \references{
-Gitzen, R. A., Millspaugh, J. J., & Kernohan, B. J. (2006).
-Bandwidth selection for fixed-kernel analysis of animal
-utilization distributions. _Journal of Wildlife Management_,
-70(5), 1334-1344.
+Gitzen, R. A., Millspaugh, J. J., & Kernohan, B. J. (2006). Bandwidth selection for fixed-kernel analysis of animal utilization distributions. _Journal of Wildlife Management_, 70(5), 1334-1344.
 }
 \seealso{
 \code{KernSmooth::dpik}

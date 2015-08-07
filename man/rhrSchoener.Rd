@@ -7,34 +7,32 @@
 rhrSchoener(dat, interval, alpha = 0.25, minM = 10, consec = TRUE)
 }
 \arguments{
-  \item{dat}{\code{data.frame} with 3 columns. The first
-  column contains x coordinates, the second column contains
-  y coordinates and the third column contains a timestamp
-  as \code{POSIXct}.} \item{interval}{Numeric scalar, the
-  interval in seconds.} \item{alpha}{Numeric scalar, alpha
-  value used to calculate the critical value.} \item{minM}
-  {Numeric scalar, the minimum number of pairs required, if
-  m is smaller than this argument it will return \code{NA}.}
-  \item{consec}{Locagical scalar, indicates whether or not the
-  observations are consecutive or not.}
+\item{dat}{\code{data.frame} with 3 columns. The first column contains x coordinates, the second column contains y coordinates and the third column contains a timestamp as \code{POSIXct}.}
+
+\item{interval}{Numeric scalar, the interval in seconds.}
+
+\item{alpha}{Numeric scalar, alpha value used to calculate the critical value.}
+
+\item{minM}{Numeric scalar, the minimum number of pairs required, if m is smaller than this argument it will return \code{NA}.}
+
+\item{consec}{Locagical scalar, indicates whether or not the observations are consecutive (i.e., equally spaced in time) or not.}
 }
 \value{
-\code{vector} vector of length six. \itemize{ \item{"V"}
-{Schoeners V} \item{"m"}{Number of pairs used} \item{"r2"}
-{Mean squared distance from the center of activity}
-\item{"t2"}{Mean squared distance between relocations}
-\item{"cv"}{Critical value} \item{"m"}{The time interval in
-seconds} }
+\code{vector} vector of length six.
+\itemize{
+ \item{"V"}{Schoeners V}
+ \item{"m"}{Number of pairs used}
+ \item{"r2"}{Mean squared distance from the center of activity}
+ \item{"t2"}{Mean squared distance between relocations}
+ \item{"cv"}{Critical value}
+ \item{"m"}{The time interval in seconds}
+}
 }
 \description{
 Function to calculate Schoeners V.
 }
 \details{
-This implementation uses the normal distribution as a
-sampling distribution. Relocations are ordered by timestamp
-and then relocations are sampled based on \code{interval}.
-If relocations are not equally spaced the nearest relocation
-forward is used.
+This implementation uses the normal distribution as a sampling distribution. Relocations are ordered by timestamp and then relocations are sampled based on \code{interval}. If relocations are not equally spaced the nearest relocation forward is used.
 }
 \examples{
 library(rhr)
@@ -47,8 +45,6 @@ dat <- data.frame(x = datSH[, 2],
 rhrSchoener(dat, interval = 60 * 60 * 10)
 }
 \references{
-Swihart, R. and Slade N. 1985, Testing for indpendence of
-observations in animal movement, _Ecology_, 66(4), 1176 -
-1184
+Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, _Ecology_, 66(4), 1176 - 1184
 }
 

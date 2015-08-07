@@ -10,30 +10,24 @@ rhrHlscv(xy, range = do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
   100, res = NULL))
 }
 \arguments{
-  \item{xy}{A two column numeric data.frame with two columns:
-  the x and y coordinates.} \item{range}{numeric vector with
-  different candidate h values.} \item{whichMin}{A character
-  indicating if the \code{global} or \code{local} minimum
-  should be searched for.} \item{rescale}{A character,
-  indicating if and if how data are rescaled. \code{unitvar}
-  rescales x and y coordinates to unit variance, \code{xvar}
-  rescales x and y coordinate to variance of x and \code{none}
-  uses the raw data.} \item{trast}{A RasterLayer with the
-  desired extent and resolution.}
+\item{xy}{A two column numeric data.frame with two columns: the x and y coordinates.}
+
+\item{range}{numeric vector with different candidate h values.}
+
+\item{whichMin}{A character indicating if the \code{global} or \code{local} minimum should be searched for.}
+
+\item{rescale}{A character, indicating if and if how data are rescaled. \code{unitvar} rescales x and y coordinates to unit variance, \code{xvar} rescales x and y coordinate to variance of x and \code{none} uses the raw data.}
+
+\item{trast}{A RasterLayer with the desired extent and resolution.}
 }
 \value{
 \code{vector} of length two
 }
 \description{
-Use two dimensional least square cross validation to select
-the bandwidth of a kernel density estimate.
+Use two dimensional least square cross validation to select the bandwidth of a kernel density estimate.
 }
 \details{
-Function to calcualte least square cross validation
-bandwidth. This implementation is based on Seaman and Powell
-(1996). If \code{whichMin} is \code{"global"} the global
-minimum is returned, else the local minimum with the largest
-candidate bandwidth is returned.
+Function to calcualte least square cross validation bandwidth. This implementation is based on Seaman and Powell (1996).  If \code{whichMin} is \code{"global"} the global minimum is returned, else the local minimum with the largest candidate bandwidth is returned.
 }
 \examples{
 \dontrun{
@@ -50,8 +44,8 @@ y <- datSH[, 3]
 Johannes Signer
 }
 \references{
-Seaman, D. E., & Powell, R. A. (1996). An evaluation of
-the accuracy of kernel density estimators for home range
-analysis. _Ecology, 77(7)_, 2075-2085. Carr and Rodges
+Seaman, D. E., & Powell, R. A. (1996). An evaluation of the accuracy of kernel density estimators for home range analysis. _Ecology, 77(7)_, 2075-2085.
+
+Carr and Rodges
 }
 

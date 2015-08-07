@@ -7,8 +7,9 @@
 rhrGUI(datFromR = NULL, outDir = getwd())
 }
 \arguments{
-  \item{datFromR}{data.frame, that is taken from current
-  namespace to the GUI} \item{outDir}{outdir}
+\item{datFromR}{data.frame, that is taken from current namespace to the GUI}
+
+\item{outDir}{outdir}
 }
 \description{
 Starts GUI

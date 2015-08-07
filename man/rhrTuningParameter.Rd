@@ -7,25 +7,26 @@
 rhrTuningParameter(x, msg = FALSE, digits = 3, ...)
 }
 \arguments{
-  \item{x}{Instance of \code{RhrEst}.} \item{msg}{Boolean
-  scalar, indicating if the answer should be returned as
-  message.} \item{digits}{Numeric scalar, giving the number of
-  decimal places to round to.} \item{...}{none implemented}
+\item{x}{Instance of \code{RhrEst}.}
+
+\item{msg}{Boolean scalar, indicating if the answer should be returned as message.}
+
+\item{digits}{Numeric scalar, giving the number of decimal places to round to.}
+
+\item{...}{none implemented}
 }
 \value{
-If \code{msg} is \code{TRUE} a character string, else a list
-with the name of the tuning parameter and its value.
+If \code{msg} is \code{TRUE} a character string, else a list with
+the name of the tuning parameter and its value.
 }
 \description{
-Function to retrieve the tuning parameter(s) of a home range
-estimate.
+Function to retrieve the tuning parameter(s) of a home range estimate.
 }
 \details{
-Some home range estimators require a tuning parameter
-for the estimation (e.g. the bandwidth for kernel density
-estimates). This functions retrieves the value of the tuning
-parameter. If \code{msg = TRUE} values are rounded to the
-\code{digit} decimal place.
+Some home range estimators require a tuning parameter for the estimation
+(e.g. the bandwidth for kernel density estimates). This functions retrieves
+the value of the tuning parameter.
+If \code{msg = TRUE} values are rounded to the \code{digit} decimal place.
 }
 \examples{
 library(rhr)

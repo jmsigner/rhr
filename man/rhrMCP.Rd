@@ -7,27 +7,21 @@
 rhrMCP(xy, levels = 95)
 }
 \arguments{
-  \item{xy}{Instance of \code{data.frame},
-  \code{SpatialPoints}, \code{SpatialPointsDataFrame}
-  or \code{RhrMappedData}. If \code{xy} is is a
-  \code{data.frame}, then the first two columns are assumed
-  to be the \code{x} and \code{y} coordinates of the
-  relocations.} \item{levels}{Numeric \code{vector} indicating
-  percentages at which the home range estimates should be
-  evaluated.}
+\item{xy}{Instance of \code{data.frame}, \code{SpatialPoints},
+\code{SpatialPointsDataFrame} or \code{RhrMappedData}. If \code{xy} is
+is a \code{data.frame}, then the first two columns are assumed to be the
+\code{x} and \code{y} coordinates of the relocations.}
+
+\item{levels}{Numeric \code{vector} indicating percentages at which the home range estimates should be evaluated.}
 }
 \value{
 Object of class \code{RhrMCP}.
 }
 \description{
-Function to estimate the minimum convex polygon (MCP) home
-range.
+Function to estimate the minimum convex polygon (MCP) home range.
 }
 \details{
-Computes the minimum convex polygon of a subset of
-points. First the centroid of the home range is found with
-\code{rgeos::gCentroid} and then the `%-levels` points are
-used to calculate a minimum convex polygon.
+Computes the minimum convex polygon of a subset of points. First the centroid of the home range is found with \code{rgeos::gCentroid} and then the `%-levels` points are used to calculate a minimum convex polygon.
 }
 \examples{
 library(rhr)

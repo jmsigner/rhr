@@ -7,21 +7,19 @@
 rhrRW(xy0 = c(0, 0), n = 1000, sigma = 1, time)
 }
 \arguments{
-  \item{xy0}{Numeric vector of length two. The initial
-  coordinates.} \item{n}{Numeric scalar. The number of
-  steps.} \item{sigma}{Numeric scalar or vector of length
-  \code{n}. Controlls the step lengths.} \item{time}{Vector
-  of \code{POSIXct} objects. Providing the time stamp of
-  relocations. If \code{time} is missing, a sequence of time
-  stamps generated starting at the current time in one minute
-  time steps.}
+\item{xy0}{Numeric vector of length two. The initial coordinates.}
+
+\item{n}{Numeric scalar. The number of steps.}
+
+\item{sigma}{Numeric scalar or vector of length \code{n}. Controlls the step lengths.}
+
+\item{time}{Vector of \code{POSIXct} objects. Providing the time stamp of relocations. If \code{time} is missing, a sequence of time stamps generated starting at the current time in one minute time steps.}
 }
 \value{
 Object of class RhrTrajST
 }
 \description{
-Individum moves in a planar coordinate system according to a
-simple random walk.
+Individum moves in a planar coordinate system according to a simple random walk.
 }
 \examples{
 set.seed(123)

@@ -22,8 +22,9 @@ rhrHasUD(x, ...)
 \method{rhrHasUD}{RhrUniNorm}(x, ...)
 }
 \arguments{
-  \item{x}{an object of class RhrEst} \item{...}{further
-  arguments, none implemented}
+\item{x}{an object of class RhrEst}
+
+\item{...}{further arguments, none implemented}
 }
 \value{
 logical value indicating whether or not a UD is present

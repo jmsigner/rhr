@@ -7,8 +7,9 @@
 rhrCUD(x, ...)
 }
 \arguments{
-  \item{x}{an object of class RhrHrEstimator*} \item{...}
-  {further arguments, none implemented}
+\item{x}{an object of class RhrHrEstimator*}
+
+\item{...}{further arguments, none implemented}
 }
 \value{
 an object of class raster

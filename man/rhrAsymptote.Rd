@@ -8,37 +8,35 @@ rhrAsymptote(x, ns = seq(100, nrow(rhrData(x)), 500), nrep = 10,
   tolTotArea = 0.05, nTimes = 5, sampling = "sequential")
 }
 \arguments{
-  \item{x}{Object of class RhrEst, the home-range estimate.}
-  \item{ns}{Numeric vector of the number of samples to
-  be taken at each step.} \item{nrep}{Numeric value,
-  number of bootstrap replicates for each sample size.}
-  \item{tolTotArea}{Numeric value, tolerance to the total area
-  (that is the area using all relocations).} \item{nTimes}
-  {Numeric value, number of times the confidence interval is
-  required to be within tolerated total area} \item{sampling}
-  {Character value, either random or sequential. See below for
-  details.}
+\item{x}{Object of class RhrEst, the home-range estimate.}
+
+\item{ns}{Numeric vector of the number of samples to be taken at each step.}
+
+\item{nrep}{Numeric value,  number of bootstrap replicates for each sample size.}
+
+\item{tolTotArea}{Numeric value, tolerance to the total area (that is the area using all relocations).}
+
+\item{nTimes}{Numeric value, number of times the confidence interval is required to be within tolerated total area}
+
+\item{sampling}{Character value, either random or sequential. See below for details.}
 }
 \value{
 An object of class \code{RhrHRAsymptote}
 }
 \description{
-Function calculates asymptote of the area of a home range
-estimate.
+Function calculates asymptote of the area of a home range estimate.
 }
 \details{
-Bootstrapped home ranges are calculated for different sample
-sizes. Starting from few relocations until the sample size
-approaches the total number of points. Home range areas are
-then plotted against the sample sizes. Laver (2005, 2005)
-suggested to use the following cutoff value: the number of
-location at which estimates of the 95 \% confidence interval
-of the bootstrapped home-range area is within a specified
-percentage of the total home range area (that is the area
-of the home range with all relocations) for at least n
-times. Harris 1990 suggested to use random sampling for
-discontinuous radio tracking data and sequential sampling
-for continuous radio tracking data.
+Bootstrapped home ranges are calculated for different sample sizes. Starting
+from few relocations until the sample size approaches the total number of
+points. Home range areas are then plotted against the sample sizes.
+Laver (2005, 2005) suggested to use the following cutoff value: the number
+of location at which estimates of the 95 \% confidence interval of the
+bootstrapped home-range area is within a specified percentage of the
+total home range area (that is the area of the home range with all
+relocations) for at least n times. Harris 1990 suggested to use random
+sampling for discontinuous radio tracking data and sequential sampling for
+continuous radio tracking data.
 }
 \examples{
 library(rhr)
@@ -62,14 +60,10 @@ mcpA <- rhrAsymptote(mcp, ns = seq(10, nrow(datSH), 20), nrep = 20)
 plot(mcpA)
 }
 \references{
-Harris, S., et al. "Home-range analysis using radio-tracking
-data-a review of problems and techniques particularly as
-applied to the study of mammals." Mammal review 20.2-3
-(1990): 97-123. Peter N Laver. Cheetah of the serengeti
-plains: a home range analysis. Master's thesis, Virginia
-Polytechnic Institute and State University, 2005 Peter N.
-Laver and Marcella J. Kelly. A critical review of home range
-studies. The Journal of Wildlife Management, 72(1):290-298,
-2008
+Harris, S., et al. "Home-range analysis using radio-tracking data-a review of problems and techniques particularly as applied to the study of mammals." Mammal review 20.2-3 (1990): 97-123.
+
+Peter N Laver. Cheetah of the serengeti plains: a home range analysis. Master's thesis, Virginia Polytechnic Institute and State University, 2005
+
+Peter N. Laver and Marcella J. Kelly. A critical review of home range studies. The Journal of Wildlife Management, 72(1):290-298, 2008
 }
 

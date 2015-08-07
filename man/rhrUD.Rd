@@ -7,19 +7,18 @@
 rhrUD(x, ...)
 }
 \arguments{
-  \item{x}{An object of class RhrProbEst.} \item{...}{none
-  implemented.}
+\item{x}{An object of class RhrProbEst.}
+
+\item{...}{none implemented.}
 }
 \value{
 An object of class RasterLayer.
 }
 \description{
-Function to obtain the utilization distribution (UD) of a
-home range estimate.
+Function to obtain the utilization distribution (UD) of a home range estimate.
 }
 \details{
-For probabilistic estimators home range estimator this
-functions returns the UD.
+For probabilistic estimators home range estimator this functions returns the UD.
 }
 \examples{
 library(rhr)

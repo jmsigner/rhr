@@ -9,12 +9,15 @@ rhrBBMM(xy, time, rangesigma1 = c(0, 10000), sigma2 = 100,
   100, res = NULL))
 }
 \arguments{
-  \item{xy}{\code{Data.frame} with two columns containing
-  x and y coordinates.} \item{time}{a vector with time
-  stamps for each relocation, must be of the same length as
-  \code{xy}.} \item{rangesigma1}{parameter 1} \item{sigma2}
-  {parameter 2} \item{trast}{a \code{RasterLayer} used as an
-  template for the output grid.}
+\item{xy}{\code{Data.frame} with two columns containing x and y coordinates.}
+
+\item{time}{a vector with time stamps for each relocation, must be of the same length as \code{xy}.}
+
+\item{rangesigma1}{parameter 1}
+
+\item{sigma2}{parameter 2}
+
+\item{trast}{a \code{RasterLayer} used as an template for the output grid.}
 }
 \value{
 object of class \code{RhrBBMM}

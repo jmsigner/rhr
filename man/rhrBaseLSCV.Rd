@@ -7,17 +7,17 @@
 rhrBaseLSCV(x, y, h)
 }
 \arguments{
-  \item{x}{Numeric vector, the x coordinates.} \item{y}
-  {Numeric vector, the y cooridnates.} \item{h}{Numeric
-  vector, candidate bandwidth.}
+\item{x}{Numeric vector, the x coordinates.}
+
+\item{y}{Numeric vector, the y cooridnates.}
+
+\item{h}{Numeric vector, candidate bandwidth.}
 }
 \value{
-Numeric vector, the score value for each of the proposed
-candidate bandwidths.
+Numeric vector, the score value for each of the proposed candidate bandwidths.
 }
 \description{
-Least square cross validation to determine bandwidth for
-kernel density estimation.
+Least square cross validation to determine bandwidth for  kernel density estimation.
 }
 \examples{
 set.seed(123)

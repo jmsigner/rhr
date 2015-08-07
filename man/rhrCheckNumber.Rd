@@ -8,17 +8,24 @@ rhrCheckNumber(val, arg, length = 1, from = NA, to = NA,
   canHaveNA = FALSE, fun = as.character(as.list(match.call())[[1]]))
 }
 \arguments{
-  \item{val}{numeric vector} \item{arg}{character, name
-  of argument} \item{length}{max length} \item{from}{lower
-  boundary} \item{to}{upper boundary} \item{canHaveNA}
-  {logical, can the vector contain NA's?} \item{fun}{name of
-  the function}
+\item{val}{numeric vector}
+
+\item{arg}{character, name of argument}
+
+\item{length}{max length}
+
+\item{from}{lower boundary}
+
+\item{to}{upper boundary}
+
+\item{canHaveNA}{logical, can the vector contain NA's?}
+
+\item{fun}{name of the function}
 }
 \description{
 Validate numeric input
 }
 \details{
-Takes a numeric input and validates it with regard to
-length, range and missing values
+Takes a numeric input and validates it with regard to length, range and missing values
 }
 

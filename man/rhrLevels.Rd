@@ -7,8 +7,9 @@
 rhrLevels(x, ...)
 }
 \arguments{
-  \item{x}{Instance of \code{RhrEst}.} \item{...}{none
-  implemented.}
+\item{x}{Instance of \code{RhrEst}.}
+
+\item{...}{none implemented.}
 }
 \value{
 Numeric \code{vector} with the levels.

@@ -7,28 +7,25 @@
 rhrExtFromPoints(xy, buffer = NULL, extendRange = NULL)
 }
 \arguments{
-  \item{xy}{data.frame, matrix or SpatialPoints; containing
-  the coordinates} \item{buffer}{numeric value; containing the
-  buffer width} \item{extendRange}{numeric value; containing
-  the factor to extend the range}
+\item{xy}{data.frame, matrix or SpatialPoints; containing the coordinates}
+
+\item{buffer}{numeric value; containing the buffer width}
+
+\item{extendRange}{numeric value; containing the factor to extend the range}
 }
 \value{
 matrix
 }
 \description{
-Takes coordinates from points and returns a (buffered,
-extended) bounding box
+Takes coordinates from points and returns a (buffered, extended) bounding box
 }
 \details{
-The buffer width is the same in all directions. If both
-buffer and extendRange are provided, precedence is given to
-buffer.
+The buffer width is the same in all directions. If both buffer and extendRange are provided, precedence is given to buffer.
 }
 \author{
 Johannes Signer
 }
 \seealso{
-\code{\link{extendrange}} for more information on extending
-the range.
+\code{\link{extendrange}} for more information on extending the range.
 }
 

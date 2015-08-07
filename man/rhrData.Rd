@@ -7,17 +7,17 @@
 rhrData(x, spatial = FALSE, ...)
 }
 \arguments{
-  \item{x}{Instance of \code{RhrEst}.} \item{spatial}
-  {Logical value indicating whether or not to return
-  \code{SpatialPoints}.} \item{...}{none implemented.}
+\item{x}{Instance of \code{RhrEst}.}
+
+\item{spatial}{Logical value indicating whether or not to return \code{SpatialPoints}.}
+
+\item{...}{none implemented.}
 }
 \value{
-Depending on the argument, either a \code{data.frame} or
-\code{SpatialPointsDataFrame}.
+Depending on the argument, either a \code{data.frame} or \code{SpatialPointsDataFrame}.
 }
 \description{
-Function to retrieve data that were used generate the
-estimate.
+Function to retrieve data that were used generate the estimate.
 }
 \examples{
 library(rhr)

@@ -7,8 +7,9 @@
 \method{rhrCUD}{RhrKDE}(x, ...)
 }
 \arguments{
-  \item{x}{an object of class rhrHREstimatorKDE} \item{...}
-  {further arguments, none implemented}
+\item{x}{an object of class rhrHREstimatorKDE}
+
+\item{...}{further arguments, none implemented}
 }
 \description{
 Calculate cumulative UD for RhrHrEstimatorKDE

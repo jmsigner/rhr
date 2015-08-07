@@ -7,16 +7,15 @@
 rhrBasePRW(x, y)
 }
 \arguments{
-  \item{x}{Numeric vector, the x coordinates.} \item{y}
-  {Numeric vector, the y coordinates.}
+\item{x}{Numeric vector, the x coordinates.}
+
+\item{y}{Numeric vector, the y coordinates.}
 }
 \value{
 Numeric matrix with the x and y coordinates of the new path.
 }
 \description{
-permuates a walk by reusing the original distances between
-steps and connecting them with angles drawn from a uniform
-distribution between 0 and 360.
+permuates a walk by reusing the original distances between steps and connecting them with angles drawn from a uniform distribution between 0 and 360.
 }
 \examples{
 set.seed(123)

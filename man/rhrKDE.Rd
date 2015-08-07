@@ -9,31 +9,25 @@ rhrKDE(xy, h = rhrHref(xy)$h, levels = 95,
   100, res = NULL))
 }
 \arguments{
-  \item{xy}{Instance of \code{data.frame},
-  \code{SpatialPoints}, \code{SpatialPointsDataFrame}
-  or \code{RhrMappedData}. If \code{xy} is is a
-  \code{data.frame}, then the first two columns are
-  assumed to be the \code{x} and \code{y} coordinates
-  of the relocations.} \item{h}{Numeric \code{vector}
-  with the bandwidth of the kernel. A scalar value will
-  be applied to both dimensions.} \item{levels}{Numeric
-  \code{vector} indicating percentages at which the home
-  range estimates should be evaluated.} \item{trast}{Instance
-  of \code{RasterLayer} that serves as a template for the
-  resulting grid of the estimation.}
+\item{xy}{Instance of \code{data.frame}, \code{SpatialPoints},
+\code{SpatialPointsDataFrame} or \code{RhrMappedData}. If \code{xy} is
+is a \code{data.frame}, then the first two columns are assumed to be the
+\code{x} and \code{y} coordinates of the relocations.}
+
+\item{h}{Numeric \code{vector} with the bandwidth of the kernel. A scalar value will be applied to both dimensions.}
+
+\item{levels}{Numeric \code{vector} indicating percentages at which the home range estimates should be evaluated.}
+
+\item{trast}{Instance of \code{RasterLayer} that serves as a template for the resulting grid of the estimation.}
 }
 \value{
 Object of class \code{RhrKDE}
 }
 \description{
-Function to estimate home ranges with kernel density
-estimation.
+Function to estimate home ranges with kernel density estimation.
 }
 \details{
-Kernels densities are estimated with
-\code{KernSmooth::bkde2d}. This is a binned approximation of
-2D kernel density estimates (see \code{?KernSmooth::bkde2d}
-for more details.
+Kernels densities are estimated with \code{KernSmooth::bkde2d}. This is a binned approximation of 2D kernel density estimates (see \code{?KernSmooth::bkde2d} for more details.
 }
 \examples{
 library(rhr)
@@ -52,7 +46,6 @@ plot(kde3, main = "h = least-square-cross validation")
 plot(kde4, main = "h = ad hoc")
 }
 \seealso{
-\code{KernSmooth::bkde2d}, \code{rhr::rhrHref},
-\code{rhr::rhrHlscv}, \code{rhr::rhrHpi}
+\code{KernSmooth::bkde2d}, \code{rhr::rhrHref}, \code{rhr::rhrHlscv}, \code{rhr::rhrHpi}
 }
 

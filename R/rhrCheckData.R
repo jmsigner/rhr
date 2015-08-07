@@ -6,8 +6,9 @@
 ##' @return \code{data.frame}, \code{SpatialPoints} or \code{STI}
 rhrCheckData <- function(dat, returnSP=FALSE) {
   
-  if (inherits(dat, "RhrTraj")) {
-    dat <- rhrTrajRelocations(dat)
+  
+  if (inherits(dat, "RhrTrack")) {
+    dat <- rhrPoints(dat)
   }
   
   ## return data.frames

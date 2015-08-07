@@ -8,13 +8,14 @@ rhrUniNorm(xy, trast = rhrRasterFromExt(rhrExtFromPoints(xy, extendRange =
   0.2), nrow = 100, res = NULL))
 }
 \arguments{
-  \item{xy}{valid input data} \item{trast}{template raster}
+\item{xy}{valid input data}
+
+\item{trast}{template raster}
 }
 \description{
 Bivariate Unimodal Normal Home-Range estimation
 }
 \details{
-Computes home-range using bivariate bimodal normal
-distribution
+Computes home-range using bivariate bimodal normal distribution
 }
 
