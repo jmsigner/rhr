@@ -40,5 +40,4 @@ Suggests:
     brew,
     xtable
 NeedsCompilation: yes
-Roxygen: list(wrap = TRUE)
 VignetteBuilder: knitr

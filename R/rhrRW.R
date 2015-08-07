@@ -22,6 +22,6 @@ rhrRW <- function(xy0 = c(0, 0), n = 1000, sigma = 1, time) {
   xy <- data.frame(x = xy0[1] + cumsum(rnorm(n, 0, sigma)), 
                    y = xy0[2] + cumsum(rnorm(n, 0, sigma)))
   xy <- sp::SpatialPoints(xy)
-  rhrTraj(xy, time = time)
+  rhrTrack(xy, time = time)
   
 }

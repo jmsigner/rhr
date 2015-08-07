@@ -8,12 +8,9 @@
 #' @param mu Numeric vector. The home-range center. 
 #' @param time Vector of \code{POSIXct} objects. Providing the time stamp of relocations. If \code{time} is missing, a sequence of time stamps generated starting at the current time in one minute time steps.
 #' @param sigma Numeric scalar. Controls the exent of the walk.
-#' 
 #' @references Fieberg, J. (2007). Kernel density estimators of home range: smoothing and the autocorrelation red herring. Ecology, 88(4), 1059-1066.
-#'
 #' @return An object of class \code{RhrTrajST}. 
 #' @export
-#'
 #' @example inst/examples/ex-rhrOU.R
 #' 
 rhrOU <- function(n = 1000, A = matrix(c(0.1, 0, 0, 0.1), 2), xy0, mu = c(0,0), time, sigma = 0.3) {
@@ -45,8 +42,7 @@ rhrOU <- function(n = 1000, A = matrix(c(0.1, 0, 0, 0.1), 2), xy0, mu = c(0,0), 
     xy[i, ] <- xy[i-1, ] + as.vector(A %*% (mu - xy[i-1, ]) * 1 + W[i, ])
   }
   
-  rhrTraj(sp::SpatialPoints(xy), time = time)
-  
+  rhrTrack(sp::SpatialPoints(xy), time = time)
 }
 
 

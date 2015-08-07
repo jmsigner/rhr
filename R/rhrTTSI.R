@@ -7,7 +7,7 @@
 ##' @template xy
 ##' @param interval Numeric scalar, initial interval considered in seconds.
 ##' @param ntimes Numeric scalar, the number of times the critical value needs to be exceeded in order to reach independence.
-##' @param time Vector with time stamp for each relocation.
+##' @param time Vector with time stamp of each relocation.
 ##' @param ... further arguments passed to \code{rhrSchoener}.
 ##' @return \code{list} with the original data, the intervals considered, if and when time to statistical independence was reached and the call.
 ##' @export

@@ -6,6 +6,7 @@
 #' @param time Vector with objects of class `POSIXct`, giving the time stamp of relocations.
 #' @param duplicates String, indicating how to handle duplicted time stamps. Currently only  "remove" is supported. 
 #' @param metda Named list, providint meta information about the animal.
+#' @export
 #' @example inst/examples/ex-rhrTrack.R
 
 rhrTrack <- function(sp, time, duplicates = "remove", meta) {

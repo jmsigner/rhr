@@ -8,7 +8,7 @@
 #' The package implements common methods to estimate home ranges. Currently available methods are:
 #' \itemize{
 #' \item Something important
-#' \itme Something even more important
+#' \item Something even more important
 #' }
 #' 
 #'
