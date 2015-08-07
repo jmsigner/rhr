@@ -42,7 +42,7 @@ rhrOU <- function(n = 1000, A = matrix(c(0.1, 0, 0, 0.1), 2), xy0, mu = c(0,0), 
   xy[1, ] <- xy0
   
   for (i in 2:n) {
-    xy[i, ] <- xy[i-1, ] + as.vector(A %*% (mu - xy[i-1, ]) * dt + W[i, ])
+    xy[i, ] <- xy[i-1, ] + as.vector(A %*% (mu - xy[i-1, ]) * 1 + W[i, ])
   }
   
   rhrTraj(sp::SpatialPoints(xy), time = time)

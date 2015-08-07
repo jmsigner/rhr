@@ -34,7 +34,7 @@ rhrBBMM <- function(xy, time,
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
   if (nrow(xy) != length(time)) {
-    stop("rhrTTSI: not every observation has a timestamp")
+    stop("rhrBBMM: not every observation has a timestamp")
   }
 
   xyt <- data.frame(x = xy[, 1],

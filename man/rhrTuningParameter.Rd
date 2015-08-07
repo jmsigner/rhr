@@ -8,10 +8,9 @@ rhrTuningParameter(x, msg = FALSE, digits = 3, ...)
 }
 \arguments{
   \item{x}{Instance of \code{RhrEst}.} \item{msg}{Boolean
-  scalar, indicating if the answer should be returned
-  as message.} \item{digits}{Numeric scalar, giving the
-  number of decimal places to round to.} \item{...}{none
-  implemented}
+  scalar, indicating if the answer should be returned as
+  message.} \item{digits}{Numeric scalar, giving the number of
+  decimal places to round to.} \item{...}{none implemented}
 }
 \value{
 If \code{msg} is \code{TRUE} a character string, else a list

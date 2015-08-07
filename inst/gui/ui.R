@@ -89,6 +89,7 @@ shinyUI(
                                                          selectInput("configOutputOutUnits", "Desired output units are:",
                                                                        choices=c("square meters" = "sqm", "hectars" = "ha", "square km" = "sqkm"), selectize=FALSE)
                                                          ), 
+                                                ## Output Grid
                                                 tabPanel("Output Grid",
                                                          h2("Specify a grid"), 
                                                          helpText("Some estimators (e.g. Kernel Density Estimation) require a grid for the results. Here you can specify this grid. The same grid will be used for all animals in the analysis."), 
@@ -135,7 +136,8 @@ shinyUI(
                                                          numericInput("configTTSIInit", "Initial time difference", value=config$pointLevel$ttsi$interval),
                                                          helpText("Initial time difference in seconds"), 
                                                          selectInput("configTTSISampling", "Sampling regime", choices=config$pointLevel$ttsi$sampling), 
-                                                         numericInput("configTTSINTimes", "Number of time above critical value", value=config$pointLevel$ttsi$ntimes)
+                                                         numericInput("configTTSINTimes", "Number of time above critical value", value=config$pointLevel$ttsi$ntimes), 
+                                                         a("More help", href = "http://jmsigner.github.io/rhrman/methodsTTSI.html", target = "_blank")
                                                       ##   sliderInput("configTTSINAlpha", "Alpha", value=config$pointLevel$ttsi$alpha, min=0, max=1, step=0.01)
                                                          ), 
                                                 well=FALSE)

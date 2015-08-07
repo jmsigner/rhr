@@ -12,9 +12,9 @@ rhrRW(xy0 = c(0, 0), n = 1000, sigma = 1, time)
   steps.} \item{sigma}{Numeric scalar or vector of length
   \code{n}. Controlls the step lengths.} \item{time}{Vector
   of \code{POSIXct} objects. Providing the time stamp of
-  relocations. If \code{time} is missing, a sequence of
-  time stamps generated starting at the current time in one
-  minute time steps.}
+  relocations. If \code{time} is missing, a sequence of time
+  stamps generated starting at the current time in one minute
+  time steps.}
 }
 \value{
 Object of class RhrTrajST

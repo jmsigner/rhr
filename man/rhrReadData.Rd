@@ -8,14 +8,13 @@ rhrReadData(file, sep = ",", skip = 0, hasHeader = TRUE, sepDec = ".",
   stringsAsFactors = FALSE, ...)
 }
 \arguments{
-  \item{file}{character; the file name} \item{sep}
-  {character; the separator} \item{skip}{numeric; the
-  number of lines to skip} \item{hasHeader}{logical;
-  indicates whether or not a header is presence}
-  \item{sepDec}{character; indicating the decimal separator}
-  \item{stringsAsFactors}{logical; indicating whether or not
-  strings should be read as factors.} \item{...}{passed to
-  scan}
+  \item{file}{character; the file name} \item{sep}{character;
+  the separator} \item{skip}{numeric; the number of lines to
+  skip} \item{hasHeader}{logical; indicates whether or not
+  a header is presence} \item{sepDec}{character; indicating
+  the decimal separator} \item{stringsAsFactors}{logical;
+  indicating whether or not strings should be read as
+  factors.} \item{...}{passed to scan}
 }
 \value{
 object of class \code{rhrDat}

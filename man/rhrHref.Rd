@@ -12,11 +12,11 @@ rhrHref(xy, rescale = "none")
   or \code{RhrMappedData}. If \code{xy} is is a
   \code{data.frame}, then the first two columns are assumed
   to be the \code{x} and \code{y} coordinates of the
-  relocations.} \item{rescale}{Scalar character, indicating
-  if and if how data are rescaled. \code{unitvar} rescales
-  x and y coordinates to unit variance, \code{xvar} rescales
-  x and y coordinate to variance of x and \code{none}, the
-  default, uses the raw data.}
+  relocations.} \item{rescale}{Scalar character, indicating if
+  and if how data are rescaled. \code{unitvar} rescales x and
+  y coordinates to unit variance, \code{xvar} rescales x and
+  y coordinate to variance of x and \code{none}, the default,
+  uses the raw data.}
 }
 \value{
 \code{list} with the calculated bandwidth and the

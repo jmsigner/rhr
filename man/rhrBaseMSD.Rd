@@ -7,8 +7,8 @@
 rhrBaseMSD(x, y)
 }
 \arguments{
-  \item{x}{Numeric vector, the x cooridnates} \item{y}
-  {Numeric vector, the y coordinates}
+  \item{x}{Numeric vector, the x cooridnates} \item{y}{Numeric
+  vector, the y coordinates}
 }
 \value{
 Numeric matrix with the x and y coordinates of the new path.

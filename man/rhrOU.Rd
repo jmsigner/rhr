@@ -8,17 +8,17 @@ rhrOU(n = 1000, A = matrix(c(0.1, 0, 0, 0.1), 2), xy0, mu = c(0, 0), time,
   sigma = 0.3)
 }
 \arguments{
-  \item{n}{Numeric scalar. The number of time steps.}
-  \item{A}{Numeric matrix with dimension 2*2. The matrix
-  \code{A} controlls the pull back towards the home-
-  range center (\code{mu}).} \item{xy0}{Numeric vector.
-  The start position. If \code{xy0} is missing it is set
-  to \code{mu}.} \item{mu}{Numeric vector. The home-range
-  center.} \item{time}{Vector of \code{POSIXct} objects.
-  Providing the time stamp of relocations. If \code{time} is
-  missing, a sequence of time stamps generated starting at
-  the current time in one minute time steps.} \item{sigma}
-  {Numeric scalar. Controls the exent of the walk.}
+  \item{n}{Numeric scalar. The number of time steps.} \item{A}
+  {Numeric matrix with dimension 2*2. The matrix \code{A}
+  controlls the pull back towards the home-range center
+  (\code{mu}).} \item{xy0}{Numeric vector. The start position.
+  If \code{xy0} is missing it is set to \code{mu}.} \item{mu}
+  {Numeric vector. The home-range center.} \item{time}{Vector
+  of \code{POSIXct} objects. Providing the time stamp of
+  relocations. If \code{time} is missing, a sequence of time
+  stamps generated starting at the current time in one minute
+  time steps.} \item{sigma}{Numeric scalar. Controls the exent
+  of the walk.}
 }
 \value{
 An object of class \code{RhrTrajST}.

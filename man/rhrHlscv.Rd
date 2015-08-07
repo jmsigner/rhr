@@ -10,17 +10,16 @@ rhrHlscv(xy, range = do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
   100, res = NULL))
 }
 \arguments{
-  \item{xy}{A two column numeric data.frame with two
-  columns: the x and y coordinates.} \item{range}{numeric
-  vector with different candidate h values.} \item{whichMin}
-  {A character indicating if the \code{global} or
-  \code{local} minimum should be searched for.}
-  \item{rescale}{A character, indicating if and if how data
-  are rescaled. \code{unitvar} rescales x and y coordinates
-  to unit variance, \code{xvar} rescales x and y coordinate
-  to variance of x and \code{none} uses the raw data.}
-  \item{trast}{A RasterLayer with the desired extent and
-  resolution.}
+  \item{xy}{A two column numeric data.frame with two columns:
+  the x and y coordinates.} \item{range}{numeric vector with
+  different candidate h values.} \item{whichMin}{A character
+  indicating if the \code{global} or \code{local} minimum
+  should be searched for.} \item{rescale}{A character,
+  indicating if and if how data are rescaled. \code{unitvar}
+  rescales x and y coordinates to unit variance, \code{xvar}
+  rescales x and y coordinate to variance of x and \code{none}
+  uses the raw data.} \item{trast}{A RasterLayer with the
+  desired extent and resolution.}
 }
 \value{
 \code{vector} of length two

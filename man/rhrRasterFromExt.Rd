@@ -10,8 +10,8 @@ rhrRasterFromExt(ext, nrow = NULL, ncol = NULL, res = 1, sameRes = TRUE)
   \item{ext}{RhrRasterExt, giving the extent of the raster}
   \item{nrow}{numeric; number of rows} \item{ncol}{numeric;
   number of columns} \item{res}{numeric; the resolution}
-  \item{sameRes}{logical; indicating if the same resolution
-  be used in x and y direction}
+  \item{sameRes}{logical; indicating if the same resolution be
+  used in x and y direction}
 }
 \value{
 raster

@@ -8,8 +8,8 @@ rhrBaseIntervalSubset(ts, int)
 }
 \arguments{
   \item{ts}{Numeric vector, the time stamps in seconds.}
-  \item{int}{Numeric scalar, the minimum time in seconds
-  that two observations need to be separated.}
+  \item{int}{Numeric scalar, the minimum time in seconds that
+  two observations need to be separated.}
 }
 \value{
 A logcial vector of length \code{length(ts)}, indicating if

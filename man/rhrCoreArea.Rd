@@ -11,8 +11,8 @@ rhrCoreArea(x, method = "seaman90", ...)
 }
 \arguments{
   \item{x}{a RhrHREstimator* object} \item{method}{method
-  used to calculate core area. At the moment only powell90
-  is implemented} \item{...}{none implemented}
+  used to calculate core area. At the moment only powell90 is
+  implemented} \item{...}{none implemented}
 }
 \value{
 object of class RhrHRCoreArea

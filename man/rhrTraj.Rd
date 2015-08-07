@@ -9,10 +9,9 @@ rhrTraj(sp, time = NULL)
 \arguments{
   \item{sp}{Object of class SpatialPoints, the relocation.
   If `sp` is an object of `SpatialPointsDataFrame`, point
-  attributes are carried forward.} \item{time}{Object
-  of class `POSIXct`, the time when the relocations were
-  recorded. If `time` is NULL without time stamps is
-  created.}
+  attributes are carried forward.} \item{time}{Object of class
+  `POSIXct`, the time when the relocations were recorded. If
+  `time` is NULL without time stamps is created.}
 }
 \value{
 Object of class \code{RhrTrajS*}

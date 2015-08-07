@@ -12,14 +12,14 @@ rhrHpi(xy, rescale = "none", correct = TRUE, ...)
   or \code{RhrMappedData}. If \code{xy} is is a
   \code{data.frame}, then the first two columns are assumed
   to be the \code{x} and \code{y} coordinates of the
-  relocations.} \item{rescale}{Scalar character, indicating
-  if and if how data are rescaled. \code{unitvar} rescales
-  x and y coordinates to unit variance, \code{xvar} rescales
-  x and y coordinate to variance of x and \code{none},
-  the default, uses the raw data.} \item{correct}{Logical
-  scalar that indicates whether or not the estimate should
-  be correct for the two dimensional case.} \item{...}
-  {additional arguments passed to \code{KernSmooth::dpik}.}
+  relocations.} \item{rescale}{Scalar character, indicating if
+  and if how data are rescaled. \code{unitvar} rescales x and
+  y coordinates to unit variance, \code{xvar} rescales x and
+  y coordinate to variance of x and \code{none}, the default,
+  uses the raw data.} \item{correct}{Logical scalar that
+  indicates whether or not the estimate should be correct for
+  the two dimensional case.} \item{...}{additional arguments
+  passed to \code{KernSmooth::dpik}.}
 }
 \value{
 \code{list} with the calculated bandwidth, the

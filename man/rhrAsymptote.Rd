@@ -8,16 +8,16 @@ rhrAsymptote(x, ns = seq(100, nrow(rhrData(x)), 500), nrep = 10,
   tolTotArea = 0.05, nTimes = 5, sampling = "sequential")
 }
 \arguments{
-  \item{x}{Object of class RhrEst, the home-range
-  estimate.} \item{ns}{Numeric vector of the number of
-  samples to be taken at each step.} \item{nrep}{Numeric
-  value, number of bootstrap replicates for each sample
-  size.} \item{tolTotArea}{Numeric value, tolerance to the
-  total area (that is the area using all relocations).}
-  \item{nTimes}{Numeric value, number of times the
-  confidence interval is required to be within tolerated
-  total area} \item{sampling}{Character value, either random
-  or sequential. See below for details.}
+  \item{x}{Object of class RhrEst, the home-range estimate.}
+  \item{ns}{Numeric vector of the number of samples to
+  be taken at each step.} \item{nrep}{Numeric value,
+  number of bootstrap replicates for each sample size.}
+  \item{tolTotArea}{Numeric value, tolerance to the total area
+  (that is the area using all relocations).} \item{nTimes}
+  {Numeric value, number of times the confidence interval is
+  required to be within tolerated total area} \item{sampling}
+  {Character value, either random or sequential. See below for
+  details.}
 }
 \value{
 An object of class \code{RhrHRAsymptote}

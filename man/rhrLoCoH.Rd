@@ -11,17 +11,16 @@ rhrLoCoH(xy, type = "k", n = 10, levels = 95, minPts = 3,
   \item{xy}{Instance of \code{data.frame},
   \code{SpatialPoints}, \code{SpatialPointsDataFrame}
   or \code{RhrMappedData}. If \code{xy} is is a
-  \code{data.frame}, then the first two columns are
-  assumed to be the \code{x} and \code{y} coordinates of
-  the relocations.} \item{type}{Scalar character, one of
-  "k", "r", "a". Method to determine the tuning parameter
-  \code{n}.} \item{n}{Numeric scalar, value of the tuning
-  parameter.} \item{levels}{Numeric \code{vector} indicating
-  percentages at which the home range estimates should be
-  evaluated.} \item{minPts}{Numeric scalar, the minimum
-  number of neighbors required.} \item{autoN}{Boolean
-  scalar, whether or not \code{n} should be determined
-  automatically.}
+  \code{data.frame}, then the first two columns are assumed
+  to be the \code{x} and \code{y} coordinates of the
+  relocations.} \item{type}{Scalar character, one of "k", "r",
+  "a". Method to determine the tuning parameter \code{n}.}
+  \item{n}{Numeric scalar, value of the tuning parameter.}
+  \item{levels}{Numeric \code{vector} indicating percentages
+  at which the home range estimates should be evaluated.}
+  \item{minPts}{Numeric scalar, the minimum number of
+  neighbors required.} \item{autoN}{Boolean scalar, whether or
+  not \code{n} should be determined automatically.}
 }
 \value{
 Object of class \code{RhrLoCoH}

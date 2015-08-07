@@ -12,16 +12,16 @@ rhrHrAnalysis(datIn, what = c("rhrSiteFidelity", "rhrTTSI", "rhrMCP",
 }
 \arguments{
   \item{datIn}{RhrMappedData} \item{what}{character vector;
-  indicating which steps should be performed, order does not
-  matter} \item{args}{list; with arguments for the different
-  steps} \item{verbose}{logical; whether or not progress
-  should be given on the command line} \item{outDir}
+  indicating which steps should be performed, order does
+  not matter} \item{args}{list; with arguments for the
+  different steps} \item{verbose}{logical; whether or not
+  progress should be given on the command line} \item{outDir}
   {character; path to the directory where the results are
-  saved.} \item{inGUI}{logical; indicating whether or not
-  the call was made from a GUI} \item{inUnit}{character;
-  units of the input} \item{outUnit}{character; units of
-  the output} \item{report}{logica; indicating if a report
-  should be created.}
+  saved.} \item{inGUI}{logical; indicating whether or not the
+  call was made from a GUI} \item{inUnit}{character; units of
+  the input} \item{outUnit}{character; units of the output}
+  \item{report}{logica; indicating if a report should be
+  created.}
 }
 \value{
 List

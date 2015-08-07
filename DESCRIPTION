@@ -1,22 +1,23 @@
 Package: rhr
 Type: Package
 Title: Reproducible Home Ranges with R
-Version: 1.2.000
-Date: 2015-05-06
+Version: 1.2.002
+Date: 2015-08-07
 Author: Johannes Signer
 Maintainer: Johannes Signer <jsigner@gwdg.de>
 Description: Functions and a graphical user interface (GUI) to analyze animal
     telemetry data.
 License: GPL-3
-Depends:
+Depends: 
     Rcpp,
     ggplot2,
     grid,
     rgdal,
     maptools,
     methods
-Imports:
+Imports: 
     sp,
+    spacetime,
     raster,
     rgeos,
     spacetime,
@@ -29,7 +30,7 @@ Imports:
     mvtnorm,
     reshape2
 LinkingTo: Rcpp
-Suggests:
+Suggests: 
     ascii,
     shiny (>= 0.10.2.1),
     knitr,
@@ -40,3 +41,4 @@ Suggests:
     xtable
 NeedsCompilation: yes
 Roxygen: list(wrap = TRUE)
+VignetteBuilder: knitr

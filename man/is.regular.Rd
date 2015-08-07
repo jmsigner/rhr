@@ -7,8 +7,8 @@
 is.regular(x, ...)
 }
 \arguments{
-  \item{x}{Object of \code{RhrTrajS*}.} \item{...}
-  {additional arguments, none implemented.}
+  \item{x}{Object of \code{RhrTrajS*}.} \item{...}{additional
+  arguments, none implemented.}
 }
 \description{
 Method to check if a trajectory is regularely spaced in

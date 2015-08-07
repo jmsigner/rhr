@@ -1,10 +1,12 @@
-##' Estimate time to statistical independence (TTSI)
+##' Estimate Time To Statistical Independence (TTSI)
 ##'
 ##' This a wrapper around \code{rhrSchoener} to calculate time to statistical indpendence from a series of intervals.
 ##'
+##' 
+##'
 ##' @template xy
-##' @param interval Numeric scalar, initial interval considered.
-##' @param ntimes Numeric scalar, number of times the critical value needs to be exceeded in order to reach independence.
+##' @param interval Numeric scalar, initial interval considered in seconds.
+##' @param ntimes Numeric scalar, the number of times the critical value needs to be exceeded in order to reach independence.
 ##' @param time Vector with time stamp for each relocation.
 ##' @param ... further arguments passed to \code{rhrSchoener}.
 ##' @return \code{list} with the original data, the intervals considered, if and when time to statistical independence was reached and the call.

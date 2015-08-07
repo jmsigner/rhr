@@ -23,10 +23,9 @@ rhrHrefScaled(xy, range = rhrHref(xy)$h * c(0.01, 2),
   indicating the number of contiguous polygons desired. This
   will usually be one.} \item{levels}{Numeric \code{vector}
   indicating percentages at which the home range estimates
-  should be evaluated.} \item{tol}{Numeric scalar,
-  indicating which difference of to stop.} \item{maxIt}
-  {Numeric scalar, indicating the maximum number of
-  acceptable iterations.}
+  should be evaluated.} \item{tol}{Numeric scalar, indicating
+  which difference of to stop.} \item{maxIt}{Numeric scalar,
+  indicating the maximum number of acceptable iterations.}
 }
 \value{
 \code{list} with the calculated bandwidth, exit status and

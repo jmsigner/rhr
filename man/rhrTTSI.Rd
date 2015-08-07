@@ -15,9 +15,9 @@ rhrTTSI(xy, time, interval, ntimes = 3, ...)
   the relocations.} \item{time}{Vector with time stamp for
   each relocation.} \item{interval}{Numeric scalar, initial
   interval considered.} \item{ntimes}{Numeric scalar, number
-  of times the critical value needs to be exceeded in order
-  to reach independence.} \item{...}{further arguments
-  passed to \code{rhrSchoener}.}
+  of times the critical value needs to be exceeded in order to
+  reach independence.} \item{...}{further arguments passed to
+  \code{rhrSchoener}.}
 }
 \value{
 \code{list} with the original data, the intervals

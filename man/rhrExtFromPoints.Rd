@@ -8,9 +8,9 @@ rhrExtFromPoints(xy, buffer = NULL, extendRange = NULL)
 }
 \arguments{
   \item{xy}{data.frame, matrix or SpatialPoints; containing
-  the coordinates} \item{buffer}{numeric value; containing
-  the buffer width} \item{extendRange}{numeric value;
-  containing the factor to extend the range}
+  the coordinates} \item{buffer}{numeric value; containing the
+  buffer width} \item{extendRange}{numeric value; containing
+  the factor to extend the range}
 }
 \value{
 matrix

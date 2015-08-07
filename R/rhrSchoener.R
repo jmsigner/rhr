@@ -8,7 +8,7 @@
 ##' @param interval Numeric scalar, the interval in seconds.
 ##' @param alpha Numeric scalar, alpha value used to calculate the critical value.
 ##' @param minM Numeric scalar, the minimum number of pairs required, if m is smaller than this argument it will return \code{NA}.
-##' @param consec Locagical scalar, indicates whether or not the observations are consecutive or not.
+##' @param consec Locagical scalar, indicates whether or not the observations are consecutive (i.e., equally spaced in time) or not.
 ##' @return \code{vector} vector of length six. 
 ##' \itemize{
 ##'  \item{"V"}{Schoeners V}

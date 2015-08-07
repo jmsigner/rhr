@@ -7,10 +7,10 @@
 rasterFromXYVect(xy, xrange = NA, yrange = NA, res = 100)
 }
 \arguments{
-  \item{xy}{A two columned \code{data.frame} or
-  \code{matrix} containing the x and y coordinates of the
-  points.} \item{xrange,yrange}{Optional numeric vector of
-  length providing the range.} \item{res}{resolution}
+  \item{xy}{A two columned \code{data.frame} or \code{matrix}
+  containing the x and y coordinates of the points.}
+  \item{xrange,yrange}{Optional numeric vector of length
+  providing the range.} \item{res}{resolution}
 }
 \description{
 Function to create an empty \code{RasterLayer} from bounding

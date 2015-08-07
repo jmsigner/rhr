@@ -497,35 +497,6 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  ## Reset button: not yet implemented
-  ## observe({
-  ##   if (!is.null(data3())){
-  ##     if (input$subsetReset == 0) {
-  ##       cat("[e] ========over 1 \n")
-  ##       return(NULL)
-  ##     }
-  ##     cat("[e] ========over 2 \n")
-  ##       updateSliderInput(session, "subsetXSlider", "X-Range", value=range(data2()$lon))
-  ##       updateSliderInput(session, "subsetYSlider", "Y-Range", value=range(data2()$lat))
-
-  ##       if (FALSE){
-  ##         if (!all(is.na(data2()$timestamp))) {
-  ##           updateDateRangeInput(session, "subsetDatePicker", "Date range:",
-  ##                                start = format(min(data2()$timestamp), "%Y-%m-%d"),
-  ##                                end = format(max(data2()$timestamp), "%Y-%m-%d"))
-  ##         }
-
-  ##         ## select ids
-  ##         pcho <- unique(data2()$id)
-
-  ##         updateSelectInput(session, "subsetSelectedIds", "Select animals",
-  ##                           choices=pcho,
-  ##                           selected=pcho,
-  ##                           multiple=TRUE,
-  ##                           selectize=FALSE)
-  ##       }
-  ##   }
-  ## })
 
   subsetTable <- reactive({
     if (!is.null(data3())) {
@@ -594,26 +565,6 @@ shinyServer(function(input, output, session) {
   })
 
 
-  ## Check for MCP
-                                        # observe({
-                                        #    input$btnModalMCPSave
-                                        #
-                                        #    isolate({
-                                        #      x <- as.numeric(input$modalMCPInputLevel)
-                                        #      
-                                        #      ## This will change the value of input$inText, based on x
-                                        #      if (!is.na(x) & x > 1 & x <= 100) {
-                                        #        y <- x
-                                        #      } else {
-                                        #        y <- 95
-                                        #      }
-                                        #      updateTextInput(session, "modalMCPInputLevel", value = y)
-                                        #    })
-                                        #  })
-                                        #
-                                        #
-                                        #
-
   ## ------------------------------------------------------------------------------ ##  
   ## Generate output grid
 
@@ -663,7 +614,7 @@ shinyServer(function(input, output, session) {
     if (!is.null(data4())) {
      rgs <- apply(bbox(data4()$dat), 1, diff)
      rgs <- c(rgs / 10, rgs / 500)
-     sliderInput("gridResSlider", "Resolution", 1, 1000, round(mean(rgs)))
+     sliderInput("gridResSlider", "Resolution", mean(rgs) * 0.001, mean(rgs) * 1000, round(mean(rgs)))
     }
   })
 
@@ -989,24 +940,6 @@ shinyServer(function(input, output, session) {
             unlink(normalizePath(file.path(outDir, "figure"), mustWork=FALSE, winslash="/"), recursive=TRUE)
             
           }
-
-          ## ------------------------------------------------------------------------------ ##  
-          ## Zip - Removed since it is not working on Windows
-          ## createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress4",
-          ##             "Zip-file",
-          ##             message=paste0("[", Sys.time(), "] Zipping all results"), 
-          ##             style="info", 
-          ##             dismiss=FALSE,
-          ##             append=TRUE)
-
-          ## if (config()$general$content$doZip) {
-          ##   ow <- setwd(outDir)
-          ##   zip(paste0(runId, ".zip"), files=list.files(full.names=TRUE, include.dirs=TRUE))
-          ##   if (config()$general$content$doCp) {
-          ##     file.copy(paste0(runId, ".zip"), config()$general$content$wd)
-          ##   }
-          ##   setwd(ow)
-          ## }
 
            if (config()$general$content$doCp) {
              dir.create(normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/"))

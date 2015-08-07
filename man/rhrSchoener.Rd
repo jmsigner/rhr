@@ -15,8 +15,8 @@ rhrSchoener(dat, interval, alpha = 0.25, minM = 10, consec = TRUE)
   value used to calculate the critical value.} \item{minM}
   {Numeric scalar, the minimum number of pairs required, if
   m is smaller than this argument it will return \code{NA}.}
-  \item{consec}{Locagical scalar, indicates whether or not
-  the observations are consecutive or not.}
+  \item{consec}{Locagical scalar, indicates whether or not the
+  observations are consecutive or not.}
 }
 \value{
 \code{vector} vector of length six. \itemize{ \item{"V"}
