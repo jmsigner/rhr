@@ -3,7 +3,7 @@ library(rhr)
 data(datSH)
 
 ## Create a SpatialPoints objects with the relocation
-sp <- sp::SpatialPoints(datSH[, 4:3])
+sp <- sp::SpatialPoints(datSH[, 2:3])
 
 ## Parse time
 time <- ymd_hms(paste(datSH$day, datSH$time))
