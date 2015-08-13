@@ -28,7 +28,8 @@ Imports:
     lubridate,
     mixtools,
     mvtnorm,
-    reshape2
+    reshape2,
+    trajectories
 LinkingTo: Rcpp
 Suggests: 
     ascii,

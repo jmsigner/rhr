@@ -5,7 +5,7 @@
 
 ## clean everything 
 rm(list=ls())
-debug <- FALSE
+debug <- TRUE
 if (debug) {
   .datFromR <- NULL
   outDir <- "/tmp"
@@ -36,8 +36,6 @@ shinyServer(function(input, output, session) {
   ##  addResourcePath("out", outDir)
 
 
-  if (debug) cat("====================================================\n", file=stderr())
-  if (debug) cat(outDir, "\n", file=stderr())
 
 
   ## ============================================================================== ##  
@@ -214,36 +212,15 @@ shinyServer(function(input, output, session) {
       dateFormat       <- input$mfDateFormat
       timeFormat       <- input$mfTimeFormat
 
-      if (debug) cat("lat : ", lat, "\n")
-      if (debug) cat("lon : ", lon, "\n")
-
       if (!is.na(lon) & !is.na(lat)) {
 
 
-        if (debug) cat("lat : ", (lat), "\n")
-        if (debug) cat("lon : ", (lon), "\n")
-        if (debug) cat("id class: ", class(id), "\n")
-
-        if (debug) cat("Trying to remap", "\n")
-        if (debug) cat(names(data()$data), "\n")
-        if (debug) cat("Lookup ======= ", "\n")
-        if (debug) cat(c(lon=lon, lat=lat, id=id, date=date, time=time), "\n")
-        
 
         dat2 <- rhrMapFields(data()$data,
                              fields=list(lon=lon, lat=lat, id=id, date=date, time=time), 
                              projString=NULL, dateFormat=dateFormat,
                              timeFormat=timeFormat, defaultId="Animal1")
 
-
-        if (debug) cat("\nstr(dat2)\n")
-        if (debug) cat(str(dat2))
-        if (debug) cat("\nclass(dat2)\n")
-        if (debug) cat(class(dat2))
-        if (debug) cat("\n===============\n")
-
-        if (debug) cat(input$configInEpsg, "\n")
-        if (debug) cat(input$configOutEpsg, "\n")
 
         ## Epsg can be used later
         if (!is.null(dat2)) {
@@ -279,8 +256,6 @@ shinyServer(function(input, output, session) {
         return(NULL)
       }
     } else {
-      if (debug) cat("dat2 is null\n")
-      if (debug) cat("============ \n")
       return(NULL)
     }
   })
@@ -300,8 +275,6 @@ shinyServer(function(input, output, session) {
 
   output$mfUI <- renderUI({
     if (!is.null(data2())) {
-      if (debug) cat("str mfUI ---------- \n")
-      if (debug) cat(str(data2()),  "\n")
       ## ugly workaround to get date displayed properly
       dat2Temp <- head(as.data.frame(data2()$dat), 25)
       dat2Temp$timestamp <- as.character(dat2Temp$timestamp)
@@ -819,12 +792,6 @@ shinyServer(function(input, output, session) {
           )
         )
 
-        if (debug) cat("str anaylsis\n\n")
-        if (debug) cat("=======================\n\n")
-        if (debug) cat(str(args))
-        if (debug) saveRDS(args, "/tmp/myrds.RDS")
-        if (debug) cat("=======================\n\n")
-        
         createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress1",
                     "Starting Analysis",
                     content = paste0("[", Sys.time(), "] Preparing the analysis"), 
@@ -847,7 +814,6 @@ shinyServer(function(input, output, session) {
 
           ## ------------------------------------------------------------------------------ ##  
           ## Run the whole analysis
-          if (debug) cat("===========\n", c(input$runSteps, input$runSteps2), "\n")
           starttime <- Sys.time()
           runtime <- system.time(res <- rhrHrAnalysis(data4(),
                                                       what=c(input$runSteps, input$runSteps2), 
@@ -896,11 +862,7 @@ shinyServer(function(input, output, session) {
             ))
             
             setProgress(message="Creating html file")
-            if (debug) cat("files are: \n")
-            if (debug) cat(files)
-            if (debug) cat("\n\n")
             src <- capture.output(brew(file=normalizePath(file.path(files, "body.brew"), winslash="/", mustWork=FALSE), output=stdout(), envir=brewEnv))
-            if (debug) cat(str(input$selectStep))
             
             
             foo <- knit(text=src, output=normalizePath(file.path(outDir, "rhrReport.Rmd"), mustWork=FALSE, winslash="/"), quiet=TRUE,
