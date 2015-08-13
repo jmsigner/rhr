@@ -1,10 +1,10 @@
 #' Net squared deplacement
-#' 
+#'
 #' Calcualtes the net squuared deplacement from the first point.
-#' 
-#' @param x RhrTrack* object 
-#' 
-#' @examples 
+#'
+#' @param x RhrTrack* object
+#'
+#' @examples
 #' data(trackS)
 #' traj <- rhrTraj(SpatialPoints(datSH[, 2:3]))
 #' plot(rhrNSD(traj), type= "l")
@@ -16,6 +16,6 @@ rhrNSD <- function(x, ...) {
 #' @export
 rhrNSD.RhrTrackS <- function(x, ...) {
   xx <- coordinates(rhrPoints(x))
-  sp::spDistsN1(as.matrix(xx), 
-                as.numeric(xx[1, ]))
+  sp::spDistsN1(as.matrix(xx),
+                as.numeric(xx[1, ]))^2
 }
