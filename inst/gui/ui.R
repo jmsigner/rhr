@@ -271,5 +271,6 @@ shinyUI(
                         )
                       ),
              inverse=TRUE,
-             footer=list(hr(), p("2014 - Wildlife Sciences - Georg-August-University Goettingen, citation"))))
+             footer=list(hr(), p("2015 - Wildlife Sciences - Georg-August-University Goettingen"), 
+                         a("citation", href = "http://jmsigner.github.io/rhrman/abtCitation.html", target = "_blank"))))
 
