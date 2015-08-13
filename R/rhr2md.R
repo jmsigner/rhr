@@ -29,24 +29,9 @@ rhr2md.RhrTrackS <- function(x) {
     paste0("```\n",  
            paste0(capture.output(summary(rhrSegments(x)$dist)), collapse = "\n"), "\n```\n\n"))
   
-  cat(md)
   
-  f <- knit2html(text = md)
-  writeLines(f, "test.html")
-  browseURL("test.html")
-  getwd()
-  
-  library(knitr)
-  library(rmarkdown)
-  
-  rmarkdown::
   f <- markdownToHTML(text = md, output = "/tmp/lala.html")
-  f
   
-  library(markdown)
-  markdownToHTML(md)
-  
-  cat(md)
 }
 
     
