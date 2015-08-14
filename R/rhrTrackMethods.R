@@ -103,6 +103,8 @@ rhrSegments <- function(x, ...) {
 #' @export
 rhrSegments.RhrTrackS <- function(x, spatial = FALSE, ...) {
   
+  x <- trackS
+  
   a <- sp::coordinates(rhrPoints(x))
   cc <- x$trackConnections
   
@@ -111,12 +113,12 @@ rhrSegments.RhrTrackS <- function(x, spatial = FALSE, ...) {
                   x1 = a[-1, 1], 
                   y0 = a[-n, 2], 
                   y1 = a[-1, 2], 
-                  dist = cc$distance, 
+                  distance = cc$distance, 
                   direction = cc$direction)
   if (spatial) {
     ## todo: carry forward epsg
     l <- SpatialLines(lapply(1:nrow(a), function(i) with(a[i, ], Lines(list(Line(cbind(c(x0, x1), c(y0, y1)))), as.character(i)))))
-    SpatialLinesDataFrame(l, a[, c("dist", "direction")])
+    SpatialLinesDataFrame(l, a[, c("distance", "direction")])
   } else {
     a
   }
@@ -135,7 +137,7 @@ rhrSegments.RhrTrackST <- function(x, spatial = FALSE, ...) {
   if (spatial) {
     ## todo: carry forward epsg
     l <- SpatialLines(lapply(1:nrow(a), function(i) with(a[i, ], Lines(list(Line(cbind(c(x0, x1), c(y0, y1)))), as.character(i)))))
-    SpatialLinesDataFrame(l, a[, c("dist", "direction")])
+    SpatialLinesDataFrame(l, a[, c("distance", "direction")])
   } else {
     a
   }
