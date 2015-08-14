@@ -137,7 +137,7 @@ rhrSegments.RhrTrackST <- function(x, spatial = FALSE, ...) {
   if (spatial) {
     ## todo: carry forward epsg
     l <- SpatialLines(lapply(1:nrow(a), function(i) with(a[i, ], Lines(list(Line(cbind(c(x0, x1), c(y0, y1)))), as.character(i)))))
-    SpatialLinesDataFrame(l, a[, c("distance", "direction")])
+    SpatialLinesDataFrame(l, a[, c("distance", "direction", "duration", "speed")])
   } else {
     a
   }
