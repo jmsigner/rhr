@@ -6,6 +6,9 @@
 \alias{rhrTrackSpan}
 \alias{rhrTrackStart}
 \alias{rhrTrackTime}
+\alias{rhrTracksEnd}
+\alias{rhrTracksSpan}
+\alias{rhrTracksStart}
 \title{Working with timestamps}
 \usage{
 rhrTrackStart(x)
@@ -13,6 +16,12 @@ rhrTrackStart(x)
 rhrTrackEnd(x)
 
 rhrTrackSpan(x)
+
+rhrTracksStart(x)
+
+rhrTracksEnd(x)
+
+rhrTracksSpan(x)
 
 rhrTrackBy(x)
 }

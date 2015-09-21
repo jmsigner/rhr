@@ -35,6 +35,7 @@ dim.RhrTrack <- function(x) {
   dim(x$track@data)
 }
 
+
 #' Extract relocations from a track.
 #' 
 #' Extract the relocation points from a track and return them as a `SpatialPointsPointsDataframe` object.
@@ -52,8 +53,34 @@ rhrPoints.RhrTrackS <- function(x, ...) {
 }
 
 #' @export
+rhrPoints.RhrTracks <- function(x, ...) {
+  pts <- do.call(rbind, lapply(x, rhrPoints))
+  pts$id <- rep(names(x), sapply(x, nrow))
+  pts
+}
+
+#' @export
 rhrPoints.RhrTrackST <- function(x, ...) {
   as(x$track, "SpatialPointsDataFrame")
+}
+
+
+#' Extract meta data from a track
+#' @param list.
+#' 
+#' @export
+rhrMeta <- function(x, ...) {
+  UseMethod("rhrMeta", x)
+}
+
+#' @export
+rhrMeta.RhrTrack <- function(x, ...) {
+  x$meta
+}
+
+#' @export
+rhrMeta.RhrTracks <- function(x, ...) {
+  lapply(x, rhrMeta)
 }
 
 #' Extract time stamps from a track.
@@ -103,8 +130,6 @@ rhrSegments <- function(x, ...) {
 #' @export
 rhrSegments.RhrTrackS <- function(x, spatial = FALSE, ...) {
   
-  x <- trackS
-  
   a <- sp::coordinates(rhrPoints(x))
   cc <- x$trackConnections
   
@@ -152,6 +177,25 @@ plot.RhrTrack <- function(x, ...) {
   points(x[1, 1], x[1, 2], pch = 19, col = "red", cex = 1.5)
   points(x[nrow(x), 1], x[nrow(x), 2], pch = 15, col = "red", cex = 1.5)
   legend("topleft", pch = c(19, 15), col = "red", legend = c("start", "end"))
+}
+
+#' @export
+plot.RhrTracks <- function(x, ...) {
+  x <- rhrPoints(x)
+  ids <- x$id
+  n <- length(unique(ids))
+  cols <- rainbow(n)     # six color rainbow
+  
+  x <- data.frame(coordinates(x))
+  plot(x[, 1], x[, 2], xlab  = "x", ylab = "y", asp = 1, type = "n", las = 1, ...)
+  xs <- split(x, ids)
+  for(i in seq_len(n)) {
+    xx <- xs[[i]]
+    lines(xx[, 1], xx[, 2], col = cols[i])
+    points(xx[1, 1], xx[1, 2], pch = 19, col = cols[i], cex = 1.5)
+    points(xx[nrow(xx), 1], xx[nrow(xx), 2], pch = 15, col = cols[i], cex = 1.5)
+  }
+  legend("topleft", pch = c(19, 15), legend = c("start", "end"))
 }
 
 ## print
@@ -254,6 +298,40 @@ rhrTrackSpan <- function(x) {
 #' @export
 rhrTrackSpan.RhrTrackST <- function(x) {
   lubridate::new_interval(rhrTrackStart(x), rhrTrackEnd(x))
+}
+
+
+#' @export
+#' @rdname rhrTrackTime
+rhrTracksStart <- function(x) {
+  UseMethod("rhrTracksStart")
+}
+
+#' @export
+rhrTracksStart.RhrTracksST <- function(x) {
+  min(do.call(base::c, lapply(x, rhrTrackStart)))
+}
+
+#' @rdname rhrTrackTime
+#' @export
+rhrTracksEnd <- function(x) {
+  UseMethod("rhrTracksEnd")
+}
+
+#' @export
+rhrTracksEnd.RhrTracksST <- function(x) {
+  max(do.call(base::c, lapply(x, rhrTrackEnd)))
+}
+
+#' @rdname rhrTrackTime
+#' @export
+rhrTracksSpan <- function(x) {
+  UseMethod("rhrTracksSpan")
+}
+
+#' @export
+rhrTracksSpan.RhrTracksST <- function(x) {
+  lubridate::new_interval(rhrTracksStart(x), rhrTracksEnd(x))
 }
 
 #' @rdname rhrTrackTime
@@ -359,3 +437,107 @@ rhrSplit.RhrTrackST <- function(x, f, minN = 3) {
   lapply(pts, function(y) if (nrow(y) >= minN) rhrTrack(as(y, "SpatialPointsDataFrame"), time(y)) else NULL)
   
 }
+
+#' Returns the bounding box of a \code{RhrTrack*}
+#'
+#' @param x Object of class \code{RhrTrack*}.
+#' @param f Numeric value, fraction by which the bounding box is extended.
+#' @return x matrix with the bounding box
+#' @export
+#' @example inst/examples/ex-rhrBBX.R
+rhrBBX <- function(x, ...) {
+  UseMethod("rhrBBX")
+}
+
+#' @export
+rhrBBX.RhrTrack <- function(x, f = 0) {
+  rhrExtBBX(sp::bbox(rhrPoints(x)), f)
+}
+
+#' @export
+rhrBBX.RhrTracks <- function(x, f = 0) {
+  if (length(x) == 1) {
+    rhrBBX(x[[1]])
+  } else {
+    abbx <- simplify2array(lapply(x, function(y) sp::bbox(rhrPoints(y))))
+    rhrExtBBX(cbind(apply(abbx[, 1, ], 1, min), apply(abbx[, 2, ], 1, max)), f)
+  }
+}
+
+rhrExtBBX <- function(x, f) {
+  x[1, ] <- grDevices::extendrange(r = x[1, ], f = f)
+  x[2, ] <- grDevices::extendrange(r = x[2, ], f = f)
+  x
+}
+
+
+
+# Extract methods ---------------------------------------------------------
+
+#' @export
+"[.RhrTrackS" <- function(x, i, j) {
+  if(!missing(j)) {
+    warning("j is ignored")
+  }
+  rhrTrack(rhrPoints(x)[i, ])
+}
+
+#' @export
+"[.RhrTrackST" <- function(x, i, j) {
+  if(!missing(j)) {
+    warning("j is ignored")
+  }
+  rhrTrack(rhrPoints(x)[i, ], rhrTimes(x)[i])
+}
+
+# rhrWithin ---------------------------------------------------------------
+
+#' Spatial subset of a track
+#'
+#' Performs a subset of a track based on the spatial position of relocations. Only relocations that are within a polygon (\code{SpatialPolygons*}) are selected a new track is created. 
+#' @param x Object of class \code{RhrTrack*}.
+#' @param y Object of class \code{SpatialPolygons*}
+#' @return Object of class \code{rhrTrack*}. 
+#' @export
+#' @example inst/examples/ex-rhrWithin.R
+
+rhrWithin <- function(x, y, ...) {
+  UseMethod("rhrWithin")
+}
+
+#' @export
+rhrWithin.RhrTrack <- function(x, y) {
+  wp <- which(rgeos::gWithin(rhrPoints(x), y, byid = TRUE))
+  if (length(wp) > 1) {
+    x[wp, ]
+  }
+}
+
+#' @export
+rhrWithin.RhrTracks <- function(x, y) {
+  x <- lapply(x, rhrWithin, y)
+  x <- x[!sapply(x, is.null)]
+  
+  class(x) <- c(
+    if (all(sapply(x, is, "RhrTrackS"))) "RhrTracksS",
+    if (all(sapply(x, is, "RhrTrackST"))) "RhrTracksST", 
+    if (all(sapply(x, is, "RhrTrackSTR"))) "RhrTracksSTR", 
+    "RhrTracks", "list")
+  x
+}
+
+
+bbx2sp <- function(x) {
+  rgeos::gEnvelope(SpatialPoints(cbind(x[1, ], x[2, ])))
+}
+
+
+# could be nicer methods --------------------------------------------------
+
+rhrAnimalById <- function(x, ids) {
+  sel <- which(names(x) %in% ids)
+  y <- base::`[`(x, sel)
+  class(y) <- class(x)
+  y
+}
+

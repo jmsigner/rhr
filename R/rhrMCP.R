@@ -106,6 +106,11 @@ rhrLevels.RhrMCP <- function(x, ...) {
   x$args$levels
 }
 
+##' @export
+rhrArgs.RhrMCP <- function(x, ...) {
+  x$args
+}
+
 ##' @method plot RhrMCP
 ##' @export
 plot.RhrMCP <- function(x, title=NULL, ...) {

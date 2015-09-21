@@ -2,18 +2,23 @@
 % Please edit documentation in R/rhrTrack.R
 \name{rhrTrack}
 \alias{rhrTrack}
+\alias{rhrTracks}
 \title{Create objects of class `RhrTrack` to represent animal relocation data.}
 \usage{
 rhrTrack(sp, time, duplicates = "remove", meta)
+
+rhrTracks(sp, ts, id, meta)
 }
 \arguments{
-\item{sp}{SpatialPoints* with the relocation of the animal.}
+\item{sp}{SpatialPoints* with the relocation of the animal or \code{RhrMappedData}.}
 
 \item{time}{Vector with objects of class `POSIXct`, giving the time stamp of relocations.}
 
 \item{duplicates}{String, indicating how to handle duplicted time stamps. Currently only  "remove" is supported.}
 
-\item{metda}{Named list, providint meta information about the animal.}
+\item{meta}{Named list, providing meta information about the animal.}
+
+\item{id}{Vector containing the id for each point in \code{sp}.}
 }
 \description{
 Creates object of class `RhrTrack*` from `SpatialPoints*` and, if provided, time stamps.
