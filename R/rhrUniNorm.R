@@ -105,7 +105,6 @@ rhrData.RhrUniNorm <- function(x, spatial=FALSE, ...) {
 }
 
 ##' @export
-##' @method plot RhrUniNorm
 plot.RhrUniNorm <- function(x, levels=95, ...) {
   ud <- rhrUD(x)
   iso <- rhrIsopleths(x, levels)

@@ -1,47 +1,41 @@
-## head
-#' @export
-head.RhrTrack <- function(x, n = 6) {
-  head(x$track@data, n)
-}
+# # @export
+# head.RhrTrack <- function(x, n = 6, ...) {
+#   base::head(x$track@data, n)
+# }
 
-## tail 
-#' @export
-tail.RhrTrack <- function(x, n = 6) {
-  tail(x$track@data, n)
-}
-
-
-## length
-#' @export
-length.RhrTrack <- function(x) {
-  nrow(x$track@data)
-}
-
-## nrow
-#' @export
-nrow.RhrTrack <- function(x) {
-  nrow(x$track@data)
-}
-
-## ncol
-#' @export
-ncol.RhrTrack <- function(x) {
-  ncol(x$track@data)
-}
-
-## dim
-#' @export
-dim.RhrTrack <- function(x) {
-  dim(x$track@data)
-}
+# # @export
+# tail.RhrTrack <- function(x, n = 6, ...) {
+#   tail(x$track@data, n)
+# }
+# 
+# # @export
+# length.RhrTrack <- function(x) {
+#   nrow(x$track@data)
+# }
+# 
+# # @export
+# nrow.RhrTrack <- function(x) {
+#   nrow(x$track@data)
+# }
+# 
+# # @export
+# ncol.RhrTrack <- function(x) {
+#   ncol(x$track@data)
+# }
+# 
+# ## dim
+# # @export
+# dim.RhrTrack <- function(x) {
+#   dim(x$track@data)
+# }
 
 
 #' Extract relocations from a track.
 #' 
 #' Extract the relocation points from a track and return them as a `SpatialPointsPointsDataframe` object.
 #' @param x Object of class `RhrTrack*`.
+#' @param ... none implemented.
 #' @example inst/examples/ex-rhrPoints.R
-#' 
 #' @export
 rhrPoints <- function(x, ...) {
   UseMethod("rhrPoints", x)
@@ -66,7 +60,8 @@ rhrPoints.RhrTrackST <- function(x, ...) {
 
 
 #' Extract meta data from a track
-#' @param list.
+#' @param x list.
+#' @param ... none implemented.
 #' 
 #' @export
 rhrMeta <- function(x, ...) {
@@ -87,6 +82,7 @@ rhrMeta.RhrTracks <- function(x, ...) {
 #' 
 #' Extracts the time stamps from a track and return them as a vector.
 #' @param x Object of class `RhrTrack*`.
+#' @param ... none implemented.
 #' @example inst/examples/ex-rhrTimes.R
 #' 
 #' @export
@@ -105,14 +101,21 @@ rhrTimes.RhrTrackST <- function(x, ...) {
 #' Returns the number of relocations in a track.
 #'
 #' @param x Object of class \code{RhrTrack*}
+#' @param ... none implemented.
 #' @export
 #' @example inst/examples/ex-rhrN.R
+
 rhrN <- function(x, ...) {
-  UseMethod("rhrN", x)
+  UseMethod("rhrN")
+}
+
+#' @export
+rhrN.default <- function(x, ...) {
+  paste0 ("rhrN is not defined for object of class", class(x))
 }
 
 ##' @export
-rhrN.RhrTrack <- function(x) {
+rhrN.RhrTrack <- function(x, ...) {
   nrow(x)
 }
 
@@ -121,9 +124,10 @@ rhrN.RhrTrack <- function(x) {
 #' Extract the segments, linear interpolations between two points, from the track.
 #' @param x Object of class `RhrTrack*`.
 #' @param spatial Logical value, should the result be spatial (SpatialLinesDataFrame).
+#' @param ... none implemented.
 #' @example inst/examples/ex-rhrSegments.R
 #' @export
-rhrSegments <- function(x, ...) {
+rhrSegments <- function(x, spatial, ...) {
   UseMethod("rhrSegments", x)
 }
 
@@ -142,8 +146,8 @@ rhrSegments.RhrTrackS <- function(x, spatial = FALSE, ...) {
                   direction = cc$direction)
   if (spatial) {
     ## todo: carry forward epsg
-    l <- SpatialLines(lapply(1:nrow(a), function(i) with(a[i, ], Lines(list(Line(cbind(c(x0, x1), c(y0, y1)))), as.character(i)))))
-    SpatialLinesDataFrame(l, a[, c("distance", "direction")])
+    l <- sp::SpatialLines(lapply(1:nrow(a), function(i) with(a[i, ], sp::Lines(list(sp::Line(cbind(c(x0, x1), c(y0, y1)))), as.character(i)))))
+    sp::SpatialLinesDataFrame(l, a[, c("distance", "direction")])
   } else {
     a
   }
@@ -161,24 +165,31 @@ rhrSegments.RhrTrackST <- function(x, spatial = FALSE, ...) {
                   x$trackConnections)
   if (spatial) {
     ## todo: carry forward epsg
-    l <- SpatialLines(lapply(1:nrow(a), function(i) with(a[i, ], Lines(list(Line(cbind(c(x0, x1), c(y0, y1)))), as.character(i)))))
-    SpatialLinesDataFrame(l, a[, c("distance", "direction", "duration", "speed")])
+    l <- sp::SpatialLines(lapply(1:nrow(a), function(i) with(a[i, ], Lines(list(Line(cbind(c(x0, x1), c(y0, y1)))), as.character(i)))))
+    sp::SpatialLinesDataFrame(l, a[, c("distance", "direction", "duration", "speed")])
   } else {
     a
   }
 }
 
 
-
+#' Prints RhrTrack object.
+#' 
+#' @param x RhrTrack object.
+#' @param ... None implemented.
 #' @export
 plot.RhrTrack <- function(x, ...) {
-  x <- coordinates(rhrPoints(x))
+  x <- sp::coordinates(rhrPoints(x))
   plot(x[, 1], x[, 2], xlab  = "", ylab = "", asp = 1, type = "l", las = 1, ...)
   points(x[1, 1], x[1, 2], pch = 19, col = "red", cex = 1.5)
   points(x[nrow(x), 1], x[nrow(x), 2], pch = 15, col = "red", cex = 1.5)
   legend("topleft", pch = c(19, 15), col = "red", legend = c("start", "end"))
 }
 
+#' Prints RhrTracks object.
+#' 
+#' @param x RhrTracks object.
+#' @param ... None implemented.
 #' @export
 plot.RhrTracks <- function(x, ...) {
   x <- rhrPoints(x)
@@ -186,7 +197,7 @@ plot.RhrTracks <- function(x, ...) {
   n <- length(unique(ids))
   cols <- rainbow(n)     # six color rainbow
   
-  x <- data.frame(coordinates(x))
+  x <- data.frame(sp::coordinates(x))
   plot(x[, 1], x[, 2], xlab  = "x", ylab = "y", asp = 1, type = "n", las = 1, ...)
   xs <- split(x, ids)
   for(i in seq_len(n)) {
@@ -201,7 +212,7 @@ plot.RhrTracks <- function(x, ...) {
 ## print
 prepLine <- function(field, val) {
   field <- if (stringr::str_length(field) > 30) {
-    paste0(string::str_sub(field, 1, 27), "...")
+    paste0(stringr::str_sub(field, 1, 27), "...")
   } else {
     field
   }
@@ -224,14 +235,15 @@ oneLine <- function(x) {
 #' Returns `TRUE` if time differences between consecutive relocations are equal.
 #'
 #' @param x Object of class \code{RhrTrackS*}
+#' @param ... none implemented.
 #' @export
 #' @example inst/examples/ex-rhrIsRegular.R
-is.regular <- function(x) {
+is.regular <- function(x, ...) {
   UseMethod("is.regular", x)
 }
 
 #' @export
-is.regular.RhrTrack <- function(x) {
+is.regular.RhrTrack <- function(x, ...) {
   if (is(x, "RhrTrackSTR")) {
     TRUE
   } else {
@@ -241,18 +253,19 @@ is.regular.RhrTrack <- function(x) {
 
 #' Checks if the track has time stamps
 #'
-#' Retunrs `TRUE` if the track has time stamps.
+#' Retunrs \code{TRUE} if the track has time stamps.
 #'
 #' @param x Object of class \code{RhrTrack*}
+#' @param ... none implemented.
 #' @export
 #' @example inst/examples/ex-rhrHasTS.R
 
-rhrHasTS <- function(x) {
+rhrHasTS <- function(x, ...) {
   UseMethod("rhrHasTS")
 }
 
 #' @export
-rhrHasTS.RhrTrack <- function(x) {
+rhrHasTS.RhrTrack <- function(x, ...) {
   inherits(x, "RhrTrackST")
 }
 
@@ -347,21 +360,24 @@ rhrTrackBy.RhrTrackSTR <- function(x) {
   as.numeric(xx[1])
 }
 
-
+#' Returns data of a RhrTrack* object.
+#' 
+#' @param x RhrTrack* object.
+#' @param ... ignored
 #' @export
-rhrTrackData <- function(x) {
+rhrTrackData <- function(x, ...) {
   UseMethod("rhrTrackData")
 }
 
 #' @export
-rhrTrackData.RhrTrack <- function(x) {
+rhrTrackData.RhrTrack <- function(x, ...) {
   as.data.frame(x$track)
 }
 
 
 
 #' @export
-print.RhrTrack <- function(x) {
+print.RhrTrack <- function(x, ...) {
   
   attr <- rhrTrackData(x)
   segs <- rhrSegments(x, spatial = FALSE)
@@ -408,14 +424,15 @@ print.RhrTrack <- function(x) {
 #' @param x Object of class \code{RhrTrack*}
 #' @param f Vector indicating the grouping
 #' @param minN Integer, the minimum number of relocations required in a group in order to create a new track. 
+#' @param ... none implemented.
 #' @export
 #' @example inst/examples/ex-rhrSplit.R
-rhrSplit <- function(x, ...) {
+rhrSplit <- function(x, f, minN, ...) {
   UseMethod("rhrSplit")
 }
 
 #' @export
-rhrSplit.RhrTrackS <- function(x, f, minN = 3) {
+rhrSplit.RhrTrackS <- function(x, f, minN = 3, ...) {
   
   if (nrow(x) != length(f)) {
     stop("x and f are not of the same length")
@@ -427,7 +444,7 @@ rhrSplit.RhrTrackS <- function(x, f, minN = 3) {
 }
 
 #' @export
-rhrSplit.RhrTrackST <- function(x, f, minN = 3) {
+rhrSplit.RhrTrackST <- function(x, f, minN = 3, ...) {
   
   if (nrow(x) != length(f)) {
     stop("x and f are not of the same length")
@@ -442,20 +459,21 @@ rhrSplit.RhrTrackST <- function(x, f, minN = 3) {
 #'
 #' @param x Object of class \code{RhrTrack*}.
 #' @param f Numeric value, fraction by which the bounding box is extended.
-#' @return x matrix with the bounding box
+#' @return A matrix with the bounding box.
+#' @param ... none implemented.
 #' @export
 #' @example inst/examples/ex-rhrBBX.R
-rhrBBX <- function(x, ...) {
+rhrBBX <- function(x, f, ...) {
   UseMethod("rhrBBX")
 }
 
 #' @export
-rhrBBX.RhrTrack <- function(x, f = 0) {
+rhrBBX.RhrTrack <- function(x, f = 0, ...) {
   rhrExtBBX(sp::bbox(rhrPoints(x)), f)
 }
 
 #' @export
-rhrBBX.RhrTracks <- function(x, f = 0) {
+rhrBBX.RhrTracks <- function(x, f = 0, ...) {
   if (length(x) == 1) {
     rhrBBX(x[[1]])
   } else {
@@ -497,6 +515,7 @@ rhrExtBBX <- function(x, f) {
 #' Performs a subset of a track based on the spatial position of relocations. Only relocations that are within a polygon (\code{SpatialPolygons*}) are selected a new track is created. 
 #' @param x Object of class \code{RhrTrack*}.
 #' @param y Object of class \code{SpatialPolygons*}
+#' @param ... none implemented.
 #' @return Object of class \code{rhrTrack*}. 
 #' @export
 #' @example inst/examples/ex-rhrWithin.R
@@ -506,7 +525,7 @@ rhrWithin <- function(x, y, ...) {
 }
 
 #' @export
-rhrWithin.RhrTrack <- function(x, y) {
+rhrWithin.RhrTrack <- function(x, y, ...) {
   wp <- which(rgeos::gWithin(rhrPoints(x), y, byid = TRUE))
   if (length(wp) > 1) {
     x[wp, ]
@@ -514,7 +533,7 @@ rhrWithin.RhrTrack <- function(x, y) {
 }
 
 #' @export
-rhrWithin.RhrTracks <- function(x, y) {
+rhrWithin.RhrTracks <- function(x, y, ...) {
   x <- lapply(x, rhrWithin, y)
   x <- x[!sapply(x, is.null)]
   
@@ -528,7 +547,7 @@ rhrWithin.RhrTracks <- function(x, y) {
 
 
 bbx2sp <- function(x) {
-  rgeos::gEnvelope(SpatialPoints(cbind(x[1, ], x[2, ])))
+  rgeos::gEnvelope(sp::SpatialPoints(cbind(x[1, ], x[2, ])))
 }
 
 

@@ -20,8 +20,8 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                           inGUI=FALSE,
                           inUnit="ido",
                           outUnit="ius", 
-                          report = TRUE, 
-                          createPDF = FALSE
+                          report = TRUE
+                          ## createPDF = FALSE
                           ## dataMan = NULL
                           ## vectorFormats=c("shp", "kml"),
                           ## rasterFormats=c("tif")
@@ -139,7 +139,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
     ## Spatial Data
     fnVect <- normalizePath(file.path(outDirVect,
                                       paste0("animal_", animal$id[1], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
-    writeOGR(rhrIsopleths(est, ...), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
+    rgdal::writeOGR(rhrIsopleths(est, ...), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
              overwrite_layer=TRUE)
 
     list(fnVect)
@@ -337,7 +337,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
       vcts <- saveVect(est, animal, scn, outDirs$vect, filename=fn, levels=ca$iso)
 
       fn <- normalizePath(file.path(outDirs$data, paste0(fn, ".shp")), mustWork=FALSE, winslash="/")
-      writeOGR(rhrIsopleths(est, levels=ca$iso), dsn=fn, layer=basename(tools::file_path_sans_ext(fn)), driver="ESRI Shapefile",
+      rgdal::writeOGR(rhrIsopleths(est, levels=ca$iso), dsn=fn, layer=basename(tools::file_path_sans_ext(fn)), driver="ESRI Shapefile",
              overwrite_layer=TRUE)
 
       

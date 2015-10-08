@@ -1,9 +1,9 @@
-##' Bimodal circular home range estimation
-##'
-##' Computes home-range using two circular normal distributions
-##' @title rhrBiCirc
-##' @param xy valid input data 
-##' @export
+#' Bimodal circular home range estimation
+#'
+#' Computes home-range using two circular normal distributions
+#' @title rhrBiCirc
+#' @param xy valid input data 
+#' @export
 rhrBiCirc <- function(xy) {
 
   xy <- rhrCheckData(xy, returnSP=FALSE)
@@ -83,7 +83,7 @@ d2cbn <- function(x, y, c1, c2, sigma1, sigma2, m) {
 
 
 
-##' @export
+#' @export
 rhrUD.RhrBiCirc <- function(x, trast, ...) {
   if (missing(trast)) {
     trast <- rhrRasterFromExt(rhrExtFromPoints(x$args$xy, extendRange=0.2), nrow=100, res=NULL)
@@ -95,31 +95,30 @@ rhrUD.RhrBiCirc <- function(x, trast, ...) {
   raster::rasterFromXYZ(r1)
 }
 
-##' @export
+#' @export
 rhrCUD.RhrBiCirc <- function(x, ...) {
   rhrUD2CUD(rhrUD(x, ...))
 }
 
-##' @export
-##' @rdname rhrHasUD
+#' @export
+#' @rdname rhrHasUD
 rhrHasUD.RhrBiCirc <- function(x, ...) {
   TRUE
 }
 
 
-##' @export
+#' @export
 rhrIsopleths.RhrBiCirc <- function(x, levels=95, ...) {
   cud <- rhrCUD(x)
   rhrCUD2Isopleths(cud, levels)
 }
 
-##' @export
+#' @export
 rhrArea.RhrBiCirc <- function(x, levels=95, ...) {
   as.data.frame(rhrIsopleths(x, levels))
 }
 
-##' @export
-##' @method plot RhrBiCirc
+#' @export
 plot.RhrBiCirc <- function(x, ...) {
   plot(rhrUD(x, ...))
 }

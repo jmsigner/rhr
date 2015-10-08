@@ -70,21 +70,14 @@ rhrMCP <- function(xy, levels=95) {
 }
 
 
-##' @export
-print.RhrMCP <- function(x, ...) {
-  if (x$exitStatus == 0) {
-    cat("* Results: Minimum ConvexPolygon \n")
-    cat("* ------------------------------ \n")
-    cat(paste0("* Observations (n) : ", nrow(x$args$xy), "\n"))
-    cat(paste0("* Levels           : ", x$args$levels), "\n")
-    cat(paste0("* To obtain the areas use: rhrArea(x)\n"))
-  } else {
-    cat("* Results: Minimum ConvexPolygon \n")
-    cat("* ------------------------------ \n")
-    cat(paste0("* A error occured during the calculations\n"))
-    cat(paste0("* Error message: ", x$msg), "\n")
-  }
+#' @export
+print.RhrKDE <- function(x, as_md = FALSE, ...) {
+  cat("* RhrMCP \n")
+  cat("* ------ \n")
+  cat(sprintf("* Observations (n) : %s\n", nrow(rhrData(x))))
+  cat(sprintf("* Levels           : %s\n", paste0(rhrLevels(x), collapse = ", ")))
 }
+
 
 ##' @export
 rhrIsopleths.RhrMCP <- function(x, ...) {
@@ -111,9 +104,9 @@ rhrArgs.RhrMCP <- function(x, ...) {
   x$args
 }
 
-##' @method plot RhrMCP
-##' @export
-plot.RhrMCP <- function(x, title=NULL, ...) {
+#' @export
+#' @importFrom graphics plot
+plot.RhrMCP <- function(x, ..., base) {
 
   long <- lat <- group <- level <- lon <- NULL
 
@@ -121,17 +114,18 @@ plot.RhrMCP <- function(x, title=NULL, ...) {
   tempol <- rhrIsopleths(x)
   tempol@data$id <- rownames(tempol@data)
   tempolPoints <- try(ggplot2::fortify(tempol, region="id"))
-  tempolDF <- merge(tempolPoints, tempol@data, by="id")
+  tempolDF <- base::merge(tempolPoints, tempol@data, by="id")
 
   points <- rhrData(x, spatial=FALSE)
 
   names(points)[1:2] <- c("lon", "lat")
 
-  ggplot2::ggplot(tempolDF, aes(x=long, y=lat, group=group, color=factor(level))) + 
-    ggplot2::geom_point(data=points, aes(x=lon, y=lat, group=NULL, color=NULL), alpha=0.1) +
-      ggplot2::geom_path(size=3, alpha=0.4) + 
-        ggplot2::labs(colour=("MCP levels"), x="lon", y="lat", title=title) +
-          ggplot2::geom_path(size=0.2, colour="black") +
-            ggplot2::scale_color_manual(values=terrain.colors(10)) + theme_bw() 
+  ggplot2::ggplot(tempolDF, ggplot2::aes(x=long, y=lat, group=group, color=factor(level))) + 
+    ggplot2::geom_point(data=points, ggplot2::aes(x=lon, y=lat, group=NULL, color=NULL), alpha=0.1) +
+    ggplot2::geom_path(size=3, alpha=0.4) + 
+    ggplot2::labs(colour=("MCP levels"), x="lon", y="lat") +
+    ggplot2::geom_path(size=0.2, colour="black") +
+    ggplot2::scale_color_manual(values=terrain.colors(10)) + 
+    ggplot2::theme_bw() 
 }
 

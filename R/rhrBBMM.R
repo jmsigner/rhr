@@ -1,19 +1,19 @@
-##' Brownian Bridge Movement Model (BBMM)
-##'
-##' A wrapper around \code{adehabitatHR::kernelbb}. 
-##'
-##' @param xy \code{Data.frame} with two columns containing x and y coordinates.
-##' @param time a vector with time stamps for each relocation, must be of the same length as \code{xy}.
-##' @param rangesigma1 parameter 1
-##' @param sigma2 parameter 2
-##' @param trast a \code{RasterLayer} used as an template for the output grid.
+#' Brownian Bridge Movement Model (BBMM)
+#'
+#' A wrapper around \code{adehabitatHR::kernelbb}. 
+#'
+#' @param xy \code{Data.frame} with two columns containing x and y coordinates.
+#' @param time a vector with time stamps for each relocation, must be of the same length as \code{xy}.
+#' @param rangesigma1 parameter 1
+#' @param sigma2 parameter 2
+#' @param trast a \code{RasterLayer} used as an template for the output grid.
 
-##' @seealso \code{adehabitatHR::kernelbb}
+#' @seealso \code{adehabitatHR::kernelbb}
 
 
-##' @return object of class \code{RhrBBMM}
-##' @export
-##' 
+#' @return object of class \code{RhrBBMM}
+#' @export
+#' 
 
 rhrBBMM <- function(xy, time, 
                     rangesigma1=c(0, 10000), 
@@ -75,54 +75,51 @@ rhrBBMM <- function(xy, time,
 }
 
 
-##' @export
+#' @export
 print.RhrBBMM <- function(x, ...) {
   cat("* rhrHREstimatorBBMM \n")
   cat("* ----------------- \n")
   cat(sprintf("* Observations (n) : %s\n", nrow(x$arguments$xy)))
 }
 
-##' @export
+#' @export
 rhrUD.RhrBBMM <- function(x, ...) {
   x$res
 }
 
-##' @export
+#' @export
 rhrCUD.RhrBBMM <- function(x, ...) {
   rhrUD2CUD(rhrUD(x))
 }
 
-##' @export
+#' @export
 rhrIsopleths.RhrBBMM <- function(x, levels=95, ...) {
   cud <- rhrCUD(x)
   rhrCUD2Isopleths(cud, levels)
 }
 
-##' @export
+#' @export
 rhrArea.RhrBBMM <- function(x, levels=95, ...) {
   tmp <- rhrIsopleths(x, levels)
   data.frame(tmp)
 }
 
-##' @export
+#' @export
 rhrData.RhrBBMM <- function(x, ...) {
   x$args$xy
 }
 
-##' @export
+#' @export
 rhrHasUD.RhrBBMM <- function(x, ...) {
   TRUE
 }
 
-##' @export
-##' @method plot RhrBBMM
+#' @export
 plot.RhrBBMM <- function(x, addIsopleths=TRUE, levels=95, ...) {
   if (addIsopleths) {
     tempol <- rhrIsopleths(x, levels, ...)
   }
-
   plot(rhrUD(x))
-
   if (addIsopleths) {
     plot(rhrIsopleths(x), add=TRUE)
   }

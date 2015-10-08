@@ -1,3 +1,6 @@
+library(rhr)
+library(sp)
+
 context("as.character: test cases")
 
 set.seed(1234)

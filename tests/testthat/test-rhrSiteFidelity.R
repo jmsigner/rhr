@@ -1,5 +1,6 @@
 library(testthat)
 library(rhr)
+library(sp)
 data(datSH)
 
 context("rhrSiteFidelity: test cases")

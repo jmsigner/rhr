@@ -1,22 +1,23 @@
 #' Test for site fidelity of animal movement.
 #'
-#' @template xy
+#' @template trackS
 #' @param n Numeric scalar. The number of simulated trajectories.
 #' @param alpha Numeric scalar. The alpha value used for the bootstrapping.
 #' @useDynLib rhr
+#' @importFrom Rcpp sourceCpp
 #' @export
 #' @return object of class \code{RhrFidelity}, which is a list of length 4. \code{msd.dat} and \code{li.dat} is the mean square distance and linearity for the real date. \code{msd.sim} and \code{li.sim} are the mean square distances and linearities for the simulated trajectories. 
 #' 
 #' @references Spencer, S. R., Cameron, G. N., & Swihart, R. K. (1990). Operationally defining home range: temporal dependence exhibited by hispid cotton rats. Ecology, 1817-1822.
 #' @example inst/examples/ex-rhrSiteFidelity.R
 
-rhrSiteFidelity <- function(dat, n=100, alpha=0.05) {
+rhrSiteFidelity <- function(track, n=100, alpha=0.05) {
 
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
   
-  ## functin for later
+  ## function for later
   li <- function(x, y) {
     line.distance   <- sqrt((x[1] - x[length(x)])^2 + (y[1] - y[length(y)])^2)
     walked.distance <- sum(sqrt((x[-1] - x[-length(x)])^2 + (y[-1] - y[-length(y)])^2))
@@ -25,7 +26,7 @@ rhrSiteFidelity <- function(dat, n=100, alpha=0.05) {
 
   ## --------------------------------------------------------------------------- #
   ## Some argument checking
-  dat <- rhrCheckData(dat, returnSP=FALSE)
+  dat <- rhrCheckData(track, returnSP=FALSE)
 
   n <- rhrCheckNumber(n, "n", from=1)
   alpha <- rhrCheckNumber(alpha, "alpha", from=0, to=1)
@@ -74,20 +75,22 @@ print.RhrSiteFidelity <- function(x, ...) {
 
 }
 
-##' @export
-##' @method plot RhrSiteFidelity
+#' @export
 plot.RhrSiteFidelity <- function(x, plotit=TRUE, ...) {
-  p1 <- ggplot(data.frame(x=x$msdSim), aes(x=x)) + geom_histogram() +
-    expand_limits(x=range(c(x$msdSim, x$msdDat))) +
-      geom_vline(data=data.frame(x=x$msdCI), aes(xintercept=x), linetype=2, colour="red") +
-        geom_vline(data=data.frame(x=x$msdDat), aes(xintercept=x), colour="red", size=1.5) +
-          theme_bw() + labs(x="Mean Squared Distance from Center of Activity", y="count")
+  p1 <- ggplot2::ggplot(data.frame(x=x$msdSim), ggplot2::aes(x=x)) + ggplot2::geom_histogram() +
+    ggplot2::expand_limits(x=range(c(x$msdSim, x$msdDat))) +
+    ggplot2::geom_vline(data=data.frame(x=x$msdCI), ggplot2::aes(xintercept=x), linetype=2, colour="red") +
+    ggplot2::geom_vline(data=data.frame(x=x$msdDat), ggplot2::aes(xintercept=x), colour="red", size=1.5) +
+    ggplot2::theme_bw() + 
+    ggplot2::labs(x="Mean Squared Distance from Center of Activity", y="count")
 
-  p2 <- ggplot(data.frame(x=x$liSim), aes(x=x)) + geom_histogram() +
-    expand_limits(x=range(c(x$liSim, x$liDat))) +
-      geom_vline(data=data.frame(x=x$liCI), aes(xintercept=x), linetype=2, colour="red") +
-        geom_vline(data=data.frame(x=x$liDat), aes(xintercept=x), colour="red", size=1.5) +
-          theme_bw() + labs(x="Linearity Index", y="count")
+  p2 <- ggplot2::ggplot(data.frame(x=x$liSim), ggplot2::aes(x=x)) + 
+    ggplot2::geom_histogram() +
+    ggplot2::expand_limits(x=range(c(x$liSim, x$liDat))) +
+    ggplot2::geom_vline(data=data.frame(x=x$liCI), ggplot2::aes(xintercept=x), linetype=2, colour="red") +
+    ggplot2::geom_vline(data=data.frame(x=x$liDat), ggplot2::aes(xintercept=x), colour="red", size=1.5) +
+    ggplot2::theme_bw() + 
+    ggplot2::labs(x="Linearity Index", y="count")
 
   if (plotit) {
    gridExtra::grid.arrange(p1, p2, ncol=1)

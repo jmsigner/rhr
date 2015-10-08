@@ -1,5 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.gitignore
 cran-comments.md
 examples
 man-roxygen
+^\.git

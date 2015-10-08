@@ -1,4 +1,5 @@
 library(rhr)
+library(sp)
 library(testthat)
 
 context("rhrLevels: test cases")

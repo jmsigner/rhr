@@ -2,6 +2,7 @@ context("rhrReadData: test cases")
 
 ## Generate Data
 library(rhr)
+library(sp)
 data(datSH)
 
 write.table(datSH, file=file.path(tempdir(), "datSepComaHeader.txt"), sep=",", row.names=FALSE, col.names=TRUE)

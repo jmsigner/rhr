@@ -2,8 +2,6 @@
 #'
 #' This a wrapper around \code{rhrSchoener} to calculate time to statistical indpendence from a series of intervals.
 #'
-#' 
-#'
 #' @template trackST
 #' @param interval Numeric scalar, initial interval considered in seconds.
 #' @param ntimes Numeric scalar, the number of times the critical value needs to be exceeded in order to reach independence.
@@ -13,7 +11,7 @@
 #' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, Ecology, 66(4), 1176 - 1184
 #' @example  inst/examples/ex-rhrTTSI.R
 
-rhrTTSI <- function(track, time, interval, ntimes=3, ...) {
+rhrTTSI <- function(track, interval, ntimes=3, ...) {
 
   call <- match.call()
   dat <- rhrCheckData(track, returnSP=FALSE)
@@ -89,8 +87,8 @@ rhrTTSI <- function(track, time, interval, ntimes=3, ...) {
 
 }
 
-##' @method plot RhrTTSI
-##' @export
+#' @export
+#' @import grid
 
 plot.RhrTTSI <- function(x, ...) {
 
@@ -146,9 +144,7 @@ plot.RhrTTSI <- function(x, ...) {
 
 }
 
-##' @method print RhrTTSI
 ##' @export
-
 print.RhrTTSI <- function(x, ...) {
 
   cat(paste0("class           : ", class(x)),

@@ -2,6 +2,7 @@ context("rhrReadData: test cases")
 
 ## Generate Data
 library(rhr)
+library(sp)
 data(datSH)
 
 dat <- data.frame(lon=c(1, 2, 3), lat=c(1, 2, 3))

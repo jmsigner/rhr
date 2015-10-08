@@ -15,5 +15,5 @@ trackST <- rhrTrack(sp, time)
 rhrTrackSpan(trackST)
 
 ## split the track by year
-tracks <- rhrSplit(trackST, year(rhrTimes(trackST)))
-tracks
+# tracks <- rhrSplit(trackST, year(rhrTimes(trackST)))
+# tracks

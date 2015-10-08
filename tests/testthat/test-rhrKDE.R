@@ -1,6 +1,7 @@
 library(testthat)
 library(rhr)
 library(magrittr)
+library(sp)
 data(datSH)
 
 context("rhrKDE: test cases")

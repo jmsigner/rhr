@@ -1,12 +1,12 @@
-##' Asymptote of Home Range estimate
+##' Asymptote of a Home Range estimate
 ##' 
-##' Function calculates asymptote of the area of a home range estimate.
+##' Function calculates sample size when an asymptote of the area of a home range estimate is reached.
 ##'
-##' Bootstrapped home ranges are calculated for different sample sizes. Starting
+##' Bootstrapped home-range areas are calculated for different sample sizes. Starting
 ##' from few relocations until the sample size approaches the total number of
-##' points. Home range areas are then plotted against the sample sizes.
+##' points. Home-range areas are then plotted against the sample sizes.
 ##' Laver (2005, 2005) suggested to use the following cutoff value: the number
-##' of location at which estimates of the 95 \% confidence interval of the
+##' of locations at which estimates of the 95 \% confidence interval of the
 ##' bootstrapped home-range area is within a specified percentage of the
 ##' total home range area (that is the area of the home range with all
 ##' relocations) for at least n times. Harris 1990 suggested to use random
@@ -30,7 +30,7 @@
 ##' @example inst/examples/rhrAsymptote.R
 
 
-rhrAsymptote <- function(x, ns=seq(100, nrow(rhrData(x)), 500), nrep=10, tolTotArea=0.05, nTimes=5, sampling="sequential") {
+rhrAsymptote <- function(x, ns=seq(nrow(rhrData(x)) / 10, nrow(rhrData(x)), length.out = 10), nrep=10, tolTotArea=0.05, nTimes=5, sampling="sequential") {
 
   ## Input checks
   if (!is(x, "RhrEst")) {
@@ -77,31 +77,41 @@ rhrAsymptote <- function(x, ns=seq(100, nrow(rhrData(x)), 500), nrep=10, tolTotA
     stop("Requested sample size larger than the number of observation")
   }
 
+  
   # Which estimator was used
   est <- sub("^R(*)", "r\\1", class(x)[1])
 
-  providedArgs <- x$args
+  providedArgs <- rhrArgs(x)
   for (i in seq_along(providedArgs)) {
     if (is.character(providedArgs[[i]])) {
       providedArgs[[i]] <- shQuote(providedArgs[[i]])
     }
   }
 
-  n <- nrow(rhrData(x))
-  bb <- replicate(nrep,
-                  do.call(rbind,
-                          lapply(ns,
-                                 function(nss) 
-                                   cbind(ns=nss,
-                                         rhrArea(
-                                           do.call(est,
-                                                   c(if (sampling == "sequential") list(xy=(xx <- providedArgs[[1]][1:nss, ])[sample(nrow(xx), replace=TRUE),])
-                                                   else list(xy=providedArgs[[1]][sample(n, nss),]),
-                                                     providedArgs[-1])))))),
-                  simplify=FALSE)
-
-  bb <- do.call(rbind, bb)
-    
+  xyp <- rhrData(x)
+  n <- nrow(xyp)
+  smpls <- rep(ns, each = nrep)
+  bb <- do.call(rbind,
+                lapply(smpls, function(nss) 
+                  cbind(ns=nss, rhrArea(
+                    do.call(est, ## call a hr 
+                            c(if (sampling == "sequential") list(xy=(z=xyp[1:nss, ])[sample(nrow(z), replace=TRUE),])
+                              else list(xy=xyp[sample(n, nss),]),
+                              providedArgs[-1]))
+                    ))))
+  
+  #bb <- replicate(nrep,
+  #                do.call(rbind,
+  #                        lapply(ns,
+  #                               function(nss) 
+  #                                 cbind(ns=nss,
+  #                                       rhrArea(
+  #                                         do.call(est,
+  #                                                 c(if (sampling == "sequential") list(xy=(xx <- providedArgs[[1]][1:nss, ])[sample(nrow(xx), replace=TRUE),])
+  #                                                   else list(xy=providedArgs[[1]][sample(n, nss),]),
+  #                                                   providedArgs[-1])))))),
+  #                simplify=FALSE)
+  
   
   totalA <- rhrArea(x)
   totalA$lower <- totalA$area * (1 - tolTotArea)
@@ -140,15 +150,13 @@ rhrAsymptote <- function(x, ns=seq(100, nrow(rhrData(x)), 500), nrep=10, tolTotA
 
   out <- list(asymptote=asymReached, confints=do.call("rbind", confints), hrAreas=bb, call=match.call(),
               params=list(ns=ns, tolTotArea=tolTotArea), totalA=totalA, hrEstimator=x)
-  class(out) <- "RhrHRAsymptote"
+  class(out) <- c("RhrHRAsymptote", "list")
   out
 
 }
 
 
-##' @method print RhrHRAsymptote
-##' @export
-
+#' @export
 print.RhrHRAsymptote <- function(x, ...) {
 
   cat(paste0("class                    : ", class(x)),
@@ -158,10 +166,7 @@ print.RhrHRAsymptote <- function(x, ...) {
 
 }
 
-
-##' @method plot RhrHRAsymptote
-##' @export
-
+#' @export
 plot.RhrHRAsymptote <- function(x, ...) {
 
   ## Input checks
@@ -187,20 +192,20 @@ plot.RhrHRAsymptote <- function(x, ...) {
 
   
   
-  p <- ggplot(x$hrAreas, aes(x=ns, y=area, group=ns)) +
-    geom_point(alpha=0.5) +  
-      geom_ribbon(data=dd, aes(x=xx, ymin=ymin, ymax=ymax, group=NULL, y=NULL, alpha=0.4)) +
-        geom_hline(aes(yintercept=area), linetype="dashed", data=totalA)  +
-          geom_line(aes(x=ns, y=value, group=variable), alpha=0.5, data=reshape2::melt(x$confints, id.vars=c("level", "ns"))) 
+  p <- ggplot2::ggplot(x$hrAreas, ggplot2::aes(x=ns, y=area, group=ns)) +
+    ggplot2::geom_point(alpha=0.5) +  
+    ggplot2::geom_ribbon(data=dd, ggplot2::aes(x=xx, ymin=ymin, ymax=ymax, group=NULL, y=NULL, alpha=0.4)) +
+    ggplot2::geom_hline(ggplot2::aes(yintercept=area), linetype="dashed", data=totalA)  +
+    ggplot2::geom_line(ggplot2::aes(x=ns, y=value, group=variable), alpha=0.5, data=reshape2::melt(x$confints, id.vars=c("level", "ns"))) 
 
   if (nrow(asymR) >= 1) {
-    p <- p + geom_vline(aes(xintercept=ns), linetype="solid", colour="red", data=asymR) 
+    p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept=ns), linetype="solid", colour="red", data=asymR) 
   }
 
-  p <- p + facet_wrap(~level, ncol=2, scales="free_y") +
-    theme_bw() +
-      theme(legend.position="none") +
-        labs(x="Number of points", y="Area")
+  p <- p + ggplot2::facet_wrap(~level, ncol=2, scales="free_y") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(legend.position="none") +
+    ggplot2::labs(x="Number of points", y="Area")
 
   return(p)
 }

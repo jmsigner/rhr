@@ -21,8 +21,8 @@ rhrOU <- function(n = 1000, A = matrix(c(0.1, 0, 0, 0.1), 2), xy0, mu = c(0,0), 
   if (missing(xy0)) {
     xy0 <- mu
   } else {
-    if (inherits(xy0, "RhrTraj")) {
-      xy0 <- tail(coordinates(rhrTrajRelocations(xy0)), 1)
+    if (inherits(xy0, "RhrTrack")) {
+      xy0 <- tail(sp::coordinates(rhrPoints(xy0)), 1)
     }
     
   }

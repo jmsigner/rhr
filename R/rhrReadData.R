@@ -9,7 +9,7 @@
 ##' @param stringsAsFactors logical; indicating whether or not strings should be read as factors.
 ##' @param ... passed to scan
 ##' @details ...
-##' @example examples/exrhrReadData.R
+##' @example inst/examples/ex-rhrReadData.R
 ##' @return object of class \code{rhrDat}
 ##' @export
 ##' @author Johannes Signer

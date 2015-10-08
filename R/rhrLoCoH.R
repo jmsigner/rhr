@@ -180,16 +180,23 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
   qq2
 }
 
+##' @export
+rhrArgs.RhrLoCoH <- function(x, ...) {
+  x$args
+}
 
 
 ##' @export
 print.RhrLoCoH <- function(x, ...) {
-  cat("* rhrHREstimatorLoCoH \n")
-  cat("* ----------------- \n")
-  cat(sprintf("* Observations (n) : %s\n", nrow(x$args$xy)))
-  cat(sprintf("* Levels           : %s\n", x$args$levels))
+  cat("* RhrLoCoH \n")
+  cat("* -------- \n")
+  cat(sprintf("* Observations     : %s\n", nrow(rhrData(x))))
+  cat(sprintf("* Type             : %s\n", rhrTuningParameter(x)$name))
+  cat(sprintf("* Type n           : %s\n", rhrTuningParameter(x)$value))
+  cat(sprintf("* Auto n           : %s\n", rhrArgs(x)$autoN))
+  cat(sprintf("* Levels           : %s\n", paste0(rhrLevels(x), collapse = ", ")))
 }
-
+  
 ##' @export
 rhrIsopleths.RhrLoCoH <- function(x, ...) {
   ## Levels
@@ -221,8 +228,7 @@ rhrData.RhrLoCoH <- function(x, spatial=FALSE, ...) {
   xx <- rhrCheckData(x$args$xy, returnSP=spatial)
 }
 
-##' @export
-##' @method plot RhrLoCoH
+#' @export
 plot.RhrLoCoH <- function(x, title=NULL, ...) {
 
   long <- lat <- group <- level <- lon <- NULL
@@ -230,16 +236,16 @@ plot.RhrLoCoH <- function(x, title=NULL, ...) {
   ## fortify poly
   tempol <- rhrIsopleths(x, ...)
   tempol@data$id <- rownames(tempol@data)
-  tempolPoints <- try(fortify(tempol, region="id"))
+  tempolPoints <- try(ggplot2::fortify(tempol, region="id"))
   tempolDF <- merge(tempolPoints, tempol@data, by="id")
 
   points <- rhrData(x, spatial=FALSE)
   names(points)[1:2] <- c("lon", "lat")
 
-  ggplot(tempolDF, aes(x=long, y=lat, group=group, color=factor(level))) + 
-    geom_point(data=points, aes(x=lon, y=lat, group=NULL, color=NULL), alpha=0.1) +
-      geom_path(size=3, alpha=0.4) + 
-        labs(colour=("LoCoH levels"), x="lon", y="lat", title=title) +
-          geom_path(size=0.2, colour="black") +
-            scale_color_manual(values=terrain.colors(10)) + theme_bw() 
+  ggplot2::ggplot(tempolDF, ggplot2::aes(x=long, y=lat, group=group, color=factor(level))) + 
+    ggplot2::geom_point(data=points, ggplot2::aes(x=lon, y=lat, group=NULL, color=NULL), alpha=0.1) +
+    ggplot2::geom_path(size=3, alpha=0.4) + 
+    ggplot2::labs(colour=("LoCoH levels"), x="lon", y="lat", title=title) +
+    ggplot2::geom_path(size=0.2, colour="black") +
+    ggplot2::scale_color_manual(values=terrain.colors(10)) + ggplot2::theme_bw() 
 }

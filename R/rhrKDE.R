@@ -10,7 +10,6 @@
 ##' @template trast
 ##' @seealso \code{KernSmooth::bkde2d}, \code{rhr::rhrHref}, \code{rhr::rhrHlscv}, \code{rhr::rhrHpi}
 ##' @return Object of class \code{RhrKDE}
-##' @import Rcpp ggplot2 grid maptools methods rgdal
 ##' @export
 ##' 
 ##' @example inst/examples/rhrKDE.R
@@ -86,19 +85,26 @@ rhrKDE <- function(xy,
 }
 
 ##' @export
-print.RhrKDE <- function(x, ...) {
-  cat("* rhrHREstimatorKDE \n")
-  cat("* ----------------- \n")
-  cat(sprintf("* Observations (n) : %s\n", nrow(x$arguments$xy)))
-  cat(sprintf("* Bandwidth (h)    : %s\n", x$arguments$h))
+print.RhrKDE <- function(x, as_md = FALSE, ...) {
+  if (!as_md) {
+    cat("* RhrKDE \n")
+    cat("* ------ \n")
+    cat(sprintf("* Observations (n) : %s\n", nrow(rhrData(x))))
+    cat(sprintf("* Bandwidth (h)    : %s\n", paste0(rhrTuningParameter(x)$value, collapse = ", ")))
+    cat(sprintf("* Template raster  : %s\n", as.character(rhrArgs(x)$trast)))
+    cat(sprintf("* Levels           : %s\n", paste0(rhrLevels(x), collapse = ", ")))
+  } else {
+    
+    knitr::kable(data.frame(
+      What = c("Observations (n)",  "Bandwidth (h)",  "Template raster", "Levels"), 
+      Value = c(nrow(rhrData(x)),
+                paste0(rhrTuningParameter(x)$value, collapse = ", "), 
+                as.character(rhrArgs(x)$trast), paste0(rhrLevels(x), collapse = ", ")) 
+    ), row.name = FALSE)
+  }
 }
 
-##' Calculate cumulative UD for RhrHrEstimatorKDE
-##' 
-##' @param x an object of class rhrHREstimatorKDE
-##' @param ... further arguments, none implemented
-##' @export
-##' @method rhrCUD RhrKDE
+#' @export
 
 rhrCUD.RhrKDE <- function(x, ...) {
 
@@ -142,13 +148,17 @@ rhrData.RhrKDE <- function(x, spatial=FALSE, ...) {
 }
 
 ##' @export
+rhrArgs.RhrKDE <- function(x, ...) {
+  x$args
+}
+
+##' @export
 ##' @rdname rhrHasUD
 rhrHasUD.RhrKDE <- function(x, ...) {
   TRUE
 }
 
-##' @method plot RhrKDE
-##' @export
+#' @export
 plot.RhrKDE <- function(x, levels = NULL, addIsopleths=TRUE, ...) {
 
   if (is.null(levels)) {
@@ -167,6 +177,6 @@ rhrTuningParameter.RhrKDE <- function (x, msg = FALSE, digits = 3, ...) {
     paste0("Value of tuning parameter h: ", paste0(round(x$args$h, digits), collapse = ", "))
   } else {
     list(name = "h",
-         value = x$args$h)
+         value = round(x$args$h, digits))
   }
 }

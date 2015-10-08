@@ -2,6 +2,7 @@ context("rhrCheckData: test cases")
 
 library(testthat)
 library(rhr)
+library(sp)
 data(datSH)
 
 context("rhrMCP: test cases")

@@ -1,3 +1,5 @@
+library(rhr)
+library(sp)
 set.seed(123)
 x <- rnorm(500)
 y <- rnorm(500)

@@ -1,3 +1,4 @@
+library(sp)
 context("rhrHref: test cases")
 
 set.seed(1234)

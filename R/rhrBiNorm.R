@@ -1,10 +1,10 @@
-##' Bivariate bimodal Normal Home-Range estimation 
-##'
-##' Computes home-range using bivariate bimodal normal distribution
-##' @title rhrBiNorm
-##' @param xy valid input data 
-##' @param trast template raster
-##' @export
+#' Bivariate bimodal Normal Home-Range estimation 
+#'
+#' Computes home-range using bivariate bimodal normal distribution
+#' @title rhrBiNorm
+#' @param xy valid input data 
+#' @param trast template raster
+#' @export
 rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
   ## Capture input arguments
@@ -97,8 +97,7 @@ rhrData.RhrBiNorm <- function(x, spatial=FALSE, ...) {
   xx <- rhrCheckData(x$args$xy, returnSP=spatial)
 }
 
-##' @export
-##' @method plot RhrBiNorm
+#' @export
 plot.RhrBiNorm <- function(x, levels=95, ...) {
   ud <- rhrUD(x)
   iso <- rhrIsopleths(x, levels)

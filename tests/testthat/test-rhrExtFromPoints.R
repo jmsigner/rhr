@@ -1,5 +1,6 @@
 library(testthat)
 library(rhr)
+library(sp)
 data(datSH)
 
 context("rhrExtFromPoints: test cases")
