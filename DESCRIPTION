@@ -1,13 +1,16 @@
 Package: rhr
 Type: Package
 Title: Reproducible Home Ranges with R
-Version: 0.2.002
-Date: 2015-10-07
+Version: 0.2.010
+Date: 2015-10-08
 Author: Johannes Signer
 Maintainer: Johannes Signer<jsigner@gwdg.de>
 Description: Functions and a graphical user interface (GUI) to analyze animal
     telemetry data.
 License: GPL-3
+Depends:
+    grid,
+    sp
 Imports: 
     adehabitatHR,
     adehabitatLT,
@@ -23,8 +26,6 @@ Imports:
     rgdal,
     rgeos,
     reshape2,
-    grid,
-    sp,
     spacetime,
     stringr,
     trajectories, 

@@ -11,7 +11,6 @@
 ##' @seealso \code{KernSmooth::dpik}
 ##' @export
 ##' @references Gitzen, R. A., Millspaugh, J. J., & Kernohan, B. J. (2006). Bandwidth selection for fixed-kernel analysis of animal utilization distributions. _Journal of Wildlife Management_, 70(5), 1334-1344.
-##' @example inst/examples/rhrHpi.R
 
 rhrHpi <- function(xy, rescale="none", correct=TRUE, ...) {
 

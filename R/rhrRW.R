@@ -10,7 +10,6 @@
 #' @return Object of class RhrTrajST
 #' @export
 #'
-#' @example inst/examples/ex-rhrRW.R
  
 rhrRW <- function(xy0 = c(0, 0), n = 1000, sigma = 1, time) {
   

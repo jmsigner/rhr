@@ -34,16 +34,6 @@ Function to calculate Schoeners V.
 \details{
 This implementation uses the normal distribution as a sampling distribution. Relocations are ordered by timestamp and then relocations are sampled based on \code{interval}. If relocations are not equally spaced the nearest relocation forward is used.
 }
-\examples{
-library(rhr)
-data(datSH)
-dat <- data.frame(x = datSH[, 2],
-                  y = datSH[, 3],
-                  t = lubridate::ymd(datSH[, 4]) +
-                    lubridate::hms(datSH[, 5]))
-
-rhrSchoener(dat, interval = 60 * 60 * 10)
-}
 \references{
 Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, _Ecology_, 66(4), 1176 - 1184
 }

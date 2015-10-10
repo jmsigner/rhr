@@ -28,19 +28,4 @@ Some home range estimators require a tuning parameter for the estimation
 the value of the tuning parameter.
 If \code{msg = TRUE} values are rounded to the \code{digit} decimal place.
 }
-\examples{
-library(rhr)
-data(datSH)
-
-kde <- rhrKDE(datSH[, 2:3])
-locoh <- rhrLoCoH(datSH[, 2:3])
-
-rhrTuningParameter(kde)
-rhrTuningParameter(kde, msg = TRUE)
-rhrTuningParameter(kde, msg = TRUE, digits = 1)
-rhrTuningParameter(kde, msg = TRUE, digits = 10)
-
-rhrTuningParameter(locoh)
-rhrTuningParameter(locoh, msg = TRUE)
-}
 

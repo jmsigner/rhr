@@ -39,22 +39,6 @@ relocations) for at least n times. Harris 1990 suggested to use random
 sampling for discontinuous radio tracking data and sequential sampling for
 continuous radio tracking data.
 }
-\examples{
-library(rhr)
-data(datSH)
-
-## With KDE
-kde <- rhrKDE(datSH[1:100, 2:3])
-kdeA <- rhrAsymptote(kde)
-plot(kdeA)
-
-
-## With MCP
-mcp <- rhrMCP(datSH[1:100, 2:3])
-#mcpA <- rhrAsymptote(mcp)
-#plot(mcpA)
-
-}
 \references{
 Harris, S., et al. "Home-range analysis using radio-tracking data-a review of problems and techniques particularly as applied to the study of mammals." Mammal review 20.2-3 (1990): 97-123.
 

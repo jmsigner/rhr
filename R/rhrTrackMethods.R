@@ -35,7 +35,6 @@
 #' Extract the relocation points from a track and return them as a `SpatialPointsPointsDataframe` object.
 #' @param x Object of class `RhrTrack*`.
 #' @param ... none implemented.
-#' @example inst/examples/ex-rhrPoints.R
 #' @export
 rhrPoints <- function(x, ...) {
   UseMethod("rhrPoints", x)
@@ -83,7 +82,6 @@ rhrMeta.RhrTracks <- function(x, ...) {
 #' Extracts the time stamps from a track and return them as a vector.
 #' @param x Object of class `RhrTrack*`.
 #' @param ... none implemented.
-#' @example inst/examples/ex-rhrTimes.R
 #' 
 #' @export
 rhrTimes <- function(x, ...) {
@@ -103,7 +101,6 @@ rhrTimes.RhrTrackST <- function(x, ...) {
 #' @param x Object of class \code{RhrTrack*}
 #' @param ... none implemented.
 #' @export
-#' @example inst/examples/ex-rhrN.R
 
 rhrN <- function(x, ...) {
   UseMethod("rhrN")
@@ -125,7 +122,6 @@ rhrN.RhrTrack <- function(x, ...) {
 #' @param x Object of class `RhrTrack*`.
 #' @param spatial Logical value, should the result be spatial (SpatialLinesDataFrame).
 #' @param ... none implemented.
-#' @example inst/examples/ex-rhrSegments.R
 #' @export
 rhrSegments <- function(x, spatial, ...) {
   UseMethod("rhrSegments", x)
@@ -237,7 +233,6 @@ oneLine <- function(x) {
 #' @param x Object of class \code{RhrTrackS*}
 #' @param ... none implemented.
 #' @export
-#' @example inst/examples/ex-rhrIsRegular.R
 is.regular <- function(x, ...) {
   UseMethod("is.regular", x)
 }
@@ -258,7 +253,6 @@ is.regular.RhrTrack <- function(x, ...) {
 #' @param x Object of class \code{RhrTrack*}
 #' @param ... none implemented.
 #' @export
-#' @example inst/examples/ex-rhrHasTS.R
 
 rhrHasTS <- function(x, ...) {
   UseMethod("rhrHasTS")
@@ -277,7 +271,6 @@ rhrHasTS.RhrTrack <- function(x, ...) {
 #' `rhrTrackStart` returns the first the time stamp of the beginning of a track. `rhrTrackEnd` returns the last time stamp and `rhrTrackSpan` the time span of a track.
 #'
 #' @param x Object of class \code{RhrTrack*}
-#' @example inst/examples/ex-rhrTrackTime.R
 #' @name rhrTrackTime
  
 #' @export
@@ -426,7 +419,6 @@ print.RhrTrack <- function(x, ...) {
 #' @param minN Integer, the minimum number of relocations required in a group in order to create a new track. 
 #' @param ... none implemented.
 #' @export
-#' @example inst/examples/ex-rhrSplit.R
 rhrSplit <- function(x, f, minN, ...) {
   UseMethod("rhrSplit")
 }
@@ -462,7 +454,6 @@ rhrSplit.RhrTrackST <- function(x, f, minN = 3, ...) {
 #' @return A matrix with the bounding box.
 #' @param ... none implemented.
 #' @export
-#' @example inst/examples/ex-rhrBBX.R
 rhrBBX <- function(x, f, ...) {
   UseMethod("rhrBBX")
 }
@@ -518,7 +509,6 @@ rhrExtBBX <- function(x, f) {
 #' @param ... none implemented.
 #' @return Object of class \code{rhrTrack*}. 
 #' @export
-#' @example inst/examples/ex-rhrWithin.R
 
 rhrWithin <- function(x, y, ...) {
   UseMethod("rhrWithin")

@@ -23,19 +23,6 @@ Use two dimensional reference bandwidth to select a bandwidth for kernel density
 \details{
 This implementation is based on Worton (1989). If variances differ greatly, it is advaisable to rescale the data using \code{rescale="unitvar"}. If the data is suspected to multimodal other bandwidth estimation methods may be more suitable.
 }
-\examples{
-library(rhr)
-data(datSH)
-
-rhrHref(datSH[, 2:3])
-rhrHref(datSH[, 2:3], rescale = "unitvar")
-
-kde1 <- rhrKDE(datSH[, 2:3], h = rhrHref(datSH[, 2:3])$h)
-kde2 <- rhrKDE(datSH[, 2:3], h = rhrHref(datSH[, 2:3], "unitvar")$h)
-kde3 <- rhrKDE(datSH[, 2:3], h = rhrHref(datSH[, 2:3], "xvar")$h)
-
-lapply(list(kde1, kde2, kde3), rhrArea)
-}
 \references{
 Worton, B. J. (1989). Kernel methods for estimating the utilization distribution in home-range studies. _Ecology, 70(1)_, 164-168.
 }

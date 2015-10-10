@@ -18,8 +18,7 @@
 ##' 
 ##' @author Johannes Signer 
 ##' @useDynLib rhr
-
-##' @examples 
+##' @examples
 ##' \dontrun{
 ##' data(datSH)
 ##' hlscv <- rhrHlscv(datSH[1:1000, 2:3])

@@ -26,32 +26,6 @@ An object of class \code{RhrTrajST}.
 \description{
 Implementation of Ornstein-Uhlenbeck process using the Euler-Maruyama method. \code{dt} is always set to 1.
 }
-\examples{
-set.seed(123)
-
-## Standard Walk
-walk <- rhrOU(n = 5000)
-plot(walk)
-
-## Adjust pull back
-walk <- rhrOU(n = 5000, A = matrix(c(0.01, 0, 0, 0.01), 2))
-plot(walk)
-
-## Effect of sigma: not only the scale of x and y changes
-set.seed(123)
-walk <- rhrOU(n = 5000, A = matrix(c(0.01, 0, 0, 0.01), 2), sigma = 1)
-plot(walk)
-
-set.seed(123)
-walk <- rhrOU(n = 5000, A = matrix(c(0.01, 0, 0, 0.01), 2), sigma = 100)
-plot(walk)
-
-
-## Effect of xy0
-set.seed(123)
-walk <- rhrOU(n = 5000, A = matrix(c(0.01, 0, 0, 0.01), 2), sigma = 1, mu = c(50, 50))
-plot(walk)
-}
 \references{
 Fieberg, J. (2007). Kernel density estimators of home range: smoothing and the autocorrelation red herring. Ecology, 88(4), 1059-1066.
 }

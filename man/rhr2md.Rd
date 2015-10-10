@@ -2,7 +2,7 @@
 % Please edit documentation in R/rhr2md.R
 \name{rhr2md}
 \alias{rhr2md}
-\title{Markdown summary}
+\title{Markdown summary of Rhr* objections}
 \usage{
 rhr2md(x)
 }

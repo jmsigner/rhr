@@ -9,7 +9,6 @@
 #' @return \code{list} with the original data, the intervals considered, if and when time to statistical independence was reached and the call.
 #' @export
 #' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, Ecology, 66(4), 1176 - 1184
-#' @example  inst/examples/ex-rhrTTSI.R
 
 rhrTTSI <- function(track, interval, ntimes=3, ...) {
 

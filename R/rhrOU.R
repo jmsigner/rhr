@@ -11,7 +11,6 @@
 #' @references Fieberg, J. (2007). Kernel density estimators of home range: smoothing and the autocorrelation red herring. Ecology, 88(4), 1059-1066.
 #' @return An object of class \code{RhrTrajST}. 
 #' @export
-#' @example inst/examples/ex-rhrOU.R
 #' 
 rhrOU <- function(n = 1000, A = matrix(c(0.1, 0, 0, 0.1), 2), xy0, mu = c(0,0), time, sigma = 0.3) {
   if (missing(time)) {

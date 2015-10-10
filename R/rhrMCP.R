@@ -9,7 +9,6 @@
 ##' @return Object of class \code{RhrMCP}.
 ##' @export
 ##' @seealso \code{adehabitatHR::mcp}, \code{rgeos::gConvexHull}
-##' @example inst/examples/rhrMCP.R
 
 rhrMCP <- function(xy, levels=95) {
 

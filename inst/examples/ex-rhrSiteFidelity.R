@@ -1,9 +1,5 @@
-set.seed(123)
-
-
-## Simulated data
-
 # Simulate a random walk.
+set.seed(123)
 a <- rhrRW(n = 1000)
 plot(a)
 
@@ -21,7 +17,7 @@ sf <- rhrSiteFidelity(a, n = 200)
 
 # For MSD and LI the observed data differ significantely from random permutations. 
 sf
-plot(sf)
+#' \dontrun{plot(sf)}
 
 ## real data
 data(datSH)

@@ -14,8 +14,4 @@ rhrNSD(x, ...)
 \description{
 Calcualtes the net squuared deplacement from the first point.
 }
-\examples{
-data(trackS)
-plot(rhrNSD(trackS), type = "l")
-}
 

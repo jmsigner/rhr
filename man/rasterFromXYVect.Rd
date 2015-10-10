@@ -19,9 +19,4 @@ Function to create an empty \code{RasterLayer} from bounding box of points defin
 \details{
 Takes x and y coordinates of points as input and creates a \code{RasterLayer} with the input coordiantes. The range in either direction can be provided, otherwise it will be obtained from the data.
 }
-\examples{
-library(rhr)
-data(datSH)
-(r <- rasterFromXYVect(datSH[, 2:3]))
-}
 

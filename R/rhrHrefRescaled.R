@@ -20,7 +20,6 @@
 ##' @export
 ##' @references Kie, John G. "A rule-based ad hoc method for selecting a bandwidth in kernel home-range analyses." Animal Biotelemetry 1.1 (2013): 1-12. 
 ##' 
-##' @example inst/examples/rhrHrefScaled.R
 
 rhrHrefScaled <- function(xy,
                           range=rhrHref(xy)$h * c(0.01, 2), 

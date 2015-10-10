@@ -7,7 +7,6 @@
 #' @param duplicates String, indicating how to handle duplicted time stamps. Currently only  "remove" is supported. 
 #' @param meta Named list, providing meta information about the animal.
 #' @export
-#' @example inst/examples/ex-rhrTrack.R
 
 rhrTrack <- function(sp, time, duplicates = "remove", meta) {
   

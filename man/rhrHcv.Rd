@@ -15,11 +15,9 @@ rhrHcv(xy)
 \description{
 Likelihood Cross Validation
 }
-\examples{
-data(datSH)
-rhrHpi(datSH[, 2:3])
-}
 \author{
 Johannes Signer
+data(datSH)
+rhrHpi(datSH[, 2:3])
 }
 

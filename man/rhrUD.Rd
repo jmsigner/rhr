@@ -20,19 +20,4 @@ Function to obtain the utilization distribution (UD) of a home range estimate.
 \details{
 For probabilistic estimators home range estimator this functions returns the UD.
 }
-\examples{
-library(rhr)
-data(datSH)
-
-## For KDE
-kde <- rhrKDE(datSH[, 2:3])
-ud <- rhrUD(kde)
-plot(rhrUD(kde))
-
-
-## For unimodal normal
-un <- rhrUniNorm(datSH[, 2:3])
-ud <- rhrUD(un)
-plot(ud)
-}
 

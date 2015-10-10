@@ -10,7 +10,6 @@
 ##' @export
 ##' @references Worton, B. J. (1989). Kernel methods for estimating the utilization distribution in home-range studies. _Ecology, 70(1)_, 164-168.
 ##' 
-##' @example inst/examples/rhrHref.R
 
 rhrHref <- function(xy, rescale="none") {
 

@@ -1,13 +1,24 @@
-#' Arguments passed to a function call
+#' Functions to work with results of a home range estimate.
+#' 
+#' This collection is a set of utility function to work with results of a home range estimate. \code{rhrArgs} returns the arguments that where passed to a call.
+#' 
+#' More to do here
 #'
 #' Returns a list of all arguments that were passed to an \code{rhr*} function call
 #' 
 #' @param x An object of class RhrEst*.
-#' @param ... none implemented.
-#' @export
+#' @template dots
 #' @return A list.
-#' @example inst/examples/ex-rhrArgs.R
+#' @name hr_utility
+#' @examples
+#' data(datSH)
+#' mcp <- rhrMCP(datSH[, 2:3])
+#' str(rhrArgs(mcp))
+NULL
 
+#' @export
+#' @rdname hr_utility
+#' 
 rhrArgs <- function(x, ...) {
   UseMethod("rhrArgs", x)
 }

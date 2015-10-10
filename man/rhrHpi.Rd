@@ -27,16 +27,6 @@ Wraps \code{KernSmooth::dpik} to select bandwidth for kernel density estimation 
 \details{
 This function calcualtes bandwidths for kernel density estimation by wrapping \code{KernSmooth::dpik}. If \code{correct} is \code{TRUE}, the bandwidth is trasformed with power 5/6 to correct for using an univariate implementation for bivariate data (Gitzen et. al 2006).
 }
-\examples{
-library(rhr)
-data(datSH)
-rhrHpi(datSH[, 2:3])
-rhrHpi(datSH[, 2:3], correct = FALSE)
-rhrHpi(datSH[, 2:3], rescale = "unitvar", correct = FALSE)
-rhrHpi(datSH[, 2:3], rescale = "xvar", correct = FALSE)
-rhrHpi(datSH[, 2:3], rescale = "unitvar", correct = TRUE)
-rhrHpi(datSH[, 2:3], rescale = "xvar", correct = TRUE)
-}
 \references{
 Gitzen, R. A., Millspaugh, J. J., & Kernohan, B. J. (2006). Bandwidth selection for fixed-kernel analysis of animal utilization distributions. _Journal of Wildlife Management_, 70(5), 1334-1344.
 }

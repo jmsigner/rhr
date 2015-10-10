@@ -19,7 +19,6 @@
 
 
 ##' @rdname rhrCoreArea
-##' @example inst/examples/ex-rhrCoreArea.R
 
 rhrCoreArea <- function(x, method="seaman90", ...) {
   UseMethod("rhrCoreArea", x)

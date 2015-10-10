@@ -27,7 +27,6 @@
 ##' @references Peter N. Laver and Marcella J. Kelly. A critical review of home range studies. The Journal of Wildlife Management, 72(1):290-298, 2008
 
 ##' @export
-##' @example inst/examples/rhrAsymptote.R
 
 
 rhrAsymptote <- function(x, ns=seq(nrow(rhrData(x)) / 10, nrow(rhrData(x)), length.out = 10), nrep=10, tolTotArea=0.05, nTimes=5, sampling="sequential") {

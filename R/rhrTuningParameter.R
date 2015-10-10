@@ -14,7 +14,6 @@
 ##' @return If \code{msg} is \code{TRUE} a character string, else a list with
 ##' the name of the tuning parameter and its value.
 ##' @export
-##' @example inst/examples/rhrTuningParameter.R
 
 rhrTuningParameter <- function (x, msg = FALSE, digits = 3, ...) {
   UseMethod ("rhrTuningParameter", x)

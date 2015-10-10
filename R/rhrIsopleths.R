@@ -10,7 +10,6 @@
 ##' @param ... see details.
 ##' @return \code{SpatialPolygonsDataFrame} 
 ##' @export
-##' @example inst/examples/rhrIsopleths.R
 
 rhrIsopleths <- function (x, ...) {
   UseMethod ("rhrIsopleths", x)

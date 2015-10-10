@@ -22,15 +22,4 @@ Probabilistic estimators take (i.e. kernel density estimates) take
 an additional argument, \code{levels}, that determines which isopleth are
 returned.
 }
-\examples{
-library(rhr)
-data(datSH)
-
-mcp <- rhrMCP(datSH[, 2:3])
-kde <- rhrKDE(datSH[, 2:3])
-
-rhrIsopleths(mcp)
-rhrIsopleths(kde)
-rhrIsopleths(kde, levels = c(20, 30, 40))
-}
 

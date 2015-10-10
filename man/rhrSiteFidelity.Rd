@@ -14,42 +14,41 @@ rhrSiteFidelity(track, n = 100, alpha = 0.05)
 \item{alpha}{Numeric scalar. The alpha value used for the bootstrapping.}
 }
 \value{
-object of class \code{RhrFidelity}, which is a list of length 4. \code{msd.dat} and \code{li.dat} is the mean square distance and linearity for the real date. \code{msd.sim} and \code{li.sim} are the mean square distances and linearities for the simulated trajectories.
+Object of class \code{RhrFidelity}, which is a list of length 4. \code{msd.dat} and \code{li.dat} is the mean square distance and linearity for the real date. \code{msd.sim} and \code{li.sim} are the mean square distances and linearities for the simulated trajectories.
 }
 \description{
-Test for site fidelity of animal movement.
+Calculates two indices (mean sequared displacement and linearity) to test for site fidelity. Significance testing is done by permuting step lengths and drawing turning angles from a uniform distribution.
 }
 \examples{
-set.seed(123)
-
-
-## Simulated data
-
 # Simulate a random walk.
+set.seed(123)
 a <- rhrRW(n = 1000)
+\dontrun{
 plot(a)
+}
 
 # Calcualte site fidelity
 sf <- rhrSiteFidelity(a, n = 200)
 
-# For MSD and LI the observed data do not differ significantely from random permutations. 
-sf
+# For MSD and LI the observed data do not differ significantely from random permutations.
+\dontrun{
 plot(sf)
+}
 
 # Simulate trajectory as Ornstein-Uhlenbeck process
 a <- rhrOU(n = 10000, A = matrix(c(0.1, 0, 0, 0.1), 2))
 plot(a)
 sf <- rhrSiteFidelity(a, n = 200)
 
-# For MSD and LI the observed data differ significantely from random permutations. 
-sf
-plot(sf)
+# For MSD and LI the observed data differ significantely from random permutations.
+\dontrun{plot(sf)}
 
 ## real data
 data(datSH)
 res <- rhrSiteFidelity(datSH[, 2:3], n = 200)
-res
+\dontrun{
 plot(res)
+}
 }
 \references{
 Spencer, S. R., Cameron, G. N., & Swihart, R. K. (1990). Operationally defining home range: temporal dependence exhibited by hispid cotton rats. Ecology, 1817-1822.

@@ -34,20 +34,4 @@ Functions to deal with time stamps of a track.
 \details{
 `rhrTrackStart` returns the first the time stamp of the beginning of a track. `rhrTrackEnd` returns the last time stamp and `rhrTrackSpan` the time span of a track.
 }
-\examples{
-library(rhr)
-data(datSH)
-
-## Create a SpatialPoints objects with the relocation
-sp <- sp::SpatialPoints(datSH[, 2:3])
-
-## Parse time
-time <- lubridate::ymd_hms(paste(datSH$day, datSH$time))
-
-## Create an object of RhrTrackST (only space)
-trackST <- rhrTrack(sp, time)
-rhrTrackStart(trackST)
-rhrTrackEnd(trackST)
-rhrTrackSpan(trackST)
-}
 

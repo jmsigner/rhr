@@ -6,7 +6,6 @@
 ##' @param ... none implemented.
 ##' @return Numeric \code{vector} with the levels.
 ##' @export
-##' @example inst/examples/rhrLevels.R
 
 rhrLevels <- function (x , ...) {
   UseMethod ("rhrLevels", x)

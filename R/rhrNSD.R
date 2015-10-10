@@ -5,7 +5,6 @@
 #' @param x RhrTrack* object
 #' @param ... None implemented.
 #'
-#' @example inst/examples/ex-rhrNSD.R
 #' @export
 rhrNSD <- function(x, ...) {
   UseMethod("rhrNSD")

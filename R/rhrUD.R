@@ -7,7 +7,6 @@
 #' @param ... none implemented.
 #' @export
 #' @return An object of class RasterLayer.
-#' @example inst/examples/rhrUD.R
 
 rhrUD <- function(x, ...) {
   UseMethod("rhrUD", x)

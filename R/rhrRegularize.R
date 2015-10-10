@@ -11,7 +11,6 @@
 ##' @param ... None implemented.
 ##' @return Object of class \code{RhrTrajS*}
 ##' @export
-## @example inst/examples/rhrRegularize.R
 rhrRegularize <- function(x, newTraj, side, windw, ...) {
   UseMethod("rhrRegularize", x)
 }

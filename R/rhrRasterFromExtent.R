@@ -7,7 +7,6 @@
 ##' @param xrange,yrange Optional numeric vector of length providing the range.
 ##' @param res resolution
 ##' @export
-##' @example inst/examples/rasterFromXYVect.R
 
 rasterFromXYVect <- function(xy, xrange=NA, yrange=NA, res=100) {
 

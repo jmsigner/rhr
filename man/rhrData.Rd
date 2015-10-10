@@ -19,11 +19,4 @@ Depending on the argument, either a \code{data.frame} or \code{SpatialPointsData
 \description{
 Function to retrieve data that were used generate the estimate.
 }
-\examples{
-library(rhr)
-data(datSH)
-
-head(rhrData(rhrMCP(datSH[, 2:3])))
-str(rhrData(rhrMCP(datSH[, 2:3]), spatial = TRUE))
-}
 

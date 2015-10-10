@@ -31,15 +31,6 @@ Seaman and Powell (1990) presented an area independent method for core area esti
 \item Percent of home range, that is the percentage of pixels with a higher relative frequency of relocations. The percentage of maximum relative frequency is then plotted against the percent of home range. The point with the greatest distance to the line with intercept 1 and slope -1 is used as threshold.
 }
 }
-\examples{
-library(rhr)
-data(datSH)
-hr <- rhrKDE(datSH[, 2:3])
-#caIso <- rhrCoreArea(hr)
-
-#plot(hr)
-#plot(rhrIsopleths(hr, levels=caIso$iso), border="red", add=TRUE)
-}
 \references{
 Peter N. Laver and Marcella J. Kelly. A critical review of home range studies. The Journal of Wildlife Management, 72(1):290-298, 2008
 

@@ -21,14 +21,6 @@ A data.frame.
 \description{
 Creates a table of home-range areas and optionally converts units.
 }
-\examples{
-library(rhr)
-data(datSH)
-
-## Geometric estimator
-mcp <- rhrMCP(datSH[, 2:3])
-rhrArgs(mcp)
-}
 \seealso{
 \code{rhrConvertUnit}
 }

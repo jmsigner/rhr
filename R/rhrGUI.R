@@ -1,6 +1,6 @@
 ##' Starts GUI
 ##'
-##' Start a web-based Graphical User Interface (GUI) to perform analyses.
+##' Start a web-based Graphical User Interface (GUI) to perform some analyses that the rhr package provides.
 ##' @title rhrGUI
 ##' @export
 

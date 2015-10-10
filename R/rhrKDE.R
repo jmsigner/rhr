@@ -12,7 +12,6 @@
 ##' @return Object of class \code{RhrKDE}
 ##' @export
 ##' 
-##' @example inst/examples/rhrKDE.R
 
 rhrKDE <- function(xy,
                    h=rhrHref(xy)$h, levels = 95, 

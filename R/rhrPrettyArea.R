@@ -9,7 +9,6 @@
 #' @export
 #' @return A data.frame.
 #' @seealso \code{rhrConvertUnit}
-#' @example inst/examples/ex-rhrArgs.R
 
 rhrPrettyArea <- function(x, inU, outU, ...) {
   UseMethod("rhrPrettyArea", x)

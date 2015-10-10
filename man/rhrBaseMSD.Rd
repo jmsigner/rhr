@@ -17,13 +17,6 @@ Numeric matrix with the x and y coordinates of the new path.
 \description{
 Mean squared distance from the center of activity.
 }
-\examples{
-set.seed(123)
-x <- rnorm(500)
-y <- rnorm(500)
-
-msd <- rhr:::rhrBaseMSD(x, y)
-}
 \references{
 \url{http://www.esajournals.org/doi/abs/10.2307/1937590}
 }

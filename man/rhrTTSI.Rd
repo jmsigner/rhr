@@ -21,13 +21,6 @@ rhrTTSI(track, interval, ntimes = 3, ...)
 \description{
 This a wrapper around \code{rhrSchoener} to calculate time to statistical indpendence from a series of intervals.
 }
-\examples{
-library(rhr)
-data(trackST)
-
-ttsi <- rhrTTSI(trackST, interval = 60 * 60 * 10)
-plot(ttsi)
-}
 \references{
 Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, Ecology, 66(4), 1176 - 1184
 }

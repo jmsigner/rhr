@@ -14,19 +14,4 @@ rhrPoints(x, ...)
 \description{
 Extract the relocation points from a track and return them as a `SpatialPointsPointsDataframe` object.
 }
-\examples{
-library(rhr)
-data(datSH)
-
-## Create a SpatialPoints objects with the relocation
-sp <- sp::SpatialPoints(datSH[, 2:3])
-
-## Parse time
-time <- lubridate::ymd_hms(paste(datSH$day, datSH$time))
-
-## Create an object of RhrTrackS (only space)
-trackS <- rhrTrack(sp)
-rhrPoints(trackS)
-
-}
 

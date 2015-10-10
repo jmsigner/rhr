@@ -6,7 +6,6 @@
 ##' @return \code{vector} of length two
 ##' 
 ##' @author Johannes Signer 
-##' @examples
 ##' data(datSH)
 ##' rhrHpi(datSH[, 2:3])
 

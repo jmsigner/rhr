@@ -1,10 +1,9 @@
-#' Markdown summary
+#' Markdown summary of Rhr* objections
 #' 
 #' Creates a markdown summary of an rhr object.
 #'
 #' @param x Object of class \code{RhrTrack*}
 #' @export
-# @example inst/examples/ex-rhr2md.R
 
 rhr2md <- function(x) {
   UseMethod("rhr2md")
@@ -27,10 +26,8 @@ rhr2md.RhrTrackS <- function(x) {
     paste("### Step lengths:\n\n"),
     paste0("```\n",  
            paste0(capture.output(summary(rhrSegments(x)$dist)), collapse = "\n"), "\n```\n\n"))
-  
-  
-  f <- markdown::markdownToHTML(text = md, output = "/tmp/lala.html")
-  
+  md
 }
+
 
     
