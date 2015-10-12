@@ -16,8 +16,6 @@
 ##' @references Seaman, D. E., & Powell, R. A. (1996). An evaluation of the accuracy of kernel density estimators for home range analysis. _Ecology, 77(7)_, 2075-2085.
 ##' @references Carr and Rodges
 ##' 
-##' @author Johannes Signer 
-##' @useDynLib rhr
 ##' @examples
 ##' \dontrun{
 ##' data(datSH)

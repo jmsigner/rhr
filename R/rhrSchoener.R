@@ -18,7 +18,6 @@
 ##'  \item{"cv"}{Critical value}
 ##'  \item{"m"}{The time interval in seconds}
 ##' }
-##' @useDynLib rhr
 ##' @export
 ##' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, _Ecology_, 66(4), 1176 - 1184
 
