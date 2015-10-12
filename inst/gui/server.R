@@ -2,14 +2,24 @@
 ## For the packaged version: make an optinal data argument and
 ## outputDir argument. They will be set static and be identical for each client.
 ## This shouldn't be a problem, if the app is run locally
+library(rhr)
 
 ## clean everything 
 rm(list=ls())
 debug <- TRUE
 if (debug) {
-  .datFromR <- NULL
   outDir <- "/tmp"
 }
+
+if (FALSE) {
+  rhrEPSGs <- as.numeric(rgdal::make_EPSG()$code)
+  rhrEPSGs <- rhrEPSGs[!is.na(rhrEPSGs)]
+   saveRDS(rhrEPSGs, "inst/gui/epsgs.RDS")
+}
+
+
+rhrEPSGs <- readRDS("epsgs.RDS")
+
 
 ## Max upload size
 options(shiny.maxRequestSize=30*1024^2)
@@ -42,43 +52,36 @@ shinyServer(function(input, output, session) {
   ## Read data
 
   data <- reactive({
-
-    if (is.null(.datFromR)) {
-
-      res <- paste0('Unable to load data, did you select a file?')
-      dat <- NULL
-      exitStatus <- 1
-
-
-      if (!is.null(input$readFileFile)) {
-        sep <- switch(input$readFileFieldSep,
-                      comma=",",
-                      tab="\t",
-                      semi=";")
-
-        ## asign decimal separator
-        sepDec <- switch(input$readFileSepDec,
-                         comma=",",
-                         point=".")
-
-        dat <- tryCatch(rhrReadData(input$readFileFile$datapath,
-                                    sep=sep,
-                                    skip=input$readFileSkipLines,
-                                    hasHeader=input$readFileHasHeader),
-                        error=function(e) e)
-
-        if (!is(dat, "error")) {
-          res <- "Data successfully read"
-          exitStatus <- 0
-        } else {
-          res <- paste0("Something went wrong:", dat$message)
-          exitStatus <- 1
-        }
-      } 
-      list(data=dat, message=res, exitStatus=exitStatus)
-    } else {
-      list(data=.datFromR, message="Data read from R", exitStatus=0)
-    }
+    res <- paste0('Unable to load data, did you select a file?')
+    dat <- NULL
+    exitStatus <- 1
+    
+    if (!is.null(input$readFileFile)) {
+      sep <- switch(input$readFileFieldSep,
+                    comma=",",
+                    tab="\t",
+                    semi=";")
+      
+      ## asign decimal separator
+      sepDec <- switch(input$readFileSepDec,
+                       comma=",",
+                       point=".")
+      
+      dat <- tryCatch(rhrReadData(input$readFileFile$datapath,
+                                  sep=sep,
+                                  skip=input$readFileSkipLines,
+                                  hasHeader=input$readFileHasHeader),
+                      error=function(e) e)
+      
+      if (!is(dat, "error")) {
+        res <- "Data successfully read"
+        exitStatus <- 0
+      } else {
+        res <- paste0("Something went wrong:", dat$message)
+        exitStatus <- 1
+      }
+    } 
+    list(data=dat, message=res, exitStatus=exitStatus)
   })
 
   observe({
@@ -123,12 +126,10 @@ shinyServer(function(input, output, session) {
       general=list(
         name="General Settings",
         content=list(
-          doPdf=input$configOutputMkPdf,
           doCp=input$configOutputCpWd,
           wd=normalizePath(.outDir, mustWork=FALSE, winslash="/"), 
-          ## doZip=input$configOutputZip,
           ## zipPath=normalizePath(file.path(outDir, paste0(runId, ".zip")), winslash="/"),
-          fileName=if (!is.null(input$readFileFile$name)) input$readFileFile$name else "data read from R", 
+          fileName=input$readFileFile$name,
           ## fileSize=input$readFileFile$size,
           fieldSeparator=input$readFileFieldSep,
           decSeparator=input$readFileSepDec,
@@ -175,8 +176,6 @@ shinyServer(function(input, output, session) {
                           "ymd_hms", "dmy_h", "dmy_hm", "dmy_hms", "mdy_h",
                           "mdy_hm", "mdy_hms"))
       updateSelectInput(session, "mfTimeFormat", choices = c("hm", "hms"))
-
-      if (debug) cat("\n Updated Select Input \n")
     }
   })
 
@@ -198,60 +197,89 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  ##
   ## Remapping of the fields happens here
-
   data2 <- reactive({
     if (debug) cat("\n Entered data2 \n\n")
     if (succesfullyFinishedS1()) {
-      id         <- ifelse(input$mfId == "NA", NA, input$mfId)
-      lon        <- ifelse(input$mfX == "NA", NA, input$mfX)
-      lat        <- ifelse(input$mfY == "NA", NA, input$mfY)
-      date       <- ifelse(input$mfDate == "NA", NA, input$mfDate)
-      time       <- ifelse(input$mfTime == "NA", NA, input$mfTime)
-      dateFormat       <- input$mfDateFormat
-      timeFormat       <- input$mfTimeFormat
+      id <- ifelse(input$mfId == "NA", NA, input$mfId)
+      lon <- ifelse(input$mfX == "NA", NA, input$mfX)
+      lat <- ifelse(input$mfY == "NA", NA, input$mfY)
+      date <- ifelse(input$mfDate == "NA", NA, input$mfDate)
+      time <- ifelse(input$mfTime == "NA", NA, input$mfTime)
+      dateFormat <- input$mfDateFormat
+      timeFormat <- input$mfTimeFormat
 
+      if (debug) cat("dat2.1 \n")
       if (!is.na(lon) & !is.na(lat)) {
+        inCRS <-  if (input$configInEpsg %in% rhrEPSGs) {
+          #   createAlert(session, "alert_data_in_setcrs", title = "CRS set", content = paste0("CRS set to ", input$inEPSG), append = FALSE)
+          input$configInEpsg
+        } else {
+          #   createAlert(session, "alert_data_in_setcrs", title = "Invalid EPSG", content = "Invalid EPSG code, no CRS set", append = FALSE)
+          NULL
+        }
+        outCRS <- if (input$configOutEpsg %in% rhrEPSGs) {
+          #   createAlert(session, "alert_data_in_transformcrs", title = "CRS set", 
+          # content = paste0("CRS transformed to ", input$outEPSG), append = FALSE)
+          input$configOutEpsg
+        } else {
+          #   createAlert(session, "alert_data_in_transformcrs", title = "Invalid EPSG", content = "CRS not transformed", append = FALSE)
+          NULL
+        }
 
-
-
+      if (debug) cat("dat2.2 \n")
+        ## Epsg can be used later, only thing that is missing are 
+        #if (!is.null(dat2)) {
+        #  if (!is.null(input$configOutEpsg)) {
+        #    if (!is.na(input$configOutEpsg)) {
+        #      if (!is.na(input$configInEpsg)) {
+        #        if (rhrValidEpsg(input$configOutEpsg)) {
+        #          ## should I also reproject
+        #          proj4string(dat2$dat) <- CRS(paste0("+init=epsg:", input$configInEpsg))
+        #          dat2$dat <- sp::spTransform(dat2$dat, CRS(paste0("+init=epsg:", input$configOutEpsg)))
+        #          createAlert(session, "rhrReproject", "rhrReproject1",
+        #                      "Reproject",
+        #                      content ="Data successfully reprojected", 
+        #                      style="success", 
+        #                      dismiss=TRUE,
+        #                      append=FALSE)
+        #        } else {
+        #          createAlert(session, "rhrReproject", "rhrReproject1",
+        #                      "Reproject",
+        #                      content = "Output EPSG not valid, won't reproject data", 
+        #                      style="error", 
+        #                      dismiss=TRUE,
+        #                      append=FALSE)
+        #          
+        #        }
+        #      }
+        #    }
+        #  }
+        #}
+        
+        inCRS <- if(!is.null(inCRS)) CRS(paste0("+init=epsg:", data_crs()$inCRS)) else NULL
+        outCRS <- if(!is.null(outCRS)) CRS(paste0("+init=epsg:", data_crs()$outCRS)) else NULL
+        
+      if (debug) cat("dat2.3 \n")
+        ## Epsg can be used later, only thing that is missing are 
         dat2 <- rhrMapFields(data()$data,
                              fields=list(lon=lon, lat=lat, id=id, date=date, time=time), 
-                             projString=NULL, dateFormat=dateFormat,
-                             timeFormat=timeFormat, defaultId="Animal1")
-
-
-        ## Epsg can be used later
-        if (!is.null(dat2)) {
-          if (!is.null(input$configOutEpsg)) {
-            if (!is.na(input$configOutEpsg)) {
-              if (!is.na(input$configInEpsg)) {
-                if (rhrValidEpsg(input$configOutEpsg)) {
-                  ## should I also reproject
-                  proj4string(dat2$dat) <- CRS(paste0("+init=epsg:", input$configInEpsg))
-                  dat2$dat <- sp::spTransform(dat2$dat, CRS(paste0("+init=epsg:", input$configOutEpsg)))
-                  createAlert(session, "rhrReproject", "rhrReproject1",
-                              "Reproject",
-                              content ="Data successfully reprojected", 
-                              style="success", 
-                              dismiss=TRUE,
-                              append=FALSE)
-                } else {
-                  createAlert(session, "rhrReproject", "rhrReproject1",
-                              "Reproject",
-                              content = "Output EPSG not valid, won't reproject data", 
-                              style="error", 
-                              dismiss=TRUE,
-                              append=FALSE)
-                  
-                }
-              }
-            }
-          }
+                             projString=inCRS, 
+                             projStringOut = outCRS, dateFormat=dateFormat,
+                             timeFormat=timeFormat)
+        
+      if (debug) cat(str(dat2))
+      if (debug) cat("dat2.4 \n")
+        
+        r <- if (dat2$hasTS) {
+          rhrTracks(dat2$dat, ts = dat2$dat$timestamp, id = dat2$dat$id)
+        } else {
+          rhrTracks(dat2$dat, id = dat2$dat$id)
         }
         
-        return(dat2)
+      if (debug) cat(str(r))
+      if (debug) cat("Class: ", class(r), "\n")
+        r
       } else {
         return(NULL)
       }
@@ -260,40 +288,41 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  missingAndDuplicated <- reactive({
-    if (!is.null(data())) {
-      ff <- data.frame(
-        id=names(unlist(data2()$res$nobs)),
-        nobs=unlist(data2()$res$nobs), 
-        missing=unlist(data2()$res$nIncompleteCases),
-        nDuplicated=unlist(data2()$res$nDuplicated),
-        finalN=data2()$res$nobsFinal)
-      names(ff) <- c("Id", "Number observations", "Number missing", "Number Duplicated", "Final number")
-      ff
-    }
-  })
-
-  output$mfUI <- renderUI({
-    if (!is.null(data2())) {
-      ## ugly workaround to get date displayed properly
-      dat2Temp <- head(as.data.frame(data2()$dat), 25)
-      dat2Temp$timestamp <- as.character(dat2Temp$timestamp)
-
-      
-      list(
-        h2("Missing and duplicated cases"),
-        renderDataTable(missingAndDuplicated()), 
-        h2("Preview of data"),
-        p("The frist 25 relocations the data are shown below"), 
-        renderTable(dat2Temp)
-      )
-    } else {
-      list(
-        h2("Data not remapped yet"),
-        helpText("Please remap the data first using the panel on the left hand side")
-      )
-    }
-  })
+  # FIX ME
+ # missingAndDuplicated <- reactive({
+ #   if (!is.null(data())) {
+ #     ff <- data.frame(
+ #       id=names(unlist(data2()$res$nobs)),
+ #       nobs=unlist(data2()$res$nobs), 
+ #       missing=unlist(data2()$res$nIncompleteCases),
+ #       nDuplicated=unlist(data2()$res$nDuplicated),
+ #       finalN=data2()$res$nobsFinal)
+ #     names(ff) <- c("Id", "Number observations", "Number missing", "Number Duplicated", "Final number")
+ #     ff
+ #   }
+ # })
+#
+ # output$mfUI <- renderUI({
+ #   if (!is.null(data2())) {
+ #     ## ugly workaround to get date displayed properly
+ #     dat2Temp <- head(as.data.frame(data2()$dat), 25)
+ #     dat2Temp$timestamp <- as.character(dat2Temp$timestamp)
+#
+ #     
+ #     list(
+ #       h2("Missing and duplicated cases"),
+ #       renderDataTable(missingAndDuplicated()), 
+ #       h2("Preview of data"),
+ #       p("The frist 25 relocations the data are shown below"), 
+ #       renderTable(dat2Temp)
+ #     )
+ #   } else {
+ #     list(
+ #       h2("Data not remapped yet"),
+ #       helpText("Please remap the data first using the panel on the left hand side")
+ #     )
+ #   }
+ # })
 
 
   ## We can only proceed if this is true
@@ -307,78 +336,67 @@ shinyServer(function(input, output, session) {
 
   ## Do we have time
   hasTime <- reactive({
-    if (is.null(data2()$dat)) {
+    if (inherits(data2(), "RhrTrackST")) {
+      TRUE
+    } else {
       FALSE
-    } else {
-      if (!all(is.na(data2()$dat$timestamp))) {
-        TRUE
-      } else {
-        FALSE
-      }
     }
   })
 
-  observe({
-    if (!hasTime()) {
-      createAlert(session, "generalNoTimeTTSI", "generalNoTimeTTSI1",
-                  "Please provide date and time",
-                  content ="This method requires date and time of relocations, but it was not provided", 
-                  style="error", 
-                  dismiss=FALSE,
-                  append=FALSE)
-
-      createAlert(session, "generalNoTimeBBMM", "generalNoTimeBBMM1",
-                  "Please provide date and time",
-                  content = "This method requires date and time of relocations, but it was not provided", 
-                  style="error", 
-                  dismiss=FALSE,
-                  append=FALSE)
-    } else {
-      closeAlert(session, "generalNoTimeTTSI1")
-      closeAlert(session, "generalNoTimeBBMM1")
-      
-    }
-  })
+#  observe({
+#    if (!hasTime()) {
+#      createAlert(session, "generalNoTimeTTSI", "generalNoTimeTTSI1",
+#                  "Please provide date and time",
+#                  content ="This method requires date and time of relocations, but it was not provided", 
+#                  style="error", 
+#                  dismiss=FALSE,
+#                  append=FALSE)
+#
+#      createAlert(session, "generalNoTimeBBMM", "generalNoTimeBBMM1",
+#                  "Please provide date and time",
+#                  content = "This method requires date and time of relocations, but it was not provided", 
+#                  style="error", 
+#                  dismiss=FALSE,
+#                  append=FALSE)
+#    } else {
+#      closeAlert(session, "generalNoTimeTTSI1")
+#      closeAlert(session, "generalNoTimeBBMM1")
+#      
+#    }
+#  })
 
 
   ## ============================================================================== ##  
   ## Subset data
-
+  
   output$subsetUI <- renderUI({
     if (succesfullyFinishedS2()) {
-      bbx <- bbox(rgeos::gBuffer(rgeos::gEnvelope(data2()$dat),
-                                 width = max(apply(bbox(data2()$dat), 1, diff)) * 0.01))
+      bbx <- rhrBBX(data2())
       uis <- list(
+        h2("Subset settings"),
         sliderInput("subsetXSlider", "X-Range", bbx[1, 1], bbx[1, 2], value=bbx[1, ]), 
         sliderInput("subsetYSlider", "Y-Range", bbx[2, 1], bbx[2, 2], value=bbx[2, ])
       )
-
-      if (!all(is.na(data2()$dat$timestamp))) {
+      if (is(data2(), "RhrTracksST")) {
         uis <- c(uis, list(dateRangeInput("subsetDatePicker", "Date range:",
-                                          start = format(min(data2()$dat$timestamp), "%Y-%m-%d"),
-                                          end = format(max(data2()$dat$timestamp), "%Y-%m-%d"))))
+                                          start = format(rhrTracksStart(data2()), "%Y-%m-%d"),
+                                          end = format(rhrTracksEnd(data2()), "%Y-%m-%d"))))
       }
-
-      ## select ids
-      pcho <- unique(data2()$dat$id)
-      if (debug) cat(pcho, "\n")
-
+      ### select ids
+      pcho <- names(data2())
       uis <- c(uis, list(
         selectInput("subsetSelectedIds", "Select animals",
                     choices=pcho,
                     selected=pcho,
                     multiple=TRUE,
-                    selectize=FALSE),
-        hr() 
-        ## actionButton("subsetReset", "Reset")
-        ## helpText("Reset button to come here")
+                    selectize=TRUE)
       ))
-      return(uis)
+      uis
     } else {
-      return(NULL)
+      NULL
     }
   })
-
+  
   ## Reactive slider values
   subsetXSliderValues <- reactive({
     input$subsetXSlider
@@ -395,72 +413,53 @@ shinyServer(function(input, output, session) {
   subsetSelectedIds <- reactive({
     input$subsetSelectedIds
   })
-
-  ## data 3
-  data3 <- reactive({
+  
+  
+  data_checked <- reactive({
     if(!is.null(data2())) {
-      if (debug) cat("starting to create data3----\n\n")
-
-      if (length(subsetSelectedIds()) == 0L) {
-        checked <- unique(data2()$dat$id)
+      checked <- if (length(subsetSelectedIds()) == 0L) {
+        unique(names(data2()))
       } else {
-        checked <- subsetSelectedIds()
+        subsetSelectedIds()
       }
-
-      cat("[b] Recreating data3() with\n")
-      cat(subsetSelectedIds(), "\n")
-      cat(checked, "\n")
-      cat("[e] ===========================\n")
-
-      dat <- data2()$dat
-      bbx <- if (!is.null(subsetXSliderValues()[1])) {
-        rgeos::gEnvelope(rgeos::readWKT(
-          paste0("MULTIPOINT((", subsetXSliderValues()[1], " ", subsetYSliderValues()[1], "), (",
-                 subsetXSliderValues()[2], " ", subsetYSliderValues()[2], "))")))
-      } else {
-        rgeos::gEnvelope(dat)
-      }
-
-      cat("[f] ===========================\n")
-      if (!all(is.na(data2()$dat$timestamp))) {
-        b <- subsetDatePicker()
-        if (debug) cat("## subset date picker \n\n")
-        if (debug) cat(str(b))
-        if (length(b) == 0) {
-          b <- c("1900-1-1", "2050-1-1")
-        }
-        dat <- dat[dat$id %in% checked & 
-                     dat$timestamp >= ymd(b[1]) &
-                     dat$timestamp <= ymd(b[2]), ]
-      } else {
-        dat <- dat[dat$id %in% checked , ]
-      }
-      cat("[g] ===========================\n")
-
-      dat <- dat[which(rgeos::gCovers(bbx, dat, byid=TRUE)), ]
-
-      dataNew <- data2()
-      dataNew$dat <- dat
-
-
-      if (nrow(dat) == 0) {
-        NULL
-      } else {
-        if (debug) cat(str(dataNew))
-        if (debug) cat("exiting data3 without error----\n\n")
-        dataNew
-      }
-
-
+      checked
     }
   })
-
+  
+  data3 <- reactive({
+    if(!is.null(data2())) {
+      
+      if (debug) cat("3.1: space \n")
+      # space
+      bbx <- rgeos::gEnvelope(sp::SpatialPoints(cbind(subsetXSliderValues(), subsetYSliderValues())))
+      dat <- rhr::rhrWithin(data2(), bbx)
+      
+      # id
+      if (debug) cat("3.2: id \n")
+      if (length(data_checked()) == 0L) {
+        checked <- names(data2())
+      } else {
+        checked <- data_checked()
+      }
+      dat <- rhr:::rhrAnimalById(dat, data_checked())
+      
+      if (debug) cat("3.3: time \n")
+      if (is(data2(), "RhrTracksST")) {
+        int <- lubridate::`%--%`(subsetDatePicker()[1], subsetDatePicker()[2])
+        dat <- rhr::rhrWithinTime(dat, int)
+        
+      }
+      if (debug) cat("3.4 finished: time \n")
+      dat
+      
+    }
+  })
+  
   output$subsetPlot <- renderPlot({
     if (!is.null(data3())) {
-      plot(rgeos::gBuffer(rgeos::gEnvelope(data2()$dat),
-                          width = max(apply(bbox(data2()$dat), 1, diff)) * 0.01), border = NA)
-      points(data2()$dat, col=adjustcolor("black", 0.1), pch=19)
-      points(data3()$dat, col="red")
+      bbx <- rhrBBX(data2(), f = 0.01)
+      plot(rhrPoints(data2()), col=adjustcolor("black", 0.1), pch=19, xlim = bbx[1, ], ylim = bbx[2, ])
+      points(rhrPoints(data3()), col="red")
       axis(1)
       axis(2)
       abline(v=subsetXSliderValues(), col="blue", lty=2)
@@ -469,22 +468,26 @@ shinyServer(function(input, output, session) {
       plot(0,0, type="n")
     }
   })
-
+  
 
   subsetTable <- reactive({
     if (!is.null(data3())) {
-      dataa <- as.data.frame(table(data2()$dat$id))
-      datbb <- as.data.frame(table(data3()$dat$id))
-      dat <- merge(dataa, datbb, by="Var1", all.x=TRUE)
-      dat$Freq.y <- ifelse(is.na(dat$Freq.y), 0, dat$Freq.y)
+      dataa <- data.frame(id = names(data2()), 
+                          n = rhrN(data2())) 
+      datbb <- data.frame(id = names(data3()), 
+                          n = rhrN(data3()))
+      dat <- merge(dataa, datbb, by="id", all.x=TRUE)
+      dat$n.y <- ifelse(is.na(dat$n.y), 0, dat$n.y)
 
       names(dat) <- c("Id", "Total number of Points", "Currently selected")
       dat
     } else {
-      dataa <- as.data.frame(table(data2()$dat$id))
-      datbb <- as.data.frame(table(data4()$dat$id))
-      dat <- merge(dataa, datbb, by="Var1", all.x=TRUE)
-      dat$Freq.y <- ifelse(is.na(dat$Freq.y), 0, dat$Freq.y)
+      dataa <- data.frame(id = names(data2()), 
+                          n = rhrN(data2())) 
+      datbb <- data.frame(id = names(data4()), 
+                          n = rhrN(data3()))
+      dat <- merge(dataa, datbb, by="id", all.x=TRUE)
+      dat$n.y <- ifelse(is.na(dat$n.y), 0, dat$n.y)
 
       names(dat) <- c("Id", "Total number of Points", "Currently selected")
       dat
@@ -516,26 +519,26 @@ shinyServer(function(input, output, session) {
   ## ------------------------------------------------------------------------------ ##  
   ## Input validation
 
-  ## Site Fidelity
-  observe({
-    x <- as.numeric(input$configSiteFidelityN)
-    if(is.na(x)) {
-      updateNumericInput(session, "configSiteFidelityN", value=config$pointLevel$sf$n)
-    }
-  })
-
-  ## TTSI
-  observe({
-    ttsiinit <- as.numeric(input$configTTSIInit)
-    if(is.na(ttsiinit)) {
-      updateNumericInput(session, "configTTSIInit", value=config$pointLevel$ttsi$interval)
-    }
-
-    ttsintimes <- as.numeric(input$configTTSINTimes)
-    if(is.na(ttsintimes)) {
-      updateNumericInput(session, "configTTSINTimes", value=config$pointLevel$ttsi$ntimes)
-    }
-  })
+  # ## Site Fidelity
+  # observe({
+  #   x <- as.numeric(input$configSiteFidelityN)
+  #   if(is.na(x)) {
+  #     updateNumericInput(session, "configSiteFidelityN", value=config$pointLevel$sf$n)
+  #   }
+  # })
+# 
+  # ## TTSI
+  # observe({
+  #   ttsiinit <- as.numeric(input$configTTSIInit)
+  #   if(is.na(ttsiinit)) {
+  #     updateNumericInput(session, "configTTSIInit", value=config$pointLevel$ttsi$interval)
+  #   }
+# 
+  #   ttsintimes <- as.numeric(input$configTTSINTimes)
+  #   if(is.na(ttsintimes)) {
+  #     updateNumericInput(session, "configTTSINTimes", value=config$pointLevel$ttsi$ntimes)
+  #   }
+  # })
 
 
   ## ------------------------------------------------------------------------------ ##  
@@ -543,23 +546,23 @@ shinyServer(function(input, output, session) {
 
   output$configOuputGridBufferPlot <- renderPlot({
     if (!is.null(data4())) {
-      bbx <- bbox(data4()$dat)
+      bbx <- rhrBBX(data4())
       xrange <- bufferXSliderValues() * c(-1, 1) + bbx[1, ]
       yrange <- bufferYSliderValues() * c(-1, 1) + bbx[2, ] 
 
-      plot(data4()$dat, type="n", asp=1, ylim=yrange, xlim=xrange)
+      plot(0, 0, type="n", asp=1, ylim=yrange, xlim=xrange)
       abline(v=xrange, col="grey50", lty=1)
       abline(h=yrange, col="grey50", lty=1)
       polygon(c(xrange, rev(xrange)), rep(yrange, each=2), col=adjustcolor("red", 0.5), border="grey50")
-      points(data4()$dat, col=adjustcolor("black", 0.1), pch=19)
+      points(rhrPoints(data4()), col=adjustcolor("black", 0.1), pch=19)
     } else {
       plot(0,0, type="n")
     }
   })
-
+  
   output$bufferUI <- renderUI({
     if (!is.null(data4())) {
-      bbx <- bbox(data4()$dat)
+      bbx <- rhrBBX(data4())
       xrange <- diff(bbx[1, ]) 
       yrange <- diff(bbx[2, ]) 
       uis <- list(
@@ -571,68 +574,68 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  ## Reactive slider values
+ # Reactive slider values
   bufferXSliderValues <- reactive({
     input$bufferXSlider
   }) 
-
+  
   bufferYSliderValues <- reactive({
     input$bufferYSlider
   }) 
 
-  ## ------------------------------------------------------------------------------ ##  
-  ## Grid
+ # ------------------------------------------------------------------------------ ##  
+ # Grid
 
-  output$gridResUi <- renderUI({
-    if (!is.null(data4())) {
-     rgs <- apply(bbox(data4()$dat), 1, diff)
-     rgs <- c(rgs / 10, rgs / 500)
-     sliderInput("gridResSlider", "Resolution", mean(rgs) * 0.001, mean(rgs) * 1000, round(mean(rgs)))
-    }
-  })
+ output$gridResUi <- renderUI({
+   if (!is.null(data4())) {
+    rgs <- apply(rhrBBX(data4()), 1, diff)
+    rgs <- c(rgs / 10, rgs / 500)
+    sliderInput("gridResSlider", "Resolution", mean(rgs) * 0.001, mean(rgs) * 1000, round(mean(rgs)))
+   }
+ })
 
-  trast <- reactive({
-    if (!is.null(data4())) {
+ trast <- reactive({
+   if (!is.null(data4())) {
 
-      ext <- rhrExtFromPoints(data4()$dat,
-                              buffer=c(bufferXSliderValues(), bufferYSliderValues()),
-                              extendRange=NULL) 
-      if (input$configOutputGridGrid == "pixel") {
-        return(rhrRasterFromExt(ext, nrow=input$gridNColSlider, ncol=input$gridNRowSlider, res=NULL))
-      } else {
-        return(rhrRasterFromExt(ext, nrow=NULL, ncol=NULL, res=ceiling(input$gridResSlider)))
-      }
-    } else {
-      return(NULL)
-    }
+     ext <- rhrExtFromPoints(data4(),
+                             buffer=c(bufferXSliderValues(), bufferYSliderValues()),
+                             extendRange=NULL) 
+     if (input$configOutputGridGrid == "pixel") {
+       return(rhrRasterFromExt(ext, nrow=input$gridNColSlider, ncol=input$gridNRowSlider, res=NULL))
+     } else {
+       return(rhrRasterFromExt(ext, nrow=NULL, ncol=NULL, res=ceiling(input$gridResSlider)))
+     }
+   } else {
+     return(NULL)
+   }
 
-  })
+ })
 
-  output$printGrid <- renderPrint({
-    cat(
-      " Number of rows:   ", nrow(trast()), "\n",
-      "Number of columns: ", ncol(trast()), "\n",
-      "Resolution:        ", paste0(raster::res(trast()),  collapse=", "), "\n",
-      "Number of cells:   ", raster::ncell(trast())
-    )
-  })
+ output$printGrid <- renderPrint({
+   cat(
+     " Number of rows:   ", nrow(trast()), "\n",
+     "Number of columns: ", ncol(trast()), "\n",
+     "Resolution:        ", paste0(raster::res(trast()),  collapse=", "), "\n",
+     "Number of cells:   ", raster::ncell(trast())
+   )
+ })
 
-  ## -------------------------------------------------------------------------- ##
-  ## levels
+ ## -------------------------------------------------------------------------- ##
+ ## levels
 
-  observe({
-    xx <- tryCatch(all(is.numeric(rhr:::rhrCheckLevels(
-      strsplit(input$configGlobalLevel, ",")[[1]]))), 
-                   error = function(e) return(FALSE))
-    
-    if (!xx) {
-      updateTextInput(session, "configGlobalLevel", value = "95")
-    }
-  })
+ observe({
+   xx <- tryCatch(all(is.numeric(rhr:::rhrCheckLevels(
+     strsplit(input$configGlobalLevel, ",")[[1]]))), 
+                  error = function(e) return(FALSE))
+   
+   if (!xx) {
+     updateTextInput(session, "configGlobalLevel", value = "95")
+   }
+ })
 
 
-  ## ------------------------------------------------------------------------------ ##  
-  ## locoh
+ # ------------------------------------------------------------------------------ ##  
+# locoh
 
   output$configLOCOHtypeKField <- renderUI({
     if (input$configLOCOHtypeK == "inclm") {
@@ -669,7 +672,7 @@ shinyServer(function(input, output, session) {
 
   ## ------------------------------------------------------------------------------ ##  
   ## KDE
-
+#
   output$configKDEbandwidthUserInput <- renderUI({
     if ("user" %in% input$configKDEbandwidth) {
       list(
@@ -679,46 +682,46 @@ shinyServer(function(input, output, session) {
       NULL
     }
   }) 
-
-  ## ============================================================================= ##
-  ## Analzye
-
-  ## Check we have date+time for the estimators that need it
-
-  observe({
-    if (!is.null(data4())) {
-      updateButton(session, "rhrAnalyze", disable=FALSE)
-      if (any(c("rhrTTSI", "rhrBBMM") %in% c(input$runSteps, input$runSteps2))) {
-        if ("rhrTTSI" %in% c(input$runSteps, input$runSteps2) & !hasTime()) {
-          createAlert(session, "rhrRunNoTimeTTSI", "rhrRunNoTimeTTSI1",
-                      "Time to statistical independence",
-                      content = "Date and time are required", 
-                      style="error", 
-                      dismiss=FALSE,
-                      append=FALSE)
-          updateButton(session, "rhrAnalyze", disable=TRUE)
-        } else {
-          closeAlert(session, "rhrRunNoTimeTTSI1")
-        }
-        if ("rhrBBMM" %in% c(input$runSteps, input$runSteps2) & !hasTime()) {
-          createAlert(session, "rhrRunNoTimeBBMM", "rhrRunNoTimeBBMM1",
-                      "Brownian Bridges Movement Model",
-                      content = "Date and time are required", 
-                      style="error", 
-                      dismiss=FALSE,
-                      append=FALSE)
-          updateButton(session, "rhrAnalyze", disable=TRUE)
-        } else {
-          closeAlert(session, "rhrRunNoTimeBBMM1")
-        }
-      } else {
-        closeAlert(session, "rhrRunNoTimeTTSI1")
-        closeAlert(session, "rhrRunNoTimeBBMM1")
-        updateButton(session, "rhrAnalyze", disable=FALSE)
-      }
-    }
-  })
-
+#
+ # ## ============================================================================= ##
+ # ## Analzye
+#
+ # ## Check we have date+time for the estimators that need it
+#
+ # observe({
+ #   if (!is.null(data4())) {
+ #     updateButton(session, "rhrAnalyze", disable=FALSE)
+ #     if (any(c("rhrTTSI", "rhrBBMM") %in% c(input$runSteps, input$runSteps2))) {
+ #       if ("rhrTTSI" %in% c(input$runSteps, input$runSteps2) & !hasTime()) {
+ #         createAlert(session, "rhrRunNoTimeTTSI", "rhrRunNoTimeTTSI1",
+ #                     "Time to statistical independence",
+ #                     content = "Date and time are required", 
+ #                     style="error", 
+ #                     dismiss=FALSE,
+ #                     append=FALSE)
+ #         updateButton(session, "rhrAnalyze", disable=TRUE)
+ #       } else {
+ #         closeAlert(session, "rhrRunNoTimeTTSI1")
+ #       }
+ #       if ("rhrBBMM" %in% c(input$runSteps, input$runSteps2) & !hasTime()) {
+ #         createAlert(session, "rhrRunNoTimeBBMM", "rhrRunNoTimeBBMM1",
+ #                     "Brownian Bridges Movement Model",
+ #                     content = "Date and time are required", 
+ #                     style="error", 
+ #                     dismiss=FALSE,
+ #                     append=FALSE)
+ #         updateButton(session, "rhrAnalyze", disable=TRUE)
+ #       } else {
+ #         closeAlert(session, "rhrRunNoTimeBBMM1")
+ #       }
+ #     } else {
+ #       closeAlert(session, "rhrRunNoTimeTTSI1")
+ #       closeAlert(session, "rhrRunNoTimeBBMM1")
+ #       updateButton(session, "rhrAnalyze", disable=FALSE)
+ #     }
+ #   }
+ # })
+#
   observe({
     if (input$rhrAnalyze == 0) {
       return(NULL)
@@ -799,19 +802,15 @@ shinyServer(function(input, output, session) {
                     dismiss=FALSE,
                     append=FALSE)
 
-        withProgress(message="starting analysis", {
-
+        withProgress(message="Starting", {
           setProgress(message="Preparing calculations", detail="creating output files .....")
-
           files <- system.file("guiTemp", package="rhr")
-          
           createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress2",
                       "Starting Calculations",
                       content = paste0("[", Sys.time(), "] Starting with calculations, this may take some time"), 
                       style="info", 
                       dismiss=FALSE,
                       append=TRUE)
-
           ## ------------------------------------------------------------------------------ ##  
           ## Run the whole analysis
           starttime <- Sys.time()
@@ -822,8 +821,7 @@ shinyServer(function(input, output, session) {
                                                       inUnit=input$configOutputInUnits, 
                                                       outUnit=input$configOutputOutUnits, 
                                                       inGUI=TRUE, 
-                                                      report = TRUE, 
-                                                      createPDF = config()$general$content$doPdf), gcFirst=TRUE)
+                                                      report = TRUE), gcFirst=TRUE)
           if (debug) cat(str(res))
           ## ------------------------------------------------------------------------------ ##  
           ## Brew html
@@ -875,23 +873,6 @@ shinyServer(function(input, output, session) {
               stylesheet=normalizePath(file.path(files, "style.css"), mustWork=FALSE, winslash="/"),
               template=normalizePath(file.path(files, "index.html"), mustWork=FALSE, winslash="/"))
             
-            ### pdf
-            if (config()$general$content$doPdf) {
-              setProgress(message="Generating PDF", detail="may take a some time")
-              brew(file=normalizePath(file.path(files, "report_brew.tex"), mustWork=FALSE, winslash="/"),
-                   output=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
-                   envir=brewEnv)
-              
-              knit(input=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
-                   output=normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"), 
-                   quiet=TRUE,
-                   envir=knitEnv)
-              
-              ow <- setwd(outDir)
-              createPDF <- tryCatch(tools::texi2pdf("rhrReport.tex", clean=TRUE), error=function(e) e)
-              setwd(ow)
-            }
-            
             ## ------------------------------------------------------------------------------ ##  
             ## Clean up
             if (!debug) {
@@ -902,13 +883,14 @@ shinyServer(function(input, output, session) {
             unlink(normalizePath(file.path(outDir, "figure"), mustWork=FALSE, winslash="/"), recursive=TRUE)
             
           }
-
+          
+          # copy everything
            if (config()$general$content$doCp) {
              dir.create(normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/"))
              filesNames <- list.files(outDir, full.names=TRUE, recursive=FALSE, ignore.case=TRUE)
              sapply(filesNames, function(x)
                     file.copy(from=x, to=normalizePath(file.path(config()$general$content$wd, runId), mustWork=FALSE, winslash="/")))
-
+#
              for (f in c("data", "plots", "vector", "raster")) {
                dir.create(normalizePath(file.path(config()$general$content$wd, runId, f), mustWork=FALSE, winslash="/"))
                filesNames <- list.files(normalizePath(file.path(outDir, "results", f), mustWork=FALSE, winslash="/"), full.names=TRUE, recursive=TRUE,
@@ -918,7 +900,7 @@ shinyServer(function(input, output, session) {
              }
              
            }
-
+          
           createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress5",
                       "Finish",
                       content =paste0("[", Sys.time(), "] Finished analysis"), 

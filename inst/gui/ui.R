@@ -18,17 +18,13 @@ shinyUI(
                           fileInput("readFileFile", "Relocations", multiple = FALSE,
                                     accept = NULL), 
                           hr(),  
-                          numericInput("configInEpsg", "Input EPSG", NA), 
-                          hr()
-                          ## h2("Habitat data"), 
-                          ## fileInput("inputhafiles", "Habitat Files", multiple = TRUE,
-                          ##          accept = NULL)
-                          ),
+                          numericInput("configInEpsg", "Input EPSG", NA) 
+                        ),
                         mainPanel(
                           bsAlert("alertLoadData"),
                           uiOutput("readFileTable")
-                          ))),
-
+                        ))),
+             
              ## ============================================================================== ##  
              ## Remap fields
              tabPanel("Map and Project Data", 
@@ -43,8 +39,8 @@ shinyUI(
                           hr(), 
                           selectInput("mfDateFormat", "Date format", choices=NULL), 
                           selectInput("mfTimeFormat", "Time format", choices=NULL)
-
-                          ),
+                          
+                        ),
                         mainPanel(
                           h2("Reproject Data"),
                           uiOutput("reproject"), 
@@ -52,8 +48,8 @@ shinyUI(
                           hr(),
                           bsAlert("alertMapFields"),
                           uiOutput("mfUI"))
-                        )),
-
+                      )),
+             
              ## ============================================================================== ##  
              ## Subset Data
              tabPanel("Subset Data",
@@ -63,8 +59,8 @@ shinyUI(
                         mainPanel(
                           plotOutput("subsetPlot"),
                           dataTableOutput("subsetTable")
-                          ))), 
-
+                        ))), 
+             
              ## ============================================================================== ##  
              ## Configure
              navbarMenu("Configure",
@@ -74,21 +70,16 @@ shinyUI(
                                                 tabPanel("Output",
                                                          h2("Set output options"), 
                                                          hr(), 
-                                                         checkboxInput("configOutputMkPdf", "Generate a pdf file"),
-                                                         helpText("This requires a working LaTeX installation on your machine"), 
-                                                         hr(), 
                                                          checkboxInput("configOutputCpWd", "Copy all results to the current working directory",
                                                                        value=FALSE),
-                                                         helpText("All files will be copied into a new directory in current working directory"), 
-                                                         hr()
-                                                         ## checkboxInput("configOutputZip", "Compress all results into a zip file", value=TRUE)
-                                                         ), 
+                                                         helpText("All files will be copied into a new directory in current working directory")
+                                                ), 
                                                 tabPanel("Units",
                                                          selectInput("configOutputInUnits", "Input units are:",
-                                                                       choices=c("I don't know" = "ido", "meters" = "m", "kilometers" = "km"), selectize=FALSE),
+                                                                     choices=c("I don't know" = "ido", "meters" = "m", "kilometers" = "km"), selectize=FALSE),
                                                          selectInput("configOutputOutUnits", "Desired output units are:",
-                                                                       choices=c("square meters" = "sqm", "hectars" = "ha", "square km" = "sqkm"), selectize=FALSE)
-                                                         ), 
+                                                                     choices=c("square meters" = "sqm", "hectars" = "ha", "square km" = "sqkm"), selectize=FALSE)
+                                                ), 
                                                 ## Output Grid
                                                 tabPanel("Output Grid",
                                                          h2("Specify a grid"), 
@@ -107,22 +98,22 @@ shinyUI(
                                                            condition="input.configOutputGridGrid == 'pixel'",
                                                            sliderInput("gridNColSlider", "Number of columns", 10, 500, 100), 
                                                            sliderInput("gridNRowSlider", "Number of rows", 10, 500, 100)
-                                                           ), 
+                                                         ), 
                                                          conditionalPanel(
                                                            condition="input.configOutputGridGrid == 'res'",
                                                            uiOutput("gridResUi")
-                                                           ), 
+                                                         ), 
                                                          h3("Currently used grid"),
                                                          verbatimTextOutput("printGrid")
-                                                         ), 
+                                                ), 
                                                 tabPanel("Levels",
                                                          h2("Specify levels"), 
                                                          helpText("Some estimators (e.g. Kernel Density Estimation) require a grid for the results. Here you can specify this grid. The same grid will be used for all animals in the analysis."), 
                                                          helpText("Levels can be specified either as single number or comma seperated lists (e.g., '10,50,95'). Range from 1 to 100 is permitted, all other values will default back to 95"),
                                                          textInput("configGlobalLevel", "Levels:", "50,95")
-                                                         ), 
+                                                ), 
                                                 well=FALSE)
-                                   )), 
+                                 )), 
                         tabPanel("Exploratory analysis", 
                                  fluidPage(
                                    navlistPanel("Configure exploratory analysis",
@@ -138,38 +129,37 @@ shinyUI(
                                                          selectInput("configTTSISampling", "Sampling regime", choices=config$pointLevel$ttsi$sampling), 
                                                          numericInput("configTTSINTimes", "Number of time above critical value", value=config$pointLevel$ttsi$ntimes), 
                                                          a("More help", href = "http://jmsigner.github.io/rhrman/methodsTTSI.html", target = "_blank")
-                                                      ##   sliderInput("configTTSINAlpha", "Alpha", value=config$pointLevel$ttsi$alpha, min=0, max=1, step=0.01)
-                                                         ), 
+                                                ), 
                                                 well=FALSE)
-                                   )), 
+                                 )), 
                         tabPanel("Home Ranges", 
                                  fluidPage(
                                    navlistPanel("Configure Home Ranges",
                                                 tabPanel("Unimodal Bivariate Normal",
                                                          h2("Estimate unimodal bivariate normal home ranges")
-                                                         ), 
+                                                ), 
                                                 tabPanel("Bimodal Bivariate Normal",
                                                          h2("Estimate bimodal bivariate normal home ranges")
-                                                         ), 
+                                                ), 
                                                 tabPanel("Minimum Convex Polygon",
                                                          h2("Configure Minimum Convex Polygon")
-                                                         ),
+                                                ),
                                                 tabPanel("Kernel Density Estimation",
                                                          h2("Kernel Density Estimation"),
                                                          selectInput("configKDEbandwidth", "Bandwidth", choices=config$homeRange$kde$bandwidthOptions,
                                                                      multiple=TRUE, selectize=FALSE),
                                                          helpText("Use CTRL to select several options"), 
                                                          uiOutput("configKDEbandwidthUserInput")
-                                                         ),
+                                                ),
                                                 tabPanel("Local Convex Polygon",
                                                          h2("Local Convex Polygon"),
                                                          hr(),
                                                          helpText("'n' is determined automatically, see documentation for more information"), 
-
+                                                         
                                                          selectInput("configLOCOHtypeK", "Type k",
                                                                      choices=c("Include (automatic)" = "incla",
-                                                                       "Include (manual)" = "inclm", 
-                                                                       "Do not include" = "not"),
+                                                                               "Include (manual)" = "inclm", 
+                                                                               "Do not include" = "not"),
                                                                      selected="incla", selectize=FALSE),
                                                          uiOutput("configLOCOHtypeKField"),
                                                          selectInput("configLOCOHtypeA", "Type a",
@@ -179,16 +169,16 @@ shinyUI(
                                                                        "Do not include" = "not"),
                                                                      selected="not", selectize=FALSE), 
                                                          uiOutput("configLOCOHtypeAField"),
-
+                                                         
                                                          selectInput("configLOCOHtypeR", "Type r",
                                                                      choices=c("Include (automatic)" = "incla",
-                                                                       "Include (manual)" = "inclm", 
-                                                                       "Do not include" = "not"),
+                                                                               "Include (manual)" = "inclm", 
+                                                                               "Do not include" = "not"),
                                                                      selectize=FALSE, selected="not"), 
                                                          uiOutput("configLOCOHtypeRField"),
                                                          hr()
-                                                         ), 
-
+                                                ), 
+                                                
                                                 tabPanel("Home range asymptote",
                                                          h2("Home range asymptote"),
                                                          numericInput("configAsymptoteMinNP", "Minimum number of points",
@@ -199,27 +189,22 @@ shinyUI(
                                                                       value=config$homeRange$asymptote$NRep), 
                                                          sliderInput("configAsymptoteTotA", "Tolerance to total area",
                                                                      min=0, max=1, step=0.01,
-                                                                      value=config$homeRange$asymptote$TotA), 
-                                                        ## sliderInput("configAsymptoteAlpha", "Alpha for confidence interval",
-                                                        ##             min=0, max=1, step=0.01,
-                                                        ##             value=config$homeRange$asymptote$TotA), 
+                                                                     value=config$homeRange$asymptote$TotA), 
                                                          numericInput("configAsymptoteNTimes", "Number of time breakup met",
                                                                       value=config$homeRange$asymptote$NTimes), 
                                                          selectInput("configAsymptoteSampling", "Sampling regime",
                                                                      choices=config$homeRange$asymptote$sampling, 
                                                                      multiple=FALSE, selectize=FALSE)
-                                                         ), 
-                                                ## tabPanel("Synoptic Home Ranges",
-                                                ##         h1("Not yet implemented")), 
+                                                ), 
                                                 tabPanel("Brownian Bridges",
                                                          h2("Estimate home ranges with Brownian Bridges"),
                                                          bsAlert("generalNoTimeBBMM"), 
                                                          numericInput("configBBMMSigma2", "Location Error (Sigma 2)", value=10),
                                                          sliderInput("configBBMMRangeSigma1", "Search range for sigma 1", value=c(0, 100),
                                                                      min=0, max=1e4)
-                                                         ), 
+                                                ), 
                                                 well=FALSE)
-                                   )), 
+                                 )), 
                         tabPanel("Core Area", 
                                  fluidPage(
                                    navlistPanel("Configure Core Area",
@@ -228,22 +213,13 @@ shinyUI(
                                                 h2("Method of Powell and Seaman"),
                                                 helpText("No additional configuration is required, core area is calculated from kernel density estimation")
                                    ))) 
-                        ## tabPanel("Path Level Analysis", 
-                                 ## fluidPage(
-                                   ## navlistPanel("Configure Path Level Analysis",
-                                                ## tabPanel("Method 1",
-                                                         ## h1("MCP")), 
-                                                ## tabPanel("Method 2",
-                                                         ## h1("MCP")), 
-                                                ## well=FALSE)
-                                   ## )) 
-                        ),
+             ),
              tabPanel("Run Analysis",
                       fluidRow(
                         column(width=5, 
-### FLuid 2 sides, one with steps, one with warnings, etc
+                               ### FLuid 2 sides, one with steps, one with warnings, etc
                                h2("Select analytical steps"),
-                               helpText("..."), 
+                               helpText("Select the analyses you want to perform here. Depending to the amount of data you provided, the number of animals and which analyses you chose, this may take some time."), 
                                h3("Home range analysis"), 
                                checkboxGroupInput("runSteps", "Select Steps",
                                                   choices=c(
@@ -261,15 +237,15 @@ shinyUI(
                                                   choices=c(
                                                     "Core Area" = "rhrCoreArea" )), 
                                bsButton("rhrAnalyze", label="Analyze", disabled=TRUE, size="large", style="primary")
-                               ),
+                        ),
                         column(width=5,
                                bsAlert("rhrAnalyzeInfo"), 
                                bsAlert("rhrRunNoTimeTTSI"), 
                                bsAlert("rhrRunNoTimeBBMM"),
                                bsAlert("rhrAnalyzeProgress")
-                               )
                         )
-                      ),
+                      )
+             ),
              inverse=TRUE,
              footer=list(hr(), p("2015 - Wildlife Sciences - Georg-August-University Goettingen"), 
                          a("citation", href = "http://jmsigner.github.io/rhrman/abtCitation.html", target = "_blank"))))

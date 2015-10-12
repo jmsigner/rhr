@@ -159,14 +159,13 @@ rhrHasUD.RhrKDE <- function(x, ...) {
 
 #' @export
 plot.RhrKDE <- function(x, levels = NULL, addIsopleths=TRUE, ...) {
-
+  
   if (is.null(levels)) {
     levels <- x$args$levels
   } 
-  
-  plot(rhrUD(x), ...)
+  plotRaster(rhrUD(x), ...)
   if (addIsopleths) {
-    plot(rhrIsopleths(x, levels), add=TRUE)
+    sp::plot(rhrIsopleths(x, levels), add=TRUE)
   }
 }
 

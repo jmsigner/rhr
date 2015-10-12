@@ -10,7 +10,7 @@
 #' @export
 #' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, Ecology, 66(4), 1176 - 1184
 
-rhrTTSI <- function(track, interval, ntimes=3, ...) {
+rhrTTSI <- function(track, interval=min(diff(as.numeric(rhrTimes(track)))), ntimes = 3, ...) {
 
   call <- match.call()
   dat <- rhrCheckData(track, returnSP=FALSE)

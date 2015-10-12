@@ -2,7 +2,7 @@
 ##'
 ##' This functions wraps many rhr* methods. The purpose of this function to run a series of
 ##' of estimates given data, a vector of desired results and a list with arguments.
-##' @param datIn RhrMappedData
+##' @param dat RhrMappedData
 ##' @param what character vector; indicating which steps should be performed, order does not matter
 ##' @param args list; with arguments for the different steps
 ##' @param verbose logical; whether or not progress should be given on the command line
@@ -14,35 +14,24 @@
 ##' @return List
 ##' @export
 ##' @author Johannes Signer
-rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrAsymptote", "rhrCoreArea"),
+rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrAsymptote", "rhrCoreArea"),
                           args=NULL, verbose=TRUE, 
                           outDir=file.path(tempdir(), paste0("rhr", format(Sys.time(), "%Y%m%d%H%M%S"))),
                           inGUI=FALSE,
                           inUnit="ido",
                           outUnit="ius", 
-                          report = TRUE
-                          ## createPDF = FALSE
-                          ## dataMan = NULL
-                          ## vectorFormats=c("shp", "kml"),
-                          ## rasterFormats=c("tif")
-                          ## fullReport=TRUE,
-                          ## browseReport=TRUE, 
-                          ## reportType=c("html", "pdf", "pdf-simpel"),
-                          ## publish="dropbox",
-                          ## publishWithResults=FALSE,
-                          ## publishWithData=TRUE
-                          ) {
+                          report = TRUE) {
 
 
   ## ------------------------------------------------------------------------------ ##  
   ## Check if the minimum is provided
 
-  if (missing(datIn)) {
+  if (missing(dat)) {
     stop("rhrHrAnalysis: dat is missing")
   }
 
-  if (!is(datIn, "RhrMappedData")) {
-    stop("rhrHrAnalysis: dat should be of class rhrMappedData")
+  if (!is(dat, "RhrTracks")) {
+    stop("rhrHrAnalysis: dat should be of class RhrTracks")
   }
 
   ## ------------------------------------------------------------------------------ ##  
@@ -71,10 +60,10 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
     if (inGUI) {
       shiny::setProgress(message=thisEst,
                          detail=paste0("Starting with animal: ",
-                           animal$id[1], " (", which(animal$id[1] == names(dat)), " of ",
+                           animal, " (", which(animal == names(dat)), " of ",
                            length(dat), ")"))
     }
-    c(logf, paste0("[", Sys.time(), "]: ", thisEst, " ", animal$id[1]))
+    c(logf, paste0("[", Sys.time(), "]: ", thisEst, " ", animal))
   }
 
   logStartEst <- function(logf, thisEst, inGUI, detail="...") {
@@ -84,9 +73,9 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
 
   ## Saving RDS
-  saveRds <- function(est, animal, scn, outDirData, filename=NULL) {
+  saveRds <- function(est, animal, estname, outDirData, filename=NULL) {
     fnRDS <- normalizePath(file.path(outDirData,
-                                     paste0("animal_", animal$id[1], "_", scn$basename, ".Rds")),mustWork=FALSE, winslash="/")
+                                     paste0("animal_", animal, "_", estname, ".Rds")),mustWork=FALSE, winslash="/")
 
     if (!is.null(filename)) {
       fnRDS <- normalizePath(file.path(outDirData, paste0(filename, ".Rds")), mustWork=FALSE, winslash="/")
@@ -96,13 +85,13 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
     return(fnRDS)
   }
 
-  savePlots <- function(est, animal, scn, outDirPlots, legend="Home Range Estimates", filename=NULL, ...) {
+  savePlots <- function(est, animal, est_name, outDirPlots, legend="Home Range Estimates", filename=NULL, ...) {
     ## Plot results
     fnPlotPNG <- normalizePath(
-      file.path(outDirPlots, paste0("animal_", animal$id[1], "_", scn$basename, ".png")),
+      file.path(outDirPlots, paste0("animal_", animal, "_", est_name, ".png")),
       mustWork=FALSE, winslash="/")
     fnPlotPDF <- normalizePath(
-      file.path(outDirPlots, paste0("animal_", animal$id[1], "_", scn$basename, ".pdf")),
+      file.path(outDirPlots, paste0("animal_", animal, "_", est_name, ".pdf")),
       mustWork=FALSE, winslash="/")
 
     if (!is.null(filename)) {
@@ -127,18 +116,18 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
     )
   }
 
-  saveMsg <- function(animal, scn, outDirData, name="ABC", msg="abc") {
-    messageRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal$id[1], "_", scn$basename, "_message.Rds")), mustWork=FALSE, winslash="/")
+  saveMsg <- function(animal, est, outDirData, name="ABC", msg="abc") {
+    messageRDS <- normalizePath(file.path(outDirData, paste0("animal_", animal, "_", est, "_message.Rds")), mustWork=FALSE, winslash="/")
     msg1 <- msg
     saveRDS(msg1, file=messageRDS)
     msg <- list(
       list(name=msg, message=messageRDS))
   }
   
-  saveVect <- function(est, animal, scn, outDirVect, filename=NULL, ...) {
+  saveVect <- function(est, animal, est_name, outDirVect, filename=NULL, ...) {
     ## Spatial Data
     fnVect <- normalizePath(file.path(outDirVect,
-                                      paste0("animal_", animal$id[1], "_", scn$basename, "_isopleths.shp")),mustWork=FALSE, winslash="/")
+                                      paste0("animal_", animal, "_", est_name, "_isopleths.shp")),mustWork=FALSE, winslash="/")
     rgdal::writeOGR(rhrIsopleths(est, ...), dsn=fnVect, layer=basename(tools::file_path_sans_ext(fnVect)), driver="ESRI Shapefile",
              overwrite_layer=TRUE)
 
@@ -146,10 +135,10 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
   }
 
 
-  saveRast <- function(est, animal, scn, outDirRast) {
+  saveRast <- function(est, animal, est_name, outDirRast) {
     ## raster
     fnRast <- normalizePath(
-      file.path(outDirRast, paste0("animal_", animal$id[1], "_", scn$basename,
+      file.path(outDirRast, paste0("animal_", animal, "_", est_name,
                                    "_UD.tif")),mustWork=FALSE, winslash="/")
     raster::writeRaster(rhrUD(est), dsn=fnRast, filename=fnRast, overwrite=TRUE)
 
@@ -157,33 +146,25 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
       fnRast)
   }
 
-  mergeIsos <- function(scenarios, resList, thisEst) {
-    resMISO <- list()
-    for (scn in seq_along(scenarios)) {
-      scns <- sapply(resList$est[[thisEst]]$res, function(x) x[[scn]]$est$vcts[[1]])
+  mergeIsos <- function(resList, thisEst, animals) {
+      scns <- sapply(resList$est[[thisEst]]$res, function(x) x$est$vcts[[1]])
       vcts <- lapply(scns, raster::shapefile)
-      animals <- names(resList$est[[thisEst]]$res)
 
       for (s in seq_along(vcts)) {
-        vcts[[s]] <- sp::spChFIDs(vcts[[s]], paste(scenarios[[scn]]$basename,
-                                               animals[s], vcts[[1]]$level, sep="_"))
+        vcts[[s]] <- sp::spChFIDs(vcts[[s]], paste(thisEst, animals[s], vcts[[s]]$level, sep="_"))
       }
-
       vcts <- do.call(rbind, vcts)
 
       ## Spatial Data
       fnVect <- normalizePath(file.path(outDirVect,
-                                        paste0("allAnimals_", scenarios[[scn]]$basename, "_isopleths.shp")),
+                                        paste0("allAnimals_", thisEst, "_isopleths.shp")),
                               mustWork=FALSE, winslash="/")
       rgdal::writeOGR(vcts, dsn=fnVect,
                       layer=basename(tools::file_path_sans_ext(fnVect)),
                       driver="ESRI Shapefile",
                       overwrite_layer=TRUE)
-
-      resMISO[[scn]] <- list(fnVect)
-
-    }
-    return(resMISO)
+      
+      fnVect
   } 
 
   saveParameters <- function(thisEst, outDirData, args) {
@@ -199,9 +180,11 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
   ## Lookup
   
   methodLookup <- data.frame(
-    short=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrLoCoH", "rhrBBMM", "rhrUniNorm", "rhrBiNorm"),
+    short=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrLoCoH", "rhrBBMM", "rhrUniNorm", "rhrBiNorm", 
+            "rhrUniCirc", "rhrBiCir"),
     long=c("Site Fidelity", "Time to Statistical Independence", "Minimum Convex Polygon", "Kernel Density Estimation",
-           "Local Convex Hull", "Brownian Bridges", "Unimodal bivariate Normal", "Bimodal bivariate Normal"),
+           "Local Convex Hull", "Brownian Bridges", "Unimodal bivariate Normal", "Bimodal bivariate Normal", 
+           "Unimodal circular home-range", "Bimodal circular home-range"),
     stringsAsFactors=FALSE)
   
   propertyLookup <- data.frame(
@@ -212,12 +195,11 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
   ## ------------------------------------------------------------------------------ ##  
   ## Properties of a HR-Estimate
 
-  rhrRes <- function(est, animal, scn, outDirs, msg = NULL) {
+  rhrRes <- function(est, animal, est_name, outDirs, msg = NULL) {
 
     if (inherits(est, "error")) {
-      fnRDS <- saveRds(est, animal, scn, outDirs$data)
+      fnRDS <- saveRds(est, animal, est_name, outDirs$data)
       return(list(
-
         class = class(est)[1], 
         rds = fnRDS,
         plts = NULL,
@@ -228,14 +210,14 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
       ))
     } else {
       ## Write the results
-      fnRDS <- saveRds(est, animal, scn, outDirs$data)
+      fnRDS <- saveRds(est, animal, est_name, outDirs$data)
 
       ## Plot results
-      plts <- savePlots(est, animal, scn, outDirs$plots, legend="Home Range Estimates") 
+      plts <- savePlots(est, animal, est_name, outDirs$plots, legend="Home Range Estimates") 
 
       ## Spatial Data
-      vcts <- if (inherits(est, "RhrEst")) saveVect(est, animal, scn, outDirs$vect) else NULL
-      rsts <- if (inherits(est, "RhrProbEst")) saveRast(est, animal, scn, outDirs$rast) else NULL
+      vcts <- if (inherits(est, "RhrEst")) saveVect(est, animal, est_name, outDirs$vect) else NULL
+      rsts <- if (inherits(est, "RhrProbEst")) saveRast(est, animal, est_name, outDirs$rast) else NULL
       return(list(
         class = class(est)[1], 
         rds = fnRDS,
@@ -254,14 +236,14 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
     ## save tables
     fnTbl1 <- normalizePath(
-      file.path(outDirs$data, paste0("animal_", animal$id[1], "_", scn$basename, "_tbl1.Rds")),
+      file.path(outDirs$data, paste0("animal_", animal, "_", scn$basename, "_tbl1.Rds")),
       mustWork=FALSE, winslash="/")
     t1 <- data.frame(a)
     names(t1) <- c("Level", "Area")
     t1$Area <- rhrConvertUnit(t1$Area, inUnit, outUnit)
     saveRDS(t1, file=fnTbl1)
 
-    fn <- paste0("animal_", animal$id[1], "_", scn$basename, "_pArea")
+    fn <- paste0("animal_", animal, "_", scn$basename, "_pArea")
 
     tbls <- list(list(name="Home range areas", path=fnTbl1))
     list(
@@ -291,7 +273,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
                                       nTimes=args[[thisEst]]$nTimes,
                                       sampling=args[[thisEst]]$sampling), error=function(e) e)
 
-        fn <- paste0("animal_", animal$id[1], "_", scn$basename, "_pAsym")
+        fn <- paste0("animal_", animal, "_", scn$basename, "_pAsym")
         
         if (is(asym, "error")) {
           return(list(
@@ -320,6 +302,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
     return(NULL)
   }
 
+  ## core area
   rhrPCA <- function(est, thisEst, animal, scn, args, outDirs, what) {
     ## check asymptote is requested
     if ("rhrCoreArea" %in% what) {
@@ -327,7 +310,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
       ca <- rhrCoreArea(est)
 
       ## Write the results
-      fn <- paste0("animal_", animal$id[1], "_", scn$basename, "_pCA")
+      fn <- paste0("animal_", animal, "_", scn$basename, "_pCA")
       fnRDS <- saveRds(ca, animal, scn, outDirData, filename=fn)
 
       ## Plot results
@@ -344,7 +327,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
     ## save tables
     a <- rhrArea(est, ca$iso)
     fnTbl1 <- normalizePath(
-      file.path(outDirs$data, paste0("animal_", animal$id[1], "_", scn$basename, "_tbl_ca.Rds")),
+      file.path(outDirs$data, paste0("animal_", animal, "_", scn$basename, "_tbl_ca.Rds")),
       mustWork=FALSE, winslash="/")
     t1 <- data.frame(a)
 
@@ -395,7 +378,7 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
   defaultArgs$rhrKDE$userh <- NULL
 
   ## trast overrides everything else
-  defaultArgs$rhrKDE$trast <- rhrRasterFromExt(rhrExtFromPoints(datIn, extendRange=0.2), nrow=100, res=NULL)
+  defaultArgs$rhrKDE$trast <- rhrRasterFromExt(rhrExtFromPoints(dat, extendRange=0.2), nrow=100, res=NULL)
   defaultArgs$rhrKDE$h <- as.list("href", "hlscv", "hpi", c(100, 100))
 
   ## BBMM
@@ -403,17 +386,27 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
   defaultArgs$rhrBBMM$levels <- 95
   defaultArgs$rhrBBMM$rangesigma1 <- c(1, 10000)
   defaultArgs$rhrBBMM$sigma2 <- 10
-  defaultArgs$rhrBBMM$trast <- rhrRasterFromExt(rhrExtFromPoints(datIn, extendRange=0.2), nrow=100, res=NULL)
+  defaultArgs$rhrBBMM$trast <- rhrRasterFromExt(rhrExtFromPoints(dat, extendRange=0.2), nrow=100, res=NULL)
 
   ## UniNorm
   defaultArgs$rhrUniNorm <- list()
   defaultArgs$rhrUniNorm$levels <- 95
-  defaultArgs$rhrUniNorm$trast <- rhrRasterFromExt(rhrExtFromPoints(datIn, extendRange=0.2), nrow=100, res=NULL)
+  defaultArgs$rhrUniNorm$trast <- rhrRasterFromExt(rhrExtFromPoints(dat, extendRange=0.2), nrow=100, res=NULL)
+  
+  ## UniCirc
+  defaultArgs$rhrUniCirc <- list()
+  defaultArgs$rhrUniCirc$levels <- 95
+  defaultArgs$rhrUniCirc$trast <- rhrRasterFromExt(rhrExtFromPoints(dat, extendRange=0.2), nrow=100, res=NULL)
 
   ## BiNorm
   defaultArgs$rhrBiNorm <- list()
   defaultArgs$rhrBiNorm$levels <- 95
-  defaultArgs$rhrBiNorm$trast <- rhrRasterFromExt(rhrExtFromPoints(datIn, extendRange=0.2), nrow=100, res=NULL)
+  defaultArgs$rhrBiNorm$trast <- rhrRasterFromExt(rhrExtFromPoints(dat, extendRange=0.2), nrow=100, res=NULL)
+  
+  ## UniCirc
+  defaultArgs$rhrBiCirc <- list()
+  defaultArgs$rhrBiCirc$levels <- 95
+  defaultArgs$rhrBiCirc$trast <- rhrRasterFromExt(rhrExtFromPoints(dat, extendRange=0.2), nrow=100, res=NULL)
 
   ## LoCoH
   defaultArgs$rhrLoCoH <- list()
@@ -487,12 +480,8 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
   ## split data by animal
   resLog <- c(resLog, paste0("[", Sys.time(), "]: Splitting data by animal"))
 
-  ## sp::split necessary
-  dat <- sp::split(datIn$dat, datIn$dat$id)
-
   ## ============================================================================== ##  
   ## Estimators
-
   resList$est <- list()
 
   ## ------------------------------------------------------------------------------ ##  
@@ -508,23 +497,16 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
-
-    scenarios <- expand.grid(n=args[[thisEst]]$n)
-    scenarios$basename <- paste0("rhrSiteFidelity_n_", scenarios$n)
-    resList$est$rhrSiteFidelity$scenarios <- scenarios
-    scenarios <- split(scenarios, 1:nrow(scenarios))
-
-    resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
+    
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
       resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
-      lapply(scenarios, function(scn) {
-        sf <- tryCatch(rhrSiteFidelity(animal, n=scn$n, alpha=args[[thisEst]]$alpha), error=function(e) e)
-        if (inherits(sf, "error")) {
-          return(list(est = rhrRes(sf, animal, scn, outDirs, msg = list(list(name="Error", message=sf$message)))))
-        } else {
-          res <-  rhrRes(sf, animal, scn, outDirs)
-          return(list(est = res))
-        }
-      })
+      sf <- tryCatch(rhrSiteFidelity(dat[[animal]], n=args[[thisEst]]$n, alpha=args[[thisEst]]$alpha), error=function(e) e)
+      if (inherits(sf, "error")) {
+        return(list(est = rhrRes(sf, animal, thisEst, outDirs, msg = list(list(name="Error", message=sf$message)))))
+      } else {
+        res <-  rhrRes(sf, animal, thisEst, outDirs)
+        return(list(est = res))
+      }
     })
 
     ## Parameters
@@ -544,24 +526,18 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
-    scenarios <- expand.grid(scn=1)
-    scenarios$basename <- paste0(thisEst, scenarios$scn)
-    resList$est[[thisEst]]$scenarios <- scenarios 
-    scenarios <- split(scenarios, 1:nrow(scenarios))
 
-    resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
       resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
-      lapply(scenarios, function(scn) {
-        ttsi <- tryCatch(rhrTTSI(animal, animal$timestamp, interval=args[[thisEst]]$init,
+        ttsi <- tryCatch(rhrTTSI(dat[[animal]], 
                                  ntimes=args[[thisEst]]$ntimes, consec=args[[thisEst]]$consec), error=function(e) e)
         if (inherits(ttsi, "error")) {
-          return(list(est = rhrRes(ttsi, animal, scn, outDirs, msg = list(list(name="Error", message=ttsi$message)))))
+          return(list(est = rhrRes(ttsi, animal, thisEst, outDirs, msg = list(list(name="Error", message=ttsi$message)))))
         } else {
           msg <- list(list(name="What does it mean", message=paste0("Time to statistical independence was ", if (ttsi$cvReached) paste0("reached after ", ttsi$cvReachedAt, " seconds.") else "not reached.")))
-          res <-  rhrRes(ttsi, animal, scn, outDirs, msg=msg)
+          res <-  rhrRes(ttsi, animal, thisEst, outDirs, msg=msg)
           return(list(est = res))
         }
-      })
     })
 
     ## Parameters
@@ -580,35 +556,29 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
-    scenarios <- expand.grid(scn=1)
-    scenarios$basename <- paste0("rhrMCP", scenarios$scn)
-    scenarios$name <- "rhrMCP"
-    resList$est[[thisEst]]$scenarios <- scenarios 
-    scenarios <- split(scenarios, 1:nrow(scenarios))
 
-    resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
       resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
-      lapply(scenarios, function(scn) {
-        mcp <- tryCatch(rhrMCP(animal, levels=args[[thisEst]]$levels), error=function(e) e)
-
-        if (inherits(mcp, "error")) {
-          return(list(est = rhrRes(mcp, animal, scn, outDirs, msg = list(list(name="Error", message=mcp$message)))))
-        } else {
-          res <-  rhrRes(mcp, animal, scn, outDirs)
-
-          ## hr area
-          pArea <- rhrPArea(mcp, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
-          pAsymptote <- rhrPAsymptote(mcp, thisEst, animal, scn, args, outDirs, what)
-
-          return(list(est = res,
-                      properties = list(area = pArea,
-                                        asymptote = pAsymptote)))
-        }
-      })
+      mcp <- tryCatch(rhrMCP(dat[[animal]], levels=args[[thisEst]]$levels), error=function(e) e)
+      
+      if (inherits(mcp, "error")) {
+        return(list(est = rhrRes(mcp, animal, thisEst, outDirs, msg = list(list(name="Error", message=mcp$message)))))
+      } else {
+        res <-  rhrRes(mcp, animal, thisEst, outDirs)
+        
+        ## hr area
+       # pArea <- rhrPArea(mcp, thisEst, animal, thisEst, args, outDirs, inUnit, outUnit)
+       # pAsymptote <- rhrPAsymptote(mcp, thisEst, animal, thisEst, args, outDirs, what)
+        
+        return(list(est = res
+                 #   properties = list(area = pArea,
+                 #                     asymptote = pAsymptote)))
+        ))
+      }
     })
-    
+
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(resList, thisEst, names(dat))
     ## Parameters
     resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
   }
@@ -619,38 +589,27 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
   if ("rhrKDE" %in% what) {
     thisEst <- "rhrKDE"
     resLog <- logStartEst(resLog, thisEst, inGUI, detail="...") 
-
     args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels", "trast", "h"))
-
-    ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
-    scenarios <- expand.grid(h=unlist(args[[thisEst]]$h))
-    scenarios$basename <- paste0(thisEst, scenarios$h)
-    scenarios$name <- paste0("KDE (bandwidth: ", scenarios$h, ")")
-    resList$est[[thisEst]]$scenarios <- scenarios 
-    scenarios <- split(scenarios, 1:nrow(scenarios))
 
-    resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
-
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
       ## Log progress
       resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
 
-      lapply(scenarios, function(scn) {
-
         ## h (its not possible yet to control h, if so you should calc a priori
-        if (scn$h == "user") {
+        if (args[[thisEst]]$h == "user") {
           hres <- list(h=rep(args[[thisEst]]$userh, 2), name="user")
-        } else if (scn$h == "href") {
-          hres <- rhrHref(animal)
-        } else if (scn$h == "hlscv") {
-          hres <- rhrHlscv(animal, trast=args[[thisEst]]$trast)
-        } else if (scn$h == "hpi") {
-          hres <- rhrHpi(animal)
+        } else if (args[[thisEst]]$h == "href") {
+          hres <- rhrHref(dat[[animal]])
+        } else if (args[[thisEst]]$h == "hlscv") {
+          hres <- rhrHlscv(dat[[animal]], trast=args[[thisEst]]$trast)
+        } else if (args[[thisEst]]$h == "hpi") {
+          hres <- rhrHpi(dat[[animal]])
         } else {
           hres$msg <- "sorry, h input not understood, this calculation will be skipped"
         }
 
-        kde <- tryCatch(rhrKDE(animal, h=hres$h, trast=args[[thisEst]]$trast,
+        kde <- tryCatch(rhrKDE(dat[[animal]], h=hres$h, trast=args[[thisEst]]$trast,
                                levels = args[[thisEst]]$levels), error=function(e) e)
 
         if (inherits(kde, "error")) {
@@ -673,20 +632,20 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
               }
           )
 
-          res <-  rhrRes(kde, animal, scn, outDirs, msgs)
-          pArea <- rhrPArea(kde, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
-          pAsymptote <- rhrPAsymptote(kde, thisEst, animal, scn, args, outDirs, what)
-          pCA <- rhrPCA(kde, thisEst, animal, scn, args, outDirs, what)
+          res <-  rhrRes(kde, animal, thisEst, outDirs, msgs)
+          #pArea <- rhrPArea(kde, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
+          #pAsymptote <- rhrPAsymptote(kde, thisEst, animal, scn, args, outDirs, what)
+          #pCA <- rhrPCA(kde, thisEst, animal, scn, args, outDirs, what)
 
-          return(list(est = res, properties = list(area = pArea,
-                                   asymptote = pAsymptote,
-                                   corearea = pCA)))
+          return(list(est = res#, properties = list(area = pArea,
+                               #    asymptote = pAsymptote,
+                               #    corearea = pCA)))
+          ))
         }
       })
-    })
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(resList, thisEst, names(dat))
 
     ## Parameters
     resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
@@ -704,22 +663,16 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
-    scenarios <- expand.grid(scn=1)
-    scenarios$basename <- paste0(thisEst, scenarios$scn)
-    scenarios$name <- paste0("BBMM")
-    resList$est[[thisEst]]$scenarios <- scenarios 
-    scenarios <- split(scenarios, 1:nrow(scenarios))
 
-    resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
       resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
-      lapply(scenarios, function(scn) {
 
-        bbmm <- tryCatch(rhrBBMM(animal, animal$timestamp, rangesigma1=args[[thisEst]]$rangesigma1, 
+        bbmm <- tryCatch(rhrBBMM(dat[[animal]], rangesigma1=args[[thisEst]]$rangesigma1, 
                                  sigma2=args[[thisEst]]$sigma2,
                                  trast=args[[thisEst]]$trast), error=function(e) e)
 
         if (inherits(bbmm, "error")) {
-          return(list(est = rhrRes(bbmm, animal, scn, outDirs, msg = list(list(name="Error", message=bbmm$message)))))
+          return(list(est = rhrRes(bbmm, animal, thisEst, outDirs, msg = list(list(name="Error", message=bbmm$message)))))
         } else {
 
           ## tables
@@ -727,18 +680,17 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
             list(list(name = "Tuning parameter (Sigma 1)",
                       message = paste0("The used value for Sigma 1 is: ", paste0(round(bbmm$sigma1, 2), collapse=",")))))
 
-          res <-  rhrRes(bbmm, animal, scn, outDirs, msgs)
-          pArea <- rhrPArea(bbmm, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
+          res <-  rhrRes(bbmm, animal, thisEst, outDirs, msgs)
+          #pArea <- rhrPArea(bbmm, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
     #      pCA <- rhrPCA(bbmm, thisEst, animal, scn, args, outDirs, what)
 
-          return(list(est = res, properties = list(area = pArea)))
+          return(list(est = res)) #, properties = list(area = pArea)))
                                    # corearea = pCA)))
         }
-      })
     })
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(resList, thisEst, names(dat))
 
     ## Parameters
     resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
@@ -753,43 +705,78 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
     ## sanity check on args
     args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels", "trast"))
-
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
-    scenarios <- expand.grid(scn=1)
-    scenarios$basename <- paste0(thisEst, scenarios$scn)
-    scenarios$name <- paste0("UniNorm")
-    resList$est[[thisEst]]$scenarios <- scenarios 
-    scenarios <- split(scenarios, 1:nrow(scenarios))
 
-    resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
       resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
-      lapply(scenarios, function(scn) {
 
-        est <- tryCatch(rhrUniNorm(animal, trast=args[[thisEst]]$trast), error=function(e) e)
+      est <- tryCatch(rhrUniNorm(dat[[animal]], trast=args[[thisEst]]$trast), error=function(e) e)
+      
+      if (inherits(est, "error")) {
+        return(list(est = rhrRes(est, animal, thisEst, outDirs, msg = list(list(name="Error", message=est$message)))))
+      } else {
 
-        if (inherits(est, "error")) {
-          return(list(est = rhrRes(est, animal, scn, outDirs, msg = list(list(name="Error", message=est$message)))))
-        } else {
-
-          ## tables
-          msgs <- list(
-            list(
-              list(name = "Tuning parameter (Sigma 1)",
-                   msg = paste0("Mu (", paste0(round(est$parameters$mean, 2), collapse=", "), "); Sigma (",
-                     paste0(round(est$parameters$sigma, 2), collapse=", "), "); AIC (", round(est$AIC, 2), "); AICc ", round(est$AICc, 2)))))
-          res <-  rhrRes(est, animal, scn, outDirs, msgs)
-          pArea <- rhrPArea(est, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
-          pCA <- rhrPCA(est, thisEst, animal, scn, args, outDirs, what)
-
-          return(list(est = res, properties = list(area = pArea,
-                                   corearea = pCA)))
-        }
-      })
+        ## tables
+        msgs <- list(
+          list(
+            list(name = "Results",
+                 msg = paste0("Mu (", paste0(round(est$parameters$mean, 2), collapse=", "), "); Sigma (",
+                              paste0(round(est$parameters$sigma, 2), collapse=", "), "); AIC (", round(est$AIC, 2), "); AICc ", round(est$AICc, 2)))))
+        res <-  rhrRes(est, animal, thisEst, outDirs, msgs)
+#        pArea <- rhrPArea(est, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
+#        pCA <- rhrPCA(est, thisEst, animal, scn, args, outDirs, what)
+        
+        return(list(est = res))#, properties = list(area = pArea,
+                             #                    corearea = pCA)))
+      }
     })
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(resList, thisEst, names(dat))
+
+    ## Parameters
+    resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
+  }
+  
+  ## ------------------------------------------------------------------------------ ##  
+  ## rhrUniCirc
+  ## 
+  if ("rhrUniCirc" %in% what) {
+    thisEst <- "rhrUniCirc"
+    resLog <- logStartEst(resLog, thisEst, inGUI, detail="...") 
+
+    ## sanity check on args
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels", "trast"))
+    ## Define possible different scenarios here
+    resList$est[[thisEst]] <- list()
+
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
+      resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
+
+      est <- tryCatch(rhrUniCirc(dat[[animal]], trast=args[[thisEst]]$trast), error=function(e) e)
+      
+      if (inherits(est, "error")) {
+        return(list(est = rhrRes(est, animal, thisEst, outDirs, msg = list(list(name="Error", message=est$message)))))
+      } else {
+
+        ## tables
+        msgs <- list(
+          list(
+            list(name = "Results",
+                 msg = paste0("Mu (", paste0(round(est$parameters$mean, 2), collapse=", "), "); a (",
+                              paste0(round(est$parameters$a, 2), collapse=", "), "); AIC (", round(est$AIC, 2), "); AICc ", round(est$AICc, 2)))))
+        res <-  rhrRes(est, animal, thisEst, outDirs, msgs)
+#        pArea <- rhrPArea(est, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
+#        pCA <- rhrPCA(est, thisEst, animal, scn, args, outDirs, what)
+        
+        return(list(est = res))#, properties = list(area = pArea,
+                             #                    corearea = pCA)))
+      }
+    })
+
+    ## merge isopleths of animals along scenarios
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(resList, thisEst, names(dat))
 
     ## Parameters
     resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
@@ -807,43 +794,83 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
-    scenarios <- expand.grid(scn=1)
-    scenarios$basename <- paste0(thisEst, scenarios$scn)
-    scenarios$name <- paste0("BiNorm")
-    resList$est[[thisEst]]$scenarios <- scenarios 
-    scenarios <- split(scenarios, 1:nrow(scenarios))
-
-    resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
+    
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
       resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
-      lapply(scenarios, function(scn) {
 
-        est <- tryCatch(rhrBiNorm(animal, trast=args[[thisEst]]$trast), error=function(e) e)
+        est <- tryCatch(rhrBiNorm(dat[[animal]], trast=args[[thisEst]]$trast), error=function(e) e)
 
         if (inherits(est, "error")) {
-          return(list(est = rhrRes(est, animal, scn, outDirs, msg = list(list(name="Error", message=est$message)))))
+          return(list(est = rhrRes(est, animal, thisEst, outDirs, msg = list(list(name="Error", message=est$message)))))
         } else {
 
           ## tables
           msgs <- list(
             list( 
-              list(name = "Tuning parameter (Sigma 1)",
+              list(name = "Parameters",
                    message = paste0("Mu1 (", paste0(round(est$parameters$mean1, 2), collapse=", "), "); Sigma1 (",
                      paste0(round(est$parameters$sigma1, 2), collapse="), "),
                      ") Mu2 (", paste0(round(est$parameters$mean2, 2), collapse=", "), "); Sigma2 (",
                      paste0(round(est$parameters$sigma2, 2), collapse=", "),
                      "); AIC (", round(est$AIC, 2), "); AICc ", round(est$AICc, 2)))))
-          res <-  rhrRes(est, animal, scn, outDirs, msgs)
-          pArea <- rhrPArea(est, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
-          pCA <- rhrPCA(est, thisEst, animal, scn, args, outDirs, what)
+          res <-  rhrRes(est, animal, thisEst, outDirs, msgs)
+          #pArea <- rhrPArea(est, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
+          #pCA <- rhrPCA(est, thisEst, animal, scn, args, outDirs, what)
 
-          return(list(est = res, properties = list(area = pArea,
-                                   corearea = pCA)))
+          return(list(est = res) #, properties = list(area = pArea,
+                                 ) #  corearea = pCA)))
         }
-      })
     })
 
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(resList, thisEst, names(dat))
+
+    ## Parameters
+    resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
+  }
+  
+  ## ------------------------------------------------------------------------------ ##  
+  ## rhrBiCirc
+
+  if ("rhrBiCirc" %in% what) {
+    thisEst <- "rhrBiCirc"
+    resLog <- logStartEst(resLog, thisEst, inGUI, detail="...") 
+
+    ## sanity check on args
+    args[[thisEst]] <- checkArgs(args[[thisEst]], defaultArgs[[thisEst]], c("levels", "trast"))
+
+    ## Define possible different scenarios here
+    resList$est[[thisEst]] <- list()
+    
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
+      resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
+
+        est <- tryCatch(rhrBiNorm(dat[[animal]], trast=args[[thisEst]]$trast), error=function(e) e)
+
+        if (inherits(est, "error")) {
+          return(list(est = rhrRes(est, animal, thisEst, outDirs, msg = list(list(name="Error", message=est$message)))))
+        } else {
+
+          ## tables
+          msgs <- list(
+            list( 
+              list(name = "Parameters",
+                   message = paste0("Mu1 (", paste0(round(est$parameters$mean1, 2), collapse=", "), "); Sigma1 (",
+                     paste0(round(est$parameters$sigma1, 2), collapse="), "),
+                     ") Mu2 (", paste0(round(est$parameters$mean2, 2), collapse=", "), "); Sigma2 (",
+                     paste0(round(est$parameters$sigma2, 2), collapse=", "),
+                     "); AIC (", round(est$AIC, 2), "); AICc ", round(est$AICc, 2)))))
+          res <-  rhrRes(est, animal, thisEst, outDirs, msgs)
+          #pArea <- rhrPArea(est, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
+          #pCA <- rhrPCA(est, thisEst, animal, scn, args, outDirs, what)
+
+          return(list(est = res) #, properties = list(area = pArea,
+                                 ) #  corearea = pCA)))
+        }
+    })
+
+    ## merge isopleths of animals along scenarios
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(resList, thisEst, names(dat))
 
     ## Parameters
     resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
@@ -861,36 +888,30 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
 
     ## Define possible different scenarios here
     resList$est[[thisEst]] <- list()
-    scenarios <- data.frame(type=args[[thisEst]]$type, n=args[[thisEst]]$n, autoN=args[[thisEst]]$autoN)
-    scenarios$name <- paste0("LoCoH (type: ", scenarios$type, ")")
-    scenarios$basename <- paste0(thisEst, scenarios$type)
-    resList$est[[thisEst]]$scenarios <- scenarios 
-    scenarios <- split(scenarios, 1:nrow(scenarios))
 
-    resList$est[[thisEst]]$res <- lapply(dat, function(animal) {
+    resList$est[[thisEst]]$res <- lapply(names(dat), function(animal) {
       resLog <- logProg(resLog, thisEst, animal, dat, inGUI)
-      lapply(scenarios, function(scn) {
-
-        locoh <- tryCatch(rhrLoCoH(animal, type=scn$type, autoN=scn$autoN, n=scn$n, levels=args[[thisEst]]$levels), error=function(e) e)
+        locoh <- tryCatch(rhrLoCoH(dat[[animal]], type=args[[thisEst]]$type, 
+                                   autoN=args[[thisEst]]$autoN, n=args[[thisEst]]$n, 
+                                   levels=args[[thisEst]]$levels), error=function(e) e)
 
         if (inherits(locoh, "error")) {
-          return(list(est = rhrRes(locoh, animal, scn, outDirs, msg = list(list(name="Error", message=locoh$message)))))
+          return(list(est = rhrRes(locoh, animal, thisEst, outDirs, msg = list(list(name="Error", message=locoh$message)))))
         } else {
-          res <-  rhrRes(locoh, animal, scn, outDirs)
+          res <- rhrRes(locoh, animal, thisEst, outDirs)
 
           ## hr area
-          pArea <- rhrPArea(locoh, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
+          #pArea <- rhrPArea(locoh, thisEst, animal, scn, args, outDirs, inUnit, outUnit)
 
           ## hr asymptote
           ## pAsymptote <- rhrPAsymptote(locoh, thisEst, animal, scn, args, outDirs, what)
 
-          return(list(est = res,
-                      properties = list(area = pArea)))
+          return(list(est = res)) #,
+                      #properties = list(area = pArea)))
         }
       })
-    })
     ## merge isopleths of animals along scenarios
-    resList$est[[thisEst]]$allAnimals <- mergeIsos(scenarios, resList, thisEst)
+    resList$est[[thisEst]]$allAnimals <- mergeIsos(resList, thisEst, names(dat))
 
     ## Parameters
     resList$est[[thisEst]]$parameters <- saveParameters(thisEst, outDirData, args)
@@ -898,7 +919,6 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
   
   runtime <- Sys.time() - startTime
   
-  ## ------------------------------------------------------------------------------ ##  
   ## ------------------------------------------------------------------------------ ##  
   
   if (report) {
@@ -910,14 +930,14 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
       res=resList,
       baseDir=outDir,
       steps=what, 
-      dat=datIn,
+      dat=dat,
       methodLookup=methodLookup, 
       startTime = startTime
     ))
 
     knitEnv <- list2env(list(
       config=args, 
-      dat=datIn
+      dat=dat
     ))
 
     src <- capture.output(brew::brew(file=normalizePath(file.path(files, "body.brew"), winslash="/", mustWork=FALSE), 
@@ -932,21 +952,6 @@ rhrHrAnalysis <- function(datIn, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", 
       stylesheet=normalizePath(file.path(files, "style.css"), mustWork=FALSE, winslash="/"),
       template=normalizePath(file.path(files, "index.html"), mustWork=FALSE, winslash="/"))
     
-    ### pdf
-    if (createPDF) {
-      brew::brew(file=normalizePath(file.path(files, "report_brew.tex"), mustWork=FALSE, winslash="/"),
-                 output=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
-                 envir=brewEnv)
-      
-      knitr::knit(input=normalizePath(file.path(outDir, "rhrReport.Rnw"), mustWork=FALSE, winslash="/"),
-                  output=normalizePath(file.path(outDir, "rhrReport.tex"), mustWork=FALSE, winslash="/"), 
-                  quiet=TRUE,
-                  envir=knitEnv)
-      
-      ow <- setwd(outDir)
-      createPDF <- tools::texi2pdf("rhrReport.tex", clean=TRUE)
-      setwd(ow)
-    }
     
     ## ------------------------------------------------------------------------------ ##  
     ## Clean up

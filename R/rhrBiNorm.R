@@ -4,8 +4,10 @@
 #' @title rhrBiNorm
 #' @param xy valid input data 
 #' @param trast template raster
+#' @param maxit Integer, giving the maximum number of iterations. See also \link{\code{mixtools::mvnormalmixEM}}, which is called.
 #' @export
-rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
+rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL), 
+                      maxit = 20) {
 
   ## Capture input arguments
   args <- as.list(environment())
@@ -21,7 +23,7 @@ rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRang
   }
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
-  hats <- mixtools::mvnormalmixEM(xy[, 1:2], k=2)
+  hats <- mixtools::mvnormalmixEM(xy[, 1:2], k=2, maxit = maxit)
 
   r1 <- data.frame(raster::rasterToPoints(trast))
   r1$density <- d2mvnorm(r1[, 1:2], m=hats$lambda[1], 
@@ -56,7 +58,7 @@ rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRang
         mean2=hats$mu[[2]],
         sigma1=hats$sigma[[1]], 
         sigma2=hats$sigma[[2]])),
-    class=c("RhrBiNorm", "RhrProbEst", "RhrEst", "list"))
+    class=c("RhrBiNorm", "RhrParamEst", "RhrProbEst", "RhrEst", "list"))
   return(invisible(res))
 }
 
@@ -64,43 +66,3 @@ d2mvnorm <- function(xy, m, mu1, sig1, mu2, sig2) {
   m * mvtnorm::dmvnorm(xy, mu1, sig1) + (1 - m) * mvtnorm::dmvnorm(xy, mu2, sig2)
 }
 
-##' @export
-rhrUD.RhrBiNorm <- function(x, ...) {
-  x$ud
-}
-
-##' @export
-rhrCUD.RhrBiNorm <- function(x, ...) {
-  r1 <- rhrUD(x)
-  rhrUD2CUD(r1)
-}
-
-##' @export
-rhrIsopleths.RhrBiNorm <- function(x, levels=95, ...) {
-  cud <- rhrCUD(x)
-  rhrCUD2Isopleths(cud, levels)
-}
-
-##' @export
-rhrArea.RhrBiNorm <- function(x, levels=95, ...) {
-  as.data.frame(rhrIsopleths(x, levels))
-}
-
-##' @export
-##' @rdname rhrHasUD
-rhrHasUD.RhrBiNorm <- function(x, ...) {
-  TRUE
-}
-
-##' @export
-rhrData.RhrBiNorm <- function(x, spatial=FALSE, ...) {
-  xx <- rhrCheckData(x$args$xy, returnSP=spatial)
-}
-
-#' @export
-plot.RhrBiNorm <- function(x, levels=95, ...) {
-  ud <- rhrUD(x)
-  iso <- rhrIsopleths(x, levels)
-  plot(ud)
-  plot(iso, add=TRUE)
-}

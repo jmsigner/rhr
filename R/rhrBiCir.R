@@ -1,11 +1,7 @@
-#' Bimodal circular home range estimation
-#'
-#' Computes home-range using two circular normal distributions
-#' @title rhrBiCirc
-#' @param xy valid input data 
 #' @export
-rhrBiCirc <- function(xy) {
-
+#' @rdname parametric_homeranges
+rhrBiCirc <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
+  
   xy <- rhrCheckData(xy, returnSP=FALSE)
   
   K <- 7  # we have 7 parameters
@@ -22,13 +18,18 @@ rhrBiCirc <- function(xy) {
 
   init <- initKmeans(xy)
   ll <- optim(init, nll, dat=xy)
+  
+  
+  r1 <- data.frame(raster::rasterToPoints(trast))
+  r1$density <- d2cbn(r1[, 1], r1[, 2], ll$par[1:2], ll$par[3:4], ll$par[5], ll$par[6], ll$par[7])
+  ud <- raster::rasterFromXYZ(r1)
 
   AIC <- 2 * ll$value + 2 * K
 
 
 
   ## AICc
-  AICc <- AIC + (2*K*(K+1)) / (nrow(xy) - K -1)
+  
 
   res <- structure(
     list(
@@ -36,16 +37,17 @@ rhrBiCirc <- function(xy) {
       args=list(
         xy=xy), 
       K=K,
+      ud = ud, 
       LL=ll, 
       AIC=AIC, 
-      AICc=AICc, 
+      AICc=AICc <- AIC + (2*K*(K+1)) / (nrow(xy) - K -1), 
       parameters=list(
         mean1=ll$par[1:2], 
         mean2=ll$par[3:4],
         sigma1=ll$par[5],
         sigma2=ll$par[6],
         pi=ll$par[7])), 
-    class=c("RhrBiCirc", "RhrProbEst", "RhrEst", "list"))
+    class=c("RhrBiCirc", "RhrParamEst", "RhrProbEst", "RhrEst", "list"))
   return(invisible(res))
 
 }
@@ -83,42 +85,3 @@ d2cbn <- function(x, y, c1, c2, sigma1, sigma2, m) {
 
 
 
-#' @export
-rhrUD.RhrBiCirc <- function(x, trast, ...) {
-  if (missing(trast)) {
-    trast <- rhrRasterFromExt(rhrExtFromPoints(x$args$xy, extendRange=0.2), nrow=100, res=NULL)
-  }
-
-  r1 <- data.frame(raster::rasterToPoints(trast))
-  r1$density <- d2cbn(r1[, 1], r1[, 2], x$parameters$mean1,
-                         x$parameters$mean2, x$parameters$sigma1, x$parameters$sigma2, x$parameters$pi)
-  raster::rasterFromXYZ(r1)
-}
-
-#' @export
-rhrCUD.RhrBiCirc <- function(x, ...) {
-  rhrUD2CUD(rhrUD(x, ...))
-}
-
-#' @export
-#' @rdname rhrHasUD
-rhrHasUD.RhrBiCirc <- function(x, ...) {
-  TRUE
-}
-
-
-#' @export
-rhrIsopleths.RhrBiCirc <- function(x, levels=95, ...) {
-  cud <- rhrCUD(x)
-  rhrCUD2Isopleths(cud, levels)
-}
-
-#' @export
-rhrArea.RhrBiCirc <- function(x, levels=95, ...) {
-  as.data.frame(rhrIsopleths(x, levels))
-}
-
-#' @export
-plot.RhrBiCirc <- function(x, ...) {
-  plot(rhrUD(x, ...))
-}

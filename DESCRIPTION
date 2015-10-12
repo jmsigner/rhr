@@ -10,8 +10,10 @@ Description: Functions and a graphical user interface (GUI) to analyze animal
 License: GPL-3
 Depends:
     grid,
+    maptools,
+    raster,
     sp
-Imports: 
+Imports:
     adehabitatHR,
     adehabitatLT,
     ggplot2,
@@ -22,16 +24,15 @@ Imports:
     mixtools,
     mvtnorm,
     Rcpp,
-    raster,
     rgdal,
     rgeos,
     reshape2,
     spacetime,
     stringr,
-    trajectories, 
+    trajectories,
     zoo
 LinkingTo: Rcpp
-Suggests: 
+Suggests:
     shiny (>= 0.10.2.1),
     knitr,
     markdown,
@@ -40,3 +41,4 @@ Suggests:
     brew,
     xtable
 NeedsCompilation: yes
+RoxygenNote: 4.1.1.9000

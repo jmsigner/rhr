@@ -11,6 +11,10 @@ rhrCheckData <- function(dat, returnSP=FALSE) {
     dat <- rhrPoints(dat)
   }
   
+  if (inherits(dat, "RhrTracks")) {
+    dat <- rhrPoints(dat)
+  }
+  
   ## return data.frames
   if (!returnSP) {
     ## remapped already, no need to worry about it anymore

@@ -2,8 +2,7 @@
 #'
 #' A wrapper around \code{adehabitatHR::kernelbb}. 
 #'
-#' @param xy \code{Data.frame} with two columns containing x and y coordinates.
-#' @param time a vector with time stamps for each relocation, must be of the same length as \code{xy}.
+#' @template trackST
 #' @param rangesigma1 parameter 1
 #' @param sigma2 parameter 2
 #' @param trast a \code{RasterLayer} used as an template for the output grid.
@@ -15,7 +14,7 @@
 #' @export
 #' 
 
-rhrBBMM <- function(xy, time, 
+rhrBBMM <- function(xy,
                     rangesigma1=c(0, 10000), 
                     sigma2=100,
                     trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
@@ -23,6 +22,10 @@ rhrBBMM <- function(xy, time,
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
+  
+  if (!inherits(xy, "RhrTrackST")) {
+    stop("xy not recognized")
+  }
 
   projString <- if (inherits(xy, "SpatialPoints")) {
     sp::proj4string(xy) 
@@ -31,11 +34,9 @@ rhrBBMM <- function(xy, time,
   } else {
     sp::CRS(NA_character_)
   }
+  time <- rhrTimes(xy)
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
-  if (nrow(xy) != length(time)) {
-    stop("rhrBBMM: not every observation has a timestamp")
-  }
 
   xyt <- data.frame(x = xy[, 1],
                     y = xy[, 2],
@@ -119,8 +120,8 @@ plot.RhrBBMM <- function(x, addIsopleths=TRUE, levels=95, ...) {
   if (addIsopleths) {
     tempol <- rhrIsopleths(x, levels, ...)
   }
-  plot(rhrUD(x))
+  plotRaster(rhrUD(x))
   if (addIsopleths) {
-    plot(rhrIsopleths(x), add=TRUE)
+    sp::plot(rhrIsopleths(x), add=TRUE)
   }
 }

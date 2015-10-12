@@ -48,7 +48,7 @@ rhrPoints.RhrTrackS <- function(x, ...) {
 #' @export
 rhrPoints.RhrTracks <- function(x, ...) {
   pts <- do.call(rbind, lapply(x, rhrPoints))
-  pts$id <- rep(names(x), sapply(x, nrow))
+  pts$id <- rep(names(x), rhrN(x))
   pts
 }
 
@@ -113,7 +113,12 @@ rhrN.default <- function(x, ...) {
 
 ##' @export
 rhrN.RhrTrack <- function(x, ...) {
-  nrow(x)
+  nrow(x$track)
+}
+
+##' @export
+rhrN.RhrTracks <- function(x, ...) {
+  sapply(x, rhrN)
 }
 
 #' Extract segments from a track.
@@ -538,6 +543,41 @@ rhrWithin.RhrTracks <- function(x, y, ...) {
 
 bbx2sp <- function(x) {
   rgeos::gEnvelope(sp::SpatialPoints(cbind(x[1, ], x[2, ])))
+}
+
+
+#' Temporal subset of a track
+#'
+#' Performs a subset of a track based on a provided time interval. Only relocations that are within the time interval are selected and (a) new track(s) is created. 
+#' @param x Object of class \code{RhrTrackST*} or code \code{RhrTracksST}.
+#' @param y Object of class \code{lubridate::Interval}
+#' @template dots
+#' @return Object of class \code{rhrTrack*}. 
+#' @export
+
+rhrWithinTime <- function(x, y, ...) {
+  UseMethod("rhrWithinTime")
+}
+
+#' @export
+rhrWithinTime.RhrTrackST <- function(x, y, ...) {
+  wp <- which(lubridate::`%within%`(rhrTimes(x), y)) 
+  if (length(wp) > 1) {
+    x[wp, ]
+  }
+}
+
+#' @export
+rhrWithinTime.RhrTracksST <- function(x, y, ...) {
+  x <- lapply(x, rhrWithinTime, y)
+  x <- x[!sapply(x, is.null)]
+  
+  class(x) <- c(
+    if (all(sapply(x, is, "RhrTrackS"))) "RhrTracksS",
+    if (all(sapply(x, is, "RhrTrackST"))) "RhrTracksST", 
+    if (all(sapply(x, is, "RhrTrackSTR"))) "RhrTracksSTR", 
+    "RhrTracks", "list")
+  x
 }
 
 
