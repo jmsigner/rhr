@@ -58,7 +58,7 @@ rhrSiteFidelity2 <- function(track, n=100, alpha=0.05) {
   y <- dat[, 2]
   
   ## simulate n random walks
-  a <- replicate(n, rhrBasePRW(x, y), simplify=FALSE)
+  a <- replicate(n, rhrPRW(x, y), simplify=FALSE)
 
   ## msd 
   msdDat <- rhrMSD2(x, y)
@@ -138,5 +138,34 @@ plot.RhrSiteFidelity <- function(x, plotit=TRUE, ...) {
 }
 
 
+rhrPRW <- function(x, y) {
+
+  if (length(x) != length(y)) {
+    stop("x and y are not of the same length")
+  }
+
+  if (!is.numeric(x) | !is.numeric(y)) {
+    stop("x and y are required to be numeric")
+  }
+
+  n <- length(x)
+  d <- sqrt((x[-1] - x[-n])^2 + (y[-1] - y[-n])^2)
+  d <- sample(d)
+
+  rA <- runif(length(d), 0, 360)
+
+  sinrA <- sin(rA * pi/180)
+  cosrA <- cos(rA * pi/180)
+
+  res <- matrix(nrow = n, ncol = 2)
+  res[1, ] <- c(x[1], y[1])
+
+  for (i in 1:(n-1)) {
+    res[i+1, 1] = res[i, 1] + cosrA[i] * d[i]
+    res[i+1, 2] = res[i, 2] + sinrA[i] * d[i]
+  }
+
+  res
+}
  
 
