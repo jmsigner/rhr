@@ -5,8 +5,6 @@
 #' @template trackS
 #' @param n Numeric scalar. The number of simulated trajectories.
 #' @param alpha Numeric scalar. The alpha value used for the bootstrapping.
-#' @useDynLib rhr
-#' @importFrom Rcpp sourceCpp
 #' @export
 #' @return Object of class \code{RhrFidelity}, which is a list of length 4. \code{msd.dat} and \code{li.dat} is the mean square distance and linearity for the real date. \code{msd.sim} and \code{li.sim} are the mean square distances and linearities for the simulated trajectories. 
 #' 
@@ -42,18 +40,12 @@
 #' plot(res)
 #' }
 
-rhrSiteFidelity <- function(track, n=100, alpha=0.05) {
+rhrSiteFidelity2 <- function(track, n=100, alpha=0.05) {
 
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
   
-  ## function for later
-  li <- function(x, y) {
-    line.distance   <- sqrt((x[1] - x[length(x)])^2 + (y[1] - y[length(y)])^2)
-    walked.distance <- sum(sqrt((x[-1] - x[-length(x)])^2 + (y[-1] - y[-length(y)])^2))
-    return(line.distance / walked.distance)
-  }
 
   ## --------------------------------------------------------------------------- #
   ## Some argument checking
@@ -66,11 +58,11 @@ rhrSiteFidelity <- function(track, n=100, alpha=0.05) {
   y <- dat[, 2]
   
   ## simulate n random walks
-  a <- replicate(n, rhrBasePRW(x, y), simplify=FALSE)
+  a <- replicate(n, rhrPRW(x, y), simplify=FALSE)
 
   ## msd 
-  msdDat <- rhrBaseMSD(x, y)
-  msdSim <- sapply(a, function(x) rhrBaseMSD(x[, 1], x[, 2]))
+  msdDat <- rhrMSD2(x, y)
+  msdSim <- sapply(a, function(x) rhrMSD2(x[, 1], x[, 2]))
 
   ## li
   liDat <- li(x, y)
@@ -91,6 +83,19 @@ rhrSiteFidelity <- function(track, n=100, alpha=0.05) {
   invisible(res)
 }
 
+
+rhrMSD2 <- function(x, y) {
+  mx <- mean(x)
+  my <- mean(y)
+  mean((x - mx)^2 + (y - my)^2)
+}
+
+## function for later
+li <- function(x, y) {
+  line.distance   <- sqrt((x[1] - x[length(x)])^2 + (y[1] - y[length(y)])^2)
+  walked.distance <- sum(sqrt((x[-1] - x[-length(x)])^2 + (y[-1] - y[-length(y)])^2))
+  return(line.distance / walked.distance)
+}
 
 
 ########### Round digits
@@ -133,5 +138,34 @@ plot.RhrSiteFidelity <- function(x, plotit=TRUE, ...) {
 }
 
 
+rhrPRW <- function(x, y) {
+
+  if (length(x) != length(y)) {
+    stop("x and y are not of the same length")
+  }
+
+  if (!is.numeric(x) | !is.numeric(y)) {
+    stop("x and y are required to be numeric")
+  }
+
+  n <- length(x)
+  d <- sqrt((x[-1] - x[-n])^2 + (y[-1] - y[-n])^2)
+  d <- sample(d)
+
+  rA <- runif(length(d), 0, 360)
+
+  sinrA <- sin(rA * pi/180)
+  cosrA <- cos(rA * pi/180)
+
+  res <- matrix(nrow = n, ncol = 2)
+  res[1, ] <- c(x[1], y[1])
+
+  for (i in 1:(n-1)) {
+    res[i+1, 1] = res[i, 1] + cosrA[i] * d[i]
+    res[i+1, 2] = res[i, 2] + sinrA[i] * d[i]
+  }
+
+  res
+}
  
 

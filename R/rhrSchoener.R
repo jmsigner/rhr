@@ -22,7 +22,7 @@
 ##' @export
 ##' @references Swihart, R. and Slade N. 1985, Testing for indpendence of observations in animal movement, _Ecology_, 66(4), 1176 - 1184
 
-rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
+rhrSchoener2 <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
 
   if (ncol(dat) < 3) {
     stop("rhrSchoener: dat: three columns are required")
@@ -43,7 +43,7 @@ rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
     warning("In rhrSchoener: removed duplicates")
   }
 
-  which <- rhrBaseIntervalSubset(as.numeric(dat[,3]), interval)
+  which <- rhrIntervalSubset(as.numeric(dat[,3]), interval)
 
   dat <- dat[as.logical(which),]
   m <- nrow(dat) - 1
@@ -55,7 +55,7 @@ rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
 
   t2 <- 1/m * (sum((dat[1:(nrow(dat) - 1), 1] - dat[2:nrow(dat), 1])^2) +
                sum((dat[1:(nrow(dat) - 1), 2] - dat[2:nrow(dat), 2])^2))
-  r2 <- rhrBaseMSD(dat[,1], dat[,2])
+  r2 <- rhrMSD2(dat[,1], dat[,2])
   V <- t2/r2
   
   ## Eccentricity (as defined in Swihart and Slade 1985, p. 1177)
@@ -72,3 +72,22 @@ rhrSchoener <- function(dat, interval, alpha=0.25, minM=10, consec=TRUE) {
   return(c(V=V, m=m, r2=r2, t2=t2, cv=cv, interval=interval))
 }
 
+
+rhrIntervalSubset <- function(ts, int) {
+  
+  n <- length(ts)
+  keep <- vector(mode = "logical", length = n)
+  keep[1] = TRUE
+
+  tdiff <- 0
+  for (i in 2:n) {
+    tdiff <- tdiff + ts[i] - ts[i-1]
+    if (tdiff >= int) {
+      keep[i] <- TRUE
+      tdiff <- 0;
+    } else  {
+      keep[i] <- FALSE
+    }
+  }
+  keep
+}

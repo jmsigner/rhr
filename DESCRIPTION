@@ -1,8 +1,8 @@
 Package: rhr
 Type: Package
 Title: Reproducible Home Ranges with R
-Version: 0.2.010
-Date: 2015-10-08
+Version: 1.9.200
+Date: 2015-10-12
 Author: Johannes Signer
 Maintainer: Johannes Signer<jsigner@gwdg.de>
 Description: Functions and a graphical user interface (GUI) to analyze animal
@@ -23,7 +23,6 @@ Imports:
     lubridate,
     mixtools,
     mvtnorm,
-    Rcpp,
     rgdal,
     rgeos,
     reshape2,
@@ -40,5 +39,5 @@ Suggests:
     shinyBS,
     brew,
     xtable
-NeedsCompilation: yes
+NeedsCompilation: no
 RoxygenNote: 4.1.1.9000

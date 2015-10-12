@@ -67,7 +67,7 @@ rhrHlscv <- function(xy, range=do.call(seq, as.list(c(rhrHref(xy)$h * c(0.1, 2),
 
   converged <- TRUE
 
-  res <- rhrBaseLSCV(xs, ys, range)
+  res <- lscv(cbind(xs, ys), range)
 
 
   if (whichMin == "global") {
@@ -103,3 +103,14 @@ localMinima <- function(x) {
   }
   y
 } 
+
+
+lscv <- function(xy, hs) {
+  n <- nrow(xy)
+  f <- sp::spDists(xy)
+  f <- f[lower.tri(f)]
+  sapply(hs, function(h) {
+    out <- sum(exp(-f^2 / (4 * h^2)) - 4 * exp(-f^2 / (2 * h^2)))
+    1.0 / (pi * h^2 * n) + (2 * out -3 * n)/(pi * 4. * h^2 * n^2);
+  })
+}
