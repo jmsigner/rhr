@@ -6,7 +6,7 @@
 \alias{rhrBiNorm}
 \alias{rhrUniCirc}
 \alias{rhrUniNorm}
-\title{rhrBiCirc}
+\title{Estimation of parametric home ranges}
 \usage{
 rhrUniCirc(xy, trast = rhrRasterFromExt(rhrExtFromPoints(xy, extendRange =
   0.2), nrow = 100, res = NULL), levels = 95)
@@ -15,10 +15,10 @@ rhrUniNorm(xy, trast = rhrRasterFromExt(rhrExtFromPoints(xy, extendRange =
   0.2), nrow = 100, res = NULL), levels = 95)
 
 rhrBiCirc(xy, trast = rhrRasterFromExt(rhrExtFromPoints(xy, extendRange =
-  0.2), nrow = 100, res = NULL))
+  0.2), nrow = 100, res = NULL), levels = 95)
 
 rhrBiNorm(xy, trast = rhrRasterFromExt(rhrExtFromPoints(xy, extendRange =
-  0.2), nrow = 100, res = NULL), maxit = 20)
+  0.2), nrow = 100, res = NULL), levels = 95, maxit = 20)
 }
 \arguments{
 \item{xy}{Instance of \code{data.frame}, \code{SpatialPoints},
@@ -28,12 +28,17 @@ is a \code{data.frame}, then the first two columns are assumed to be the
 
 \item{trast}{Instance of \code{RasterLayer} that serves as a template for the resulting grid of the estimation.}
 
-\item{maxit}{Integer, giving the maximum number of iterations. See also \link{\code{mixtools::mvnormalmixEM}}, which is called.}
+\item{levels}{Numeric \code{vector} indicating percentages at which the home-range estimates should be evaluated.}
+
+\item{maxit}{Integer, giving the maximum number of iterations. See also \code{mixtools::mvnormalmixEM}, which is called.}
 }
 \description{
-Bimodal circular home range estimation
+Estimators for unimodal and bimodal, bivariate circular and normal home ranges.
 }
 \details{
-Computes home-range using two circular normal distributions
+\code{rhrUniCirc} and \code{rhrUniNorm} estimate uni modal bivariate normal and circular home-ranges. \code{rhrBiCir} estimates bimodal circular home ranges and \code{rhrBiNormal} a mixture of two bivariate normal home range using the estimation maximization algorithm.
+}
+\references{
+Horne, J. S., & Garton, E. O. (2006). Selecting the best home range model: an information-theoretic approach. Ecology, 87(5), 1146-1152.
 }
 

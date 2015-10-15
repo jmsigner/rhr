@@ -41,8 +41,12 @@ config <- list(
       TotA=0.05,
       Alpha=0.05, 
       NTimes=4,
+      include=c("rhrKDE", "rhrMCP", "rhrUniCirc", "rhrBiCirc", "rhrUniNorm", "rhrBiNorm"), 
       sampling=c("Sequential" = "sequential", "Random" = "random")
-      )
+      ), 
+    ca = list(
+      include=c("rhrKDE", "rhrUniCirc", "rhrBiCirc", "rhrUniNorm", "rhrBiNorm")
+    )
     )
   )
 

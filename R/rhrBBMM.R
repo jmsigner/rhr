@@ -6,6 +6,7 @@
 #' @param rangesigma1 parameter 1
 #' @param sigma2 parameter 2
 #' @param trast a \code{RasterLayer} used as an template for the output grid.
+#' @template levels
 
 #' @seealso \code{adehabitatHR::kernelbb}
 
@@ -14,26 +15,23 @@
 #' @export
 #' 
 
-rhrBBMM <- function(xy,
+rhrBBMM <- function(track,
                     rangesigma1=c(0, 10000), 
                     sigma2=100,
+                    levels = 95, 
                     trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
 
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
   
+  xy <- track
+  
   if (!inherits(xy, "RhrTrackST")) {
     stop("xy not recognized")
   }
 
-  projString <- if (inherits(xy, "SpatialPoints")) {
-    sp::proj4string(xy) 
-  } else if (is(xy, "RhrMappedData")) {
-    sp::proj4string(xy$dat)
-  } else {
-    sp::CRS(NA_character_)
-  }
+  projString <- getEPSG(xy)
   time <- rhrTimes(xy)
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
@@ -94,14 +92,18 @@ rhrCUD.RhrBBMM <- function(x, ...) {
 }
 
 #' @export
-rhrIsopleths.RhrBBMM <- function(x, levels=95, ...) {
+rhrIsopleths.RhrBBMM <- function(x, levels, ...) {
+  
+  if (missing(levels)) {
+    levels <- rhrArgs(x)$levels
+  }
   cud <- rhrCUD(x)
   rhrCUD2Isopleths(cud, levels)
 }
 
 #' @export
-rhrArea.RhrBBMM <- function(x, levels=95, ...) {
-  tmp <- rhrIsopleths(x, levels)
+rhrArea.RhrBBMM <- function(x, ...) {
+  tmp <- rhrIsopleths(x, ...)
   data.frame(tmp)
 }
 
@@ -123,5 +125,19 @@ plot.RhrBBMM <- function(x, addIsopleths=TRUE, levels=95, ...) {
   plotRaster(rhrUD(x))
   if (addIsopleths) {
     sp::plot(rhrIsopleths(x), add=TRUE)
+  }
+}
+
+##' @export
+rhrArgs.RhrBBMM <- function(x, ...) {
+  x$args
+}
+
+##' @export
+rhrData.RhrBBMM <- function(x, as.data.frame=FALSE, ...) {
+  if (as.data.frame) {
+    xx <- rhrCheckData(x$args$track, returnSP=spatial)
+  } else {
+    x$args$track
   }
 }

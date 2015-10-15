@@ -17,7 +17,7 @@ is a \code{data.frame}, then the first two columns are assumed to be the
 
 \item{n}{Numeric scalar, value of the tuning parameter.}
 
-\item{levels}{Numeric \code{vector} indicating percentages at which the home range estimates should be evaluated.}
+\item{levels}{Numeric \code{vector} indicating percentages at which the home-range estimates should be evaluated.}
 
 \item{minPts}{Numeric scalar, the minimum number of neighbors required.}
 

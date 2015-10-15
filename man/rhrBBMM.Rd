@@ -4,18 +4,20 @@
 \alias{rhrBBMM}
 \title{Brownian Bridge Movement Model (BBMM)}
 \usage{
-rhrBBMM(xy, rangesigma1 = c(0, 10000), sigma2 = 100,
+rhrBBMM(track, rangesigma1 = c(0, 10000), sigma2 = 100, levels = 95,
   trast = rhrRasterFromExt(rhrExtFromPoints(xy, extendRange = 0.2), nrow =
   100, res = NULL))
 }
 \arguments{
+\item{track}{Object inheriting from \code{RhrTrackST}.}
+
 \item{rangesigma1}{parameter 1}
 
 \item{sigma2}{parameter 2}
 
-\item{trast}{a \code{RasterLayer} used as an template for the output grid.}
+\item{levels}{Numeric \code{vector} indicating percentages at which the home-range estimates should be evaluated.}
 
-\item{track}{Object inheriting from \code{RhrTrackST}.}
+\item{trast}{a \code{RasterLayer} used as an template for the output grid.}
 }
 \value{
 object of class \code{RhrBBMM}

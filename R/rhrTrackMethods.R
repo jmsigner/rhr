@@ -1,33 +1,32 @@
-# # @export
-# head.RhrTrack <- function(x, n = 6, ...) {
-#   base::head(x$track@data, n)
-# }
+#' @export
+head.RhrTrack <- function(x, n = 6, ...) {
+  base::head(x$track@data, n)
+}
 
-# # @export
-# tail.RhrTrack <- function(x, n = 6, ...) {
-#   tail(x$track@data, n)
-# }
-# 
-# # @export
-# length.RhrTrack <- function(x) {
-#   nrow(x$track@data)
-# }
-# 
-# # @export
-# nrow.RhrTrack <- function(x) {
-#   nrow(x$track@data)
-# }
-# 
-# # @export
-# ncol.RhrTrack <- function(x) {
-#   ncol(x$track@data)
-# }
-# 
-# ## dim
-# # @export
-# dim.RhrTrack <- function(x) {
-#   dim(x$track@data)
-# }
+#' @export
+tail.RhrTrack <- function(x, n = 6, ...) {
+  tail(x$track@data, n)
+}
+
+#' @export
+length.RhrTrack <- function(x) {
+  nrow(x$track@data)
+}
+
+#' @export
+nrow.RhrTrack <- function(x) {
+  nrow(x$track@data)
+}
+
+#' @export
+ncol.RhrTrack <- function(x) {
+  ncol(x$track@data)
+}
+
+#' @export
+dim.RhrTrack <- function(x) {
+  dim(x$track@data)
+}
 
 
 #' Extract relocations from a track.
@@ -177,7 +176,7 @@ rhrSegments.RhrTrackST <- function(x, spatial = FALSE, ...) {
 #' Prints RhrTrack object.
 #' 
 #' @param x RhrTrack object.
-#' @param ... None implemented.
+#' @template dots
 #' @export
 plot.RhrTrack <- function(x, ...) {
   x <- sp::coordinates(rhrPoints(x))
@@ -190,13 +189,13 @@ plot.RhrTrack <- function(x, ...) {
 #' Prints RhrTracks object.
 #' 
 #' @param x RhrTracks object.
-#' @param ... None implemented.
+#' @template dots
 #' @export
 plot.RhrTracks <- function(x, ...) {
   x <- rhrPoints(x)
   ids <- x$id
   n <- length(unique(ids))
-  cols <- rainbow(n)     # six color rainbow
+  cols <- rainbow(n)  
   
   x <- data.frame(sp::coordinates(x))
   plot(x[, 1], x[, 2], xlab  = "x", ylab = "y", asp = 1, type = "n", las = 1, ...)
@@ -578,6 +577,26 @@ rhrWithinTime.RhrTracksST <- function(x, y, ...) {
     if (all(sapply(x, is, "RhrTrackSTR"))) "RhrTracksSTR", 
     "RhrTracks", "list")
   x
+}
+
+summary.RhrTracksS <- function(x, ...) {
+  m <- data.frame(
+    id = names(x), 
+    n = sapply(x, rhrN)
+  )
+  row.names(m) <- NULL
+  m
+}
+
+summary.RhrTracksST <- function(x, ...) {
+  m <-  data.frame(
+    id = names(x), 
+    n = sapply(x, rhrN), 
+    start = sapply(x, function(x) as.character(rhrTrackStart(x))), 
+    end = sapply(x, function(x) as.character(rhrTrackEnd(x)))
+  )
+  row.names(m) <- NULL
+  m
 }
 
 

@@ -1,8 +1,8 @@
 Package: rhr
 Type: Package
 Title: Reproducible Home Ranges with R
-Version: 1.9.200
-Date: 2015-10-12
+Version: 1.2.900
+Date: 2015-10-14
 Author: Johannes Signer
 Maintainer: Johannes Signer<jsigner@gwdg.de>
 Description: Functions and a graphical user interface (GUI) to analyze animal
@@ -11,8 +11,7 @@ License: GPL-3
 Depends:
     grid,
     maptools,
-    raster,
-    sp
+    raster
 Imports:
     adehabitatHR,
     adehabitatLT,
@@ -26,11 +25,11 @@ Imports:
     rgdal,
     rgeos,
     reshape2,
+    sp,
     spacetime,
     stringr,
     trajectories,
     zoo
-LinkingTo: Rcpp
 Suggests:
     shiny (>= 0.10.2.1),
     knitr,

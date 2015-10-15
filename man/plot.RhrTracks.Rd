@@ -4,7 +4,7 @@
 \alias{plot.RhrTracks}
 \title{Prints RhrTracks object.}
 \usage{
-\method{plot}{RhrTracks}(x, ...)
+plot.RhrTracks(x, ...)
 }
 \arguments{
 \item{x}{RhrTracks object.}

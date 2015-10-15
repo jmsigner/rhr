@@ -22,13 +22,8 @@ rhrKDE <- function(xy,
   call <- match.call()
 
   ## check input 
-  projString <- if (inherits(xy, "SpatialPoints")) {
-    sp::proj4string(xy) 
-  } else if (is(xy, "RhrMappedData")) {
-    sp::proj4string(xy$dat)
-  } else {
-    sp::CRS(NA_character_)
-  }
+  projString <- getEPSG(xy)
+  
   xy <- rhrCheckData(xy, returnSP=FALSE)
   levels <- rhrCheckLevels(levels)
 
@@ -119,9 +114,9 @@ rhrCUD.RhrKDE <- function(x, ...) {
 }
 
 ##' @export
-rhrIsopleths.RhrKDE <- function(x, levels=NULL, ...) {
+rhrIsopleths.RhrKDE <- function(x, levels, ...) {
 
-  if (is.null(levels)) {
+  if (missing(levels)) {
     levels <- rhrLevels(x)
   } 
 
@@ -136,8 +131,8 @@ rhrUD.RhrKDE <- function(x, ...) {
 }
 
 ##' @export
-rhrArea.RhrKDE <- function(x, levels=95, ...) {
-  tmp <- rhrIsopleths(x, levels)
+rhrArea.RhrKDE <- function(x, ...) {
+  tmp <- rhrIsopleths(x, ...)
   data.frame(tmp)
 }
 
@@ -152,7 +147,6 @@ rhrArgs.RhrKDE <- function(x, ...) {
 }
 
 ##' @export
-##' @rdname rhrHasUD
 rhrHasUD.RhrKDE <- function(x, ...) {
   TRUE
 }

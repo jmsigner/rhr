@@ -44,10 +44,12 @@ shinyUI(
                         mainPanel(
                           h2("Reproject Data"),
                           uiOutput("reproject"), 
-                          bsAlert("rhrReproject"),
+                          bsAlert("alert_data_in_setcrs"),
+                          bsAlert("alert_data_in_transformcrs"),
                           hr(),
                           bsAlert("alertMapFields"),
-                          uiOutput("mfUI"))
+                         plotOutput("mapDataPlot"))
+                         # uiOutput("mfUI"))
                       )),
              
              ## ============================================================================== ##  
@@ -124,7 +126,7 @@ shinyUI(
                                                 tabPanel("Time to statistical independence",
                                                          h2("Time to statistical independence"),
                                                          bsAlert("generalNoTimeTTSI"), 
-                                                         numericInput("configTTSIInit", "Initial time difference", value=config$pointLevel$ttsi$interval),
+                                                         numericInput("configTTSIInterval", "Initial time difference", value=config$pointLevel$ttsi$interval),
                                                          helpText("Initial time difference in seconds"), 
                                                          selectInput("configTTSISampling", "Sampling regime", choices=config$pointLevel$ttsi$sampling), 
                                                          numericInput("configTTSINTimes", "Number of time above critical value", value=config$pointLevel$ttsi$ntimes), 
@@ -179,8 +181,23 @@ shinyUI(
                                                          hr()
                                                 ), 
                                                 
+                                                tabPanel("Brownian Bridges",
+                                                         h2("Estimate home ranges with Brownian Bridges"),
+                                                         bsAlert("generalNoTimeBBMM"), 
+                                                         numericInput("configBBMMSigma2", "Location Error (Sigma 2)", value=10),
+                                                         sliderInput("configBBMMRangeSigma1", "Search range for sigma 1", value=c(0, 100),
+                                                                     min=0, max=1e4)
+                                                ), 
+                                                well=FALSE)
+                                 )), 
+                        tabPanel("Home-range properties", 
+                                 fluidPage(
+                                   navlistPanel("Home-range Properties",
                                                 tabPanel("Home range asymptote",
                                                          h2("Home range asymptote"),
+                                                         selectInput("configAsymptoteInclude", "Estimators",
+                                                                     choices=config$homeRange$asymptote$include, 
+                                                                     multiple=TRUE, selectize=TRUE), 
                                                          numericInput("configAsymptoteMinNP", "Minimum number of points",
                                                                       value=config$homeRange$asymptote$minNP), 
                                                          numericInput("configAsymptoteSI", "Sampling interval",
@@ -196,22 +213,12 @@ shinyUI(
                                                                      choices=config$homeRange$asymptote$sampling, 
                                                                      multiple=FALSE, selectize=FALSE)
                                                 ), 
-                                                tabPanel("Brownian Bridges",
-                                                         h2("Estimate home ranges with Brownian Bridges"),
-                                                         bsAlert("generalNoTimeBBMM"), 
-                                                         numericInput("configBBMMSigma2", "Location Error (Sigma 2)", value=10),
-                                                         sliderInput("configBBMMRangeSigma1", "Search range for sigma 1", value=c(0, 100),
-                                                                     min=0, max=1e4)
-                                                ), 
-                                                well=FALSE)
-                                 )), 
-                        tabPanel("Core Area", 
-                                 fluidPage(
-                                   navlistPanel("Configure Core Area",
-                                                tabPanel("Method of Powell and Seaman",
+                                                tabPanel("Core Area",
                                                          well=FALSE), 
-                                                h2("Method of Powell and Seaman"),
-                                                helpText("No additional configuration is required, core area is calculated from kernel density estimation")
+                                                h2("Core Area"),
+                                                selectInput("configCAInclude", "Estimators",
+                                                            choices=config$homeRange$ca$include, 
+                                                            multiple=TRUE, selectize=TRUE)
                                    ))) 
              ),
              tabPanel("Run Analysis",
@@ -228,14 +235,11 @@ shinyUI(
                                                     "Minimum Convex Polygon" = "rhrMCP",
                                                     "Kernel Density Estimation" = "rhrKDE", 
                                                     "Local Convex Hull" = "rhrLoCoH",
-                                                    "Home Range Asymptote" = "rhrAsymptote",
                                                     "Brownian Bridges" = "rhrBBMM",
                                                     "Unimodal Bivariate Normal" = "rhrUniNorm",
-                                                    "Bimodal Bivariate Normal" = "rhrBiNorm")),
-                               h3("Core Area"), 
-                               checkboxGroupInput("runSteps2", "Select Steps",
-                                                  choices=c(
-                                                    "Core Area" = "rhrCoreArea" )), 
+                                                    "Unimodal Circular" = "rhrUniCirc",
+                                                    "Bimodal Bivariate Normal" = "rhrBiNorm",
+                                                    "Bimodal Circular" = "rhrBiCirc")),
                                bsButton("rhrAnalyze", label="Analyze", disabled=TRUE, size="large", style="primary")
                         ),
                         column(width=5,

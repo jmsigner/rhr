@@ -20,7 +20,7 @@ is a \code{data.frame}, then the first two columns are assumed to be the
 
 \item{numOfParts}{Numeric numeric scalar, indicating the number of contiguous  polygons desired. This will usually be one.}
 
-\item{levels}{Numeric \code{vector} indicating percentages at which the home range estimates should be evaluated.}
+\item{levels}{Numeric \code{vector} indicating percentages at which the home-range estimates should be evaluated.}
 
 \item{tol}{Numeric scalar, indicating which difference of to stop.}
 

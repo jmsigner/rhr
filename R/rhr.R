@@ -14,5 +14,7 @@
 #'
 #' @docType package
 #' @name rhr
+#' @import maptools
+#' @import raster
+#' @importFrom stats AIC
 NULL
-#> NULL

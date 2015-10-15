@@ -17,22 +17,17 @@ opts_knit$set(base.dir="<%=normalizePath(baseDir, winslash="/")%>")
 	<p>This is an automatically generated report summarizing from a range analysis with rhr started: [<%=as.character(startTime)%>]</p>
 </header>
 
-<%#
-# General Information
-## Relocations
-The following table gives an overview of all data retrived from the provided data source.
+# Data
+
+The following table gives an overview of all data that was used for the analyses.
 
 ```{r, results="asis"}
-kable(relocTable)
+knitr::kable(summary(dat))
 ```
 
-## Used data
-The following table gives an overview of all data that was used for the analysis.
-
-```{r, results="asis"}
-kable(subsetTable)
+```{r}
+plot(dat)
 ```
--%>
 
 
 
@@ -48,7 +43,7 @@ kable(subsetTable)
 <% if (step %in% names(res$est)) { %>
 
 <% if (!is.null(res$est[[step]]$parameters)) { %>
-## Parameter values used
+## Parameter values used 
 
 ```{r, results="asis"}
 kable(readRDS("<%=normalizePath(res$est[[step]]$parameters, winslash="/")%>"))
@@ -63,26 +58,24 @@ kable(readRDS("<%=normalizePath(res$est[[step]]$parameters, winslash="/")%>"))
 ## Results for <%=animal%>
 
 
-<%# -------------------------- START CYCLE OVER ALL SCENARIOS OF AN ANIMAL -%>
-<% for (scenario in 1:length(res$est[[step]]$res[[animal]])) { %>
-
-<% if (length(res$est[[step]]$res[[animal]]) > 1) { %>
-### Scenario: <%=res$est[[step]]$scenarios$name[scenario]%>
-<%}%>
-
 <%# ========================== Check if I can continue, that means no error occured during calculation %>
-<% if (is(readRDS(normalizePath(res$est[[step]]$res[[animal]][[scenario]]$est$rds)), "error")) { %>
-Terminated with error: <%=readRDS(normalizePath(res$est[[step]]$res[[animal]][[scenario]]$rds))$message %>
+<% if (is(readRDS(normalizePath(res$est[[step]]$res[[animal]]$est$rds)), "error")) { %>
+<div class="box">
+    <h2>Terminated with an error</h2>
+    <p> 
+    <%=readRDS(normalizePath(res$est[[step]]$res[[animal]]$est$rds))$message %>
+    </p>
+</div>
 <% } else { %>
 
 <%# -------------------------- plots -%>
-<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$est$plts)) { %>
+<% if (!is.null(res$est[[step]]$res[[animal]]$est$plts)) { %>
 
-<% for (plt in seq_along(res$est[[step]]$res[[animal]][[scenario]]$est$plts)) { %>
+<% for (plt in seq_along(res$est[[step]]$res[[animal]]$est$plts)) { %>
 
 <figure>
-  <img src="<%=normalizePath(res$est[[step]]$res[[animal]][[scenario]]$est$plts[[plt]]$plotPNG, winslash="/")%>">
-  <figcaption><%=res$est[[step]]$res[[animal]][[scenario]]$est$plts[[plt]]$name%></figcaption>
+  <img src="<%=normalizePath(res$est[[step]]$res[[animal]]$est$plts[[plt]]$plotPNG, winslash="/")%>">
+  <figcaption><%=res$est[[step]]$res[[animal]]$est$plts[[plt]]$name%></figcaption>
 </figure>
 
 <% } %>
@@ -90,14 +83,14 @@ Terminated with error: <%=readRDS(normalizePath(res$est[[step]]$res[[animal]][[s
 
 
 <%# -------------------------- message -%>
-<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$est$msgs)) { %>
+<% if (!is.null(res$est[[step]]$res[[animal]]$est$msgs)) { %>
 
-<% for (msg in seq_along(res$est[[step]]$res[[animal]][[scenario]]$est$msgs)) { %>
+<% for (msg in seq_along(res$est[[step]]$res[[animal]]$est$msgs)) { %>
 
-<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$est$msgs[[msg]]$name)) { %>
+<% if (!is.null(res$est[[step]]$res[[animal]]$est$msgs[[msg]]$name)) { %>
 <div class="box">
-    <h2><%=res$est[[step]]$res[[animal]][[scenario]]$est$msgs[[msg]]$name%></h2>
-    <p> <%=res$est[[step]]$res[[animal]][[scenario]]$est$msgs[[msg]]$msg%> </p>
+    <h2><%=res$est[[step]]$res[[animal]]$est$msgs[[msg]]$name%></h2>
+    <p> <%=res$est[[step]]$res[[animal]]$est$msgs[[msg]]$msg%> </p>
 </div>
 <% } %>
 
@@ -106,23 +99,33 @@ Terminated with error: <%=readRDS(normalizePath(res$est[[step]]$res[[animal]][[s
 
 
 <%# ========================== Properties %>
-<% if (!is.null(res$est[[step]]$res[[animal]][[scenario]]$properties)) { %>
-<% for (p in res$est[[step]]$res[[animal]][[scenario]]$properties) { %>
+<% if (!is.null(res$est[[step]]$res[[animal]]$properties)) { %>
+<% for (p in res$est[[step]]$res[[animal]]$properties) { %>
 
 <% if (!is.null(p$name)) { %>
 
 #### <%=propertyLookup[propertyLookup$short == p$name, 'long']%>
 
+<% if (!is.null(p$args)) { %>
+##### Parameter values used
+
+```{r, results="asis"}
+kable(readRDS("<%=normalizePath(p$args$table, winslash="/")%>"), row.names=FALSE, caption="<%=p$args$name%>", format="html")
+```
+
+##### Results
+<% } %>
+
 
 <%# -------------------------- message -%>
-<% if (!is.null(p$mgs)) { %>
+<% if (!is.null(p$msg)) { %>
 
-<% for (msg in seq_along(p$mgs)) { %>
+<% for (msg in seq_along(p$msg)) { %>
 
-<% if (!is.null(p$mgs[[msg]]$name)) { %>
+<% if (!is.null(p$msg[[msg]]$name)) { %>
 <div class="box">
-    <h2><%=p$msgs[[msg]]$message%></h2>
-    <p> <%=p$mgs[[msg]]$name%> </p>
+    <h2> <%=p$msg[[msg]]$name%> </h2>
+    <p><%=p$msg[[msg]]$msg%></p>
 </div>
 <% } %>
 
@@ -169,9 +172,6 @@ kable(readRDS("<%=normalizePath(p$tables[[tbl]]$path, winslash="/")%>"), row.nam
 <% } %>
 <% } %> 
 
-<%# END CYCLE OVER ALL SCENARIOS %>
-<% } %>
-
 <%# END CYCLE OVER ALL ANIMALS %>
 <% } %>
 
@@ -200,6 +200,16 @@ kable(data.frame(Parameter=names(config$general$content), value=unlist(config$ge
 kable(data.frame(Parameter=names(config$fields$content), value=unlist(config$fields$content)), row.names=FALSE)
 ```
 -->
+
+<%# -------------------------- zip -%>
+<% if (!is.null(zip)) { %>
+
+# Archived results
+
+Download results as a <a href = "<%= paste0(outDir, '.zip')%>"> *.zip file </a>.
+
+<% } %>
+
 
 # Session info
 For the sake of reproducibility, you should always include your session info. This shows which version of R and different packages you were using. 

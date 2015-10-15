@@ -16,7 +16,7 @@ is a \code{data.frame}, then the first two columns are assumed to be the
 
 \item{h}{Numeric \code{vector} with the bandwidth of the kernel. A scalar value will be applied to both dimensions.}
 
-\item{levels}{Numeric \code{vector} indicating percentages at which the home range estimates should be evaluated.}
+\item{levels}{Numeric \code{vector} indicating percentages at which the home-range estimates should be evaluated.}
 
 \item{trast}{Instance of \code{RasterLayer} that serves as a template for the resulting grid of the estimation.}
 }

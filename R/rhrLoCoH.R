@@ -30,19 +30,16 @@ rhrLoCoH <- function(xy, type="k", n=10, levels=95, minPts=3, autoN=FALSE) {
   call <- match.call()
 
   ## check input coordinates
-  projString <- if (inherits(xy, "SpatialPoints")) {
-    sp::proj4string(xy) 
-  } else if (is(xy, "RhrMappedData")) {
-    sp::proj4string(xy$dat)
-  } else {
-    sp::CRS(NA_character_)
-  }
+  projString <- getEPSG(xy)
 
   xy <- rhrCheckData(xy, returnSP=FALSE)
+  
+  # Remove quotes from type
+  type <- gsub("['\"]", "", type)
 
   ## type
   if (!type %in% c("a", "k", "r")) {
-    stop("rhrLocoh: incorrect type")
+    stop(paste0("rhrLocoh: incorrect type"))
   }
 
   n <- as.numeric(n)
@@ -198,7 +195,6 @@ print.RhrLoCoH <- function(x, ...) {
   
 ##' @export
 rhrIsopleths.RhrLoCoH <- function(x, ...) {
-  ## Levels
   x$res$hr
 }
 

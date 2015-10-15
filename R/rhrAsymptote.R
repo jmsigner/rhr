@@ -30,6 +30,10 @@
 
 
 rhrAsymptote <- function(x, ns=seq(nrow(rhrData(x)) / 10, nrow(rhrData(x)), length.out = 10), nrep=10, tolTotArea=0.05, nTimes=5, sampling="sequential") {
+  
+  
+  args <- as.list(environment())
+  call <- match.call()
 
   ## Input checks
   if (!is(x, "RhrEst")) {
@@ -94,23 +98,10 @@ rhrAsymptote <- function(x, ns=seq(nrow(rhrData(x)) / 10, nrow(rhrData(x)), leng
                 lapply(smpls, function(nss) 
                   cbind(ns=nss, rhrArea(
                     do.call(est, ## call a hr 
-                            c(if (sampling == "sequential") list(xy=(z=xyp[1:nss, ])[sample(nrow(z), replace=TRUE),])
-                              else list(xy=xyp[sample(n, nss),]),
+                            c(if (sampling == "sequential") list((z=xyp[1:nss, ])[sample(nrow(z), replace=TRUE),])
+                              else list(xyp[sample(n, nss),]),
                               providedArgs[-1]))
                     ))))
-  
-  #bb <- replicate(nrep,
-  #                do.call(rbind,
-  #                        lapply(ns,
-  #                               function(nss) 
-  #                                 cbind(ns=nss,
-  #                                       rhrArea(
-  #                                         do.call(est,
-  #                                                 c(if (sampling == "sequential") list(xy=(xx <- providedArgs[[1]][1:nss, ])[sample(nrow(xx), replace=TRUE),])
-  #                                                   else list(xy=providedArgs[[1]][sample(n, nss),]),
-  #                                                   providedArgs[-1])))))),
-  #                simplify=FALSE)
-  
   
   totalA <- rhrArea(x)
   totalA$lower <- totalA$area * (1 - tolTotArea)
@@ -147,7 +138,9 @@ rhrAsymptote <- function(x, ns=seq(nrow(rhrData(x)) / 10, nrow(rhrData(x)), leng
   asymReached <- data.frame(level=as.numeric(names(confints)),
                             ns=asymReached)
 
-  out <- list(asymptote=asymReached, confints=do.call("rbind", confints), hrAreas=bb, call=match.call(),
+  out <- list(args = args, 
+              call = call, 
+    asymptote=asymReached, confints=do.call("rbind", confints), hrAreas=bb, call=match.call(),
               params=list(ns=ns, tolTotArea=tolTotArea), totalA=totalA, hrEstimator=x)
   class(out) <- c("RhrHRAsymptote", "list")
   out
@@ -207,4 +200,41 @@ plot.RhrHRAsymptote <- function(x, ...) {
     ggplot2::labs(x="Number of points", y="Area")
 
   return(p)
+}
+
+
+#' @export
+rhrArgs.RhrHRAsymptote <- function(x, ...) {
+  x$args
+}
+
+#' @export
+rhrPrettyArgs.RhrHRAsymptote <- function (x, as.rmd = FALSE, includeName = FALSE, ...) {
+  
+  x <- rhrArgs(x)
+  
+  ns <- if (length(x$ns) > 5) {
+    paste(paste(x$ns[1:2], collapse = ", "), "...", paste(tail(x$ns, 2), collapse = ", "), sep = " ")
+    
+  } else {
+    paste(x$ns, collapse = ", ")
+  }
+  
+  names(x)
+  res <- data.frame(
+    Parameter = c(if (includeName) "Estimator", 
+                  "Number of samples", "Number of repicates", 
+                  "Tolerance to total area", "Number of times within total area", 
+                  "sampling regime"), 
+    Value = c(if (includeName) class(x$x)[1], 
+              ns, x$nrep, 
+              x$tolTotArea, x$nTimes, x$sampling), 
+    stringsAsFactors = FALSE
+  )
+  
+  if (as.rmd) {
+    knitr::kable(res)
+  } else {
+   res 
+  }
 }

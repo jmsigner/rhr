@@ -40,7 +40,7 @@
 #' plot(res)
 #' }
 
-rhrSiteFidelity2 <- function(track, n=100, alpha=0.05) {
+rhrSiteFidelity <- function(track, n=100, alpha=0.05) {
 
   ## Capture input arguments
   args <- as.list(environment())

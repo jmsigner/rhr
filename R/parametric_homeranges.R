@@ -1,10 +1,12 @@
-#' Bimodal circular home range estimation
+#' Estimation of parametric home ranges
 #'
-#' Computes home-range using two circular normal distributions
-#' @title rhrBiCirc
+#' Estimators for unimodal and bimodal, bivariate circular and normal home ranges.
+#' 
+#' \code{rhrUniCirc} and \code{rhrUniNorm} estimate uni modal bivariate normal and circular home-ranges. \code{rhrBiCir} estimates bimodal circular home ranges and \code{rhrBiNormal} a mixture of two bivariate normal home range using the estimation maximization algorithm.
+#' @references Horne, J. S., & Garton, E. O. (2006). Selecting the best home range model: an information-theoretic approach. Ecology, 87(5), 1146-1152.
 #' @template xy
 #' @template trast
-#' @param maxit Integer, giving the maximum number of iterations. See also \link{\code{mixtools::mvnormalmixEM}}, which is called.
+#' @template levels
 #' @name parametric_homeranges
 NULL
 
@@ -12,6 +14,11 @@ NULL
 #' @rdname parametric_homeranges
 rhrUniCirc <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL), 
                        levels = 95) {
+  
+  args <- as.list(environment())
+  call <- match.call()
+  projString <- getEPSG(xy)
+  
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
   ## estimate parameters
@@ -33,6 +40,8 @@ rhrUniCirc <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRan
   r1 <- data.frame(raster::rasterToPoints(trast))
   r1$density <- dbexppm(r1[, 1:2], phat[1], phat[2], phat[3], phat[4])
   ud <- raster::rasterFromXYZ(r1)
+  ## project ud
+  sp::proj4string(ud) <- projString
 
 
   # AIC
@@ -44,16 +53,18 @@ rhrUniCirc <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRan
 
   res <- structure(
     list(
-    model="Unimodal Circular", 
-    K=K,
-    LL=ll, 
-    AIC=AIC, 
-    AICc=AICc, 
-    ud = ud,
-    parameters=list(
-      mean=phat[1:2],
-      c=phat[3],
-      a=phat[4])),
+      args=args,
+      call=call,
+      model="Unimodal Circular", 
+      K=K,
+      LL=ll, 
+      AIC=AIC, 
+      AICc=AICc, 
+      ud = ud,
+      parameters=list(
+        mean=phat[1:2],
+        c=phat[3],
+        a=phat[4])),
     class=c("RhrUniCirc", "RhrParamEst", "RhrProbEst", "RhrEst", "list"))
   return(invisible(res))
 }
@@ -73,13 +84,8 @@ rhrUniNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRan
   call <- match.call()
 
   ## check input 
-  projString <- if (inherits(xy, "SpatialPoints")) {
-    sp::proj4string(xy) 
-  } else if (is(xy, "RhrMappedData")) {
-    sp::proj4string(xy$dat)
-  } else {
-    sp::CRS(NA_character_)
-  }
+  projString <- getEPSG(xy)
+  
   xy <- rhrCheckData(xy, returnSP=FALSE)
   
   ll <- function(xy, par) -sum(mvtnorm::dmvnorm(xy, mean=c(par[1], par[2]),
@@ -130,8 +136,12 @@ dUniNorm <- function(xy, mu, sigma) {
 
 #' @export
 #' @rdname parametric_homeranges
-rhrBiCirc <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL)) {
+rhrBiCirc <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL),
+                       levels = 95) {
   
+  args <- as.list(environment())
+  call <- match.call()
+  projString <- getEPSG(xy)
   xy <- rhrCheckData(xy, returnSP=FALSE)
   
   K <- 7  # we have 7 parameters
@@ -153,19 +163,18 @@ rhrBiCirc <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRang
   r1 <- data.frame(raster::rasterToPoints(trast))
   r1$density <- d2cbn(r1[, 1], r1[, 2], ll$par[1:2], ll$par[3:4], ll$par[5], ll$par[6], ll$par[7])
   ud <- raster::rasterFromXYZ(r1)
+  ## project ud
+  sp::proj4string(ud) <- projString
 
   AIC <- 2 * ll$value + 2 * K
 
 
-
   ## AICc
-  
-
   res <- structure(
     list(
+      args=args,
+      call=call,
       model="Bimodal Circular", 
-      args=list(
-        xy=xy), 
       K=K,
       ud = ud, 
       LL=ll, 
@@ -209,28 +218,21 @@ d2cbn <- function(x, y, c1, c2, sigma1, sigma2, m) {
   d <- d1 + d2
 
   ifelse(d == 0, 0.0000000000000001, d)
-  
 }
-
 
 
 #' @export
 #' @rdname parametric_homeranges
+#' @param maxit Integer, giving the maximum number of iterations. See also \code{mixtools::mvnormalmixEM}, which is called.
 rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL), 
-                      maxit = 20) {
+                      levels = 95, maxit = 20) {
 
   ## Capture input arguments
   args <- as.list(environment())
   call <- match.call()
 
   ## check input 
-  projString <- if (inherits(xy, "SpatialPoints")) {
-    sp::proj4string(xy) 
-  } else if (is(xy, "RhrMappedData")) {
-    sp::proj4string(xy$dat)
-  } else {
-    sp::CRS(NA_character_)
-  }
+  projString <- getEPSG(xy)
   xy <- rhrCheckData(xy, returnSP=FALSE)
 
   hats <- mixtools::mvnormalmixEM(xy[, 1:2], k=2, maxit = maxit)
@@ -240,6 +242,8 @@ rhrBiNorm <- function(xy, trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRang
                          mu1=hats$mu[[1]], sig1=hats$sigma[[1]], mu2=hats$mu[[2]], sig2=hats$sigma[[2]])
 
   ud <- raster::rasterFromXYZ(r1)
+  ## project ud
+  sp::proj4string(ud) <- projString
 
   ## log likelihood
   ll <- hats$loglik
@@ -277,6 +281,9 @@ d2mvnorm <- function(xy, m, mu1, sig1, mu2, sig2) {
 }
 
 
+
+# Methods for parametric estimator ----------------------------------------
+
 #' @export
 rhrUD.RhrParamEst <- function(x, ...) {
   x$ud
@@ -289,9 +296,9 @@ rhrCUD.RhrParamEst <- function(x, ...) {
 }
 
 #' @export
-rhrIsopleths.RhrParamEst <- function(x, levels=NULL, ...) {
+rhrIsopleths.RhrParamEst <- function(x, levels, ...) {
   
-  if (is.null(levels)) {
+  if (missing(levels)) {
     levels <- rhrLevels(x)
   } 
   cud <- rhrCUD(x)
@@ -299,8 +306,8 @@ rhrIsopleths.RhrParamEst <- function(x, levels=NULL, ...) {
 }
 
 #' @export
-rhrArea.RhrParamEst <- function(x, levels=95, ...) {
-  as.data.frame(rhrIsopleths(x, levels))
+rhrArea.RhrParamEst <- function(x, ...) {
+  as.data.frame(rhrIsopleths(x, ...))
 }
 
 #' @export
@@ -319,4 +326,24 @@ plot.RhrParamEst <- function(x, levels=95, ...) {
   iso <- rhrIsopleths(x, levels)
   plotRaster(ud)
   sp::plot(iso, add=TRUE)
+}
+
+#' Obtain the AIC of a home-range
+#' 
+#' Function to obtain the AIC of a home range. This is currently only possible for parametric home-ranges.
+#' @param x The home-range estimate.
+#' @param AICc Logical value, indicating if the AICc should be returned instead of the AIC.
+#' @export
+
+AIC.RhrParamEst <- function(x, AICc = FALSE) {
+  if (AICc) {
+    x$AICc
+  } else {
+    x$AIC
+  }
+}
+
+##' @export
+rhrArgs.RhrParamEst <- function(x, ...) {
+  x$args
 }

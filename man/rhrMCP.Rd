@@ -12,7 +12,7 @@ rhrMCP(xy, levels = 95)
 is a \code{data.frame}, then the first two columns are assumed to be the
 \code{x} and \code{y} coordinates of the relocations.}
 
-\item{levels}{Numeric \code{vector} indicating percentages at which the home range estimates should be evaluated.}
+\item{levels}{Numeric \code{vector} indicating percentages at which the home-range estimates should be evaluated.}
 }
 \value{
 Object of class \code{RhrMCP}.

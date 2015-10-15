@@ -2,12 +2,12 @@
 % Please edit documentation in R/rhrCA.R
 \name{rhrCoreArea}
 \alias{rhrCoreArea}
-\alias{rhrCoreArea.RhrEst}
+\alias{rhrCoreArea.RhrProbEst}
 \title{Estimate Core Area}
 \usage{
 rhrCoreArea(x, method = "seaman90", ...)
 
-\method{rhrCoreArea}{RhrEst}(x, method = "powell90", ...)
+\method{rhrCoreArea}{RhrProbEst}(x, method = "powell90", ...)
 }
 \arguments{
 \item{x}{a RhrHREstimator* object}
