@@ -6,10 +6,8 @@ library(rhr)
 
 ## clean everything 
 rm(list=ls())
-debug <- TRUE
-if (debug) {
-  outDir <- "/tmp"
-}
+debug <- FALSE
+dozip <- FALSE
 
 if (FALSE) {
   rhrEPSGs <- as.numeric(rgdal::make_EPSG()$code)
@@ -34,9 +32,11 @@ library(rhr)
 library(shinyBS)
 library(shiny)
 library(xtable)
+addResourcePath("out", tempdir())
 
 shinyServer(function(input, output, session) {
   
+  if (debug) cat(tempdir())
   ## Read data
 
   data <- reactive({
@@ -113,9 +113,7 @@ shinyServer(function(input, output, session) {
         content=list(
           doCp=input$configOutputCpWd,
           wd=normalizePath(getwd(), mustWork=FALSE, winslash="/"), 
-          ## zipPath=normalizePath(file.path(outDir, paste0(runId, ".zip")), winslash="/"),
           fileName=input$readFileFile$name,
-          ## fileSize=input$readFileFile$size,
           fieldSeparator=input$readFileFieldSep,
           decSeparator=input$readFileSepDec,
           hasHeader=input$readFileHasHeader,
@@ -667,6 +665,9 @@ shinyServer(function(input, output, session) {
        }
     }
   })
+  
+  report <- reactiveValues(runid = NULL)
+  
 
   observe({
     if (input$rhrAnalyze == 0) {
@@ -679,7 +680,7 @@ shinyServer(function(input, output, session) {
       if (!is.null(data4())) {
         closeAlert(session, "rhrAnalyzeInfo1")
 
-        runId <- paste0("rhr-run-", format(now(), "%Y%m%d%H%M%S"))
+        runId <- paste0("rhr_run_", format(now(), "%Y%m%d%H%M%S"))
         outDir <- normalizePath(file.path(normalizePath(tempdir(), mustWork=FALSE, winslash="/"), runId), mustWork=FALSE, winslash="/")
         dir.create(outDir)
         addResourcePath("out", outDir)
@@ -777,7 +778,7 @@ shinyServer(function(input, output, session) {
                                                       outDir=outDir,
                                                       inUnit=input$configOutputInUnits, 
                                                       outUnit=input$configOutputOutUnits, 
-                                                      inGUI=TRUE, 
+                                                      inGUI=TRUE, zip = dozip, 
                                                       report = TRUE), gcFirst=TRUE)
           ## ------------------------------------------------------------------------------ ##  
           ## Brew html
@@ -815,7 +816,13 @@ shinyServer(function(input, output, session) {
                       append=TRUE)
           
         })
-        browseURL(normalizePath(file.path(outDir, "rhrReport.html"), mustWork=FALSE, winslash="/"))
+        
+        
+        if (dozip) {
+          report$runId <- runId
+        } else {
+          browseURL(normalizePath(file.path(outDir, "rhrReport.html"), mustWork=FALSE, winslash="/"))
+        }
       } else {
         createAlert(session, "rhrAnalyzeInfo", "rhrAnalyzeInfo1",
                     "Not ready yet",
@@ -824,6 +831,21 @@ shinyServer(function(input, output, session) {
                     append=FALSE)
       }
     })
+  })
+  
+  
+  output$result <- renderUI({
+    if (!is.null(report$runId)) {
+      p2 <- if (dozip) {
+         paste0("<p><a href = '/out/", report$runId, ".zip' target='_blank' >Download Results as zip<a></p>")
+      } else {
+        NULL
+      }
+      if (debug) cat(paste0("<p><a href = '/out/", report$runId, "/rhrReport.html' target='_blank' >Display Results<a></p>"))
+    #  HTML(paste0("<p><a href = '/out/", report$runId, "/rhrReport.html' target='_blank' >Display Results<a></p>"), p2)
+      HTML(paste0("<p><a href = '/out/rhrReport.html' target='_blank' >Display Results<a></p>"), p2)
+    } 
+    
   })
   
 })

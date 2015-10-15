@@ -201,16 +201,6 @@ kable(data.frame(Parameter=names(config$fields$content), value=unlist(config$fie
 ```
 -->
 
-<%# -------------------------- zip -%>
-<% if (!is.null(zip)) { %>
-
-# Archived results
-
-Download results as a <a href = "<%= paste0(outDir, '.zip')%>"> *.zip file </a>.
-
-<% } %>
-
-
 # Session info
 For the sake of reproducibility, you should always include your session info. This shows which version of R and different packages you were using. 
 

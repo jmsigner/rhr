@@ -2,7 +2,7 @@ library(shinyBS)
 library(shiny)
 
 shinyUI(
-  navbarPage("Reproducible Home Range Analysis with R",
+  navbarPage("Reproducible Home Range Analysis with R", id = "nav_rhr", 
              ## ============================================================================== ##  
              ## Read Files
              tabPanel("Load Data",
@@ -246,10 +246,12 @@ shinyUI(
                                bsAlert("rhrAnalyzeInfo"), 
                                bsAlert("rhrRunNoTimeTTSI"), 
                                bsAlert("rhrRunNoTimeBBMM"),
-                               bsAlert("rhrAnalyzeProgress")
+                               bsAlert("rhrAnalyzeProgress"), 
+                               htmlOutput("result")
                         )
                       )
              ),
+             
              inverse=TRUE,
              footer=list(hr(), p("2015 - Wildlife Sciences - Georg-August-University Goettingen"), 
                          a("citation", href = "http://jmsigner.github.io/rhrman/abtCitation.html", target = "_blank"))))
