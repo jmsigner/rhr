@@ -214,12 +214,12 @@ shinyUI(
                                                                      multiple=FALSE, selectize=FALSE)
                                                 ), 
                                                 tabPanel("Core Area",
-                                                         well=FALSE), 
-                                                h2("Core Area"),
-                                                selectInput("configCAInclude", "Estimators",
-                                                            choices=config$homeRange$ca$include, 
-                                                            multiple=TRUE, selectize=TRUE)
-                                   ))) 
+                                                         h2("Core Area"),
+                                                         selectInput("configCAInclude", "Estimators",
+                                                                     choices=config$homeRange$ca$include, 
+                                                                     multiple=TRUE, selectize=TRUE)), 
+                                                well=FALSE) 
+                                   )) 
              ),
              tabPanel("Run Analysis",
                       fluidRow(
