@@ -2,7 +2,7 @@ library(shinyBS)
 library(shiny)
 
 shinyUI(
-  navbarPage("Reproducible Home Range Analysis with R", id = "nav_rhr", 
+  navbarPage("Reproducible Home Range Analysis with R", id = "nav_rhr",  
              ## ============================================================================== ##  
              ## Read Files
              tabPanel("Load Data",
@@ -48,8 +48,8 @@ shinyUI(
                           bsAlert("alert_data_in_transformcrs"),
                           hr(),
                           bsAlert("alertMapFields"),
-                         plotOutput("mapDataPlot"))
-                         # uiOutput("mfUI"))
+                          plotOutput("mapDataPlot"))
+                          #uiOutput("mapTable"))
                       )),
              
              ## ============================================================================== ##  
@@ -247,12 +247,12 @@ shinyUI(
                                bsAlert("rhrRunNoTimeTTSI"), 
                                bsAlert("rhrRunNoTimeBBMM"),
                                bsAlert("rhrAnalyzeProgress"), 
+                               hr(),
                                htmlOutput("result")
                         )
                       )
              ),
              
              inverse=TRUE,
-             footer=list(hr(), p("2015 - Wildlife Sciences - Georg-August-University Goettingen"), 
-                         a("citation", href = "http://jmsigner.github.io/rhrman/abtCitation.html", target = "_blank"))))
+             footer=column(12, list(hr(), HTML("2015 - Department Wildlife Sciences - University of Goettingen, Germany; Visit the package website for <a href = 'http://jmsigner.github.io/rhrman/' target = '_blank'> more information</a> and <a href = 'http://jmsigner.github.io/rhrman/abtCitation.html' target = '_blank'>citation</a>.")))))
 

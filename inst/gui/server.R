@@ -1,28 +1,3 @@
-
-## For the packaged version: make an optinal data argument and
-## outputDir argument. They will be set static and be identical for each client.
-## This shouldn't be a problem, if the app is run locally
-library(rhr)
-
-## clean everything 
-rm(list=ls())
-debug <- FALSE
-dozip <- FALSE
-
-if (FALSE) {
-  rhrEPSGs <- as.numeric(rgdal::make_EPSG()$code)
-  rhrEPSGs <- rhrEPSGs[!is.na(rhrEPSGs)]
-   saveRDS(rhrEPSGs, "inst/gui/epsgs.RDS")
-}
-
-
-rhrEPSGs <- readRDS("epsgs.RDS")
-
-
-## Max upload size
-options(shiny.maxRequestSize=30*1024^2)
-#####
-
 library(brew)
 library(lubridate)
 library(knitr)
@@ -32,13 +7,26 @@ library(rhr)
 library(shinyBS)
 library(shiny)
 library(xtable)
-addResourcePath("out", tempdir())
+
+## clean everything 
+rm(list=ls())
+debug <- FALSE
+dozip <- FALSE
+outdir_base <- tempdir()
+
+options(shiny.maxRequestSize=30*1024^2)
+addResourcePath("out", outdir_base)
+rhrEPSGs <- readRDS("epsgs.RDS")
+
+if (FALSE) {
+  rhrEPSGs <- as.numeric(rgdal::make_EPSG()$code)
+  rhrEPSGs <- rhrEPSGs[!is.na(rhrEPSGs)]
+   saveRDS(rhrEPSGs, "inst/gui/epsgs.RDS")
+}
+
+
 
 shinyServer(function(input, output, session) {
-  
-  if (debug) cat(tempdir())
-  ## Read data
-
   data <- reactive({
     res <- paste0('Unable to load data, did you select a file?')
     dat <- NULL
@@ -229,19 +217,11 @@ shinyServer(function(input, output, session) {
                              projStringOut = outCRS, dateFormat=dateFormat,
                              timeFormat=timeFormat)
         
-        if (debug) cat(str(dat2))
-        if (debug) cat("dat2.4 \n")
-        
         r <- if (dat2$hasTS) {
-          if (debug) cat("dat2.4a \n")
           rhrTracks(dat2$dat, ts = dat2$dat$timestamp, id = dat2$dat$id)
         } else {
-          if (debug) cat("dat2.4b \n")
           rhrTracks(dat2$dat, id = dat2$dat$id)
         }
-        
-        if (debug) cat("dat2.5 \n")
-        if (debug) cat("Class: ", class(r), "\n")
         r
       } else {
         return(NULL)
@@ -249,6 +229,16 @@ shinyServer(function(input, output, session) {
     } else {
       return(NULL)
     }
+  })
+  
+  output$mapTable <- renderUI({
+    if (!is.null(data2())) {
+      list(
+        h2("Preview mapped data"),
+        p("The frist 20 relocations the data are shown below"), 
+        renderTable(head(as.data.frame(rhrPoints(data2())), 20))
+      )
+    } 
   })
   
   output$mapDataPlot <- renderPlot(
@@ -530,15 +520,15 @@ shinyServer(function(input, output, session) {
  output$gridResUi <- renderUI({
    if (!is.null(data4())) {
     rgs <- apply(rhrBBX(data4()), 1, diff)
-    rgs <- c(rgs / 10, rgs / 500)
-    sliderInput("gridResSlider", "Resolution", mean(rgs) * 0.001, mean(rgs) * 1000, round(mean(rgs)))
+    rgs <- min(rgs) / 2000
+    sliderInput("gridResSlider", "Resolution", rgs, rgs * 1000, round(mean(rgs)))
    }
  })
 
  trast <- reactive({
    if (!is.null(data4())) {
 
-     ext <- rhrExtFromPoints(data4(),
+     ext <- rhrExtFromPoints(rhrPoints(data4()),
                              buffer=c(bufferXSliderValues(), bufferYSliderValues()),
                              extendRange=NULL) 
      if (input$configOutputGridGrid == "pixel") {
@@ -681,9 +671,8 @@ shinyServer(function(input, output, session) {
         closeAlert(session, "rhrAnalyzeInfo1")
 
         runId <- paste0("rhr_run_", format(now(), "%Y%m%d%H%M%S"))
-        outDir <- normalizePath(file.path(normalizePath(tempdir(), mustWork=FALSE, winslash="/"), runId), mustWork=FALSE, winslash="/")
+        outDir <- normalizePath(file.path(normalizePath(outdir_base, mustWork=FALSE, winslash="/"), runId), mustWork=FALSE, winslash="/")
         dir.create(outDir)
-        addResourcePath("out", outDir)
 
         ## Create args
         args <- list(
@@ -753,6 +742,12 @@ shinyServer(function(input, output, session) {
            include = input$configCAInclude
          ) 
         )
+        
+        closeAlert(session, "rhrAnalyzeProgress1") 
+        closeAlert(session, "rhrAnalyzeProgress2") 
+        closeAlert(session, "rhrAnalyzeProgress3") 
+        closeAlert(session, "rhrAnalyzeProgress4") 
+        closeAlert(session, "rhrAnalyzeProgress5") 
 
         createAlert(session, "rhrAnalyzeProgress", "rhrAnalyzeProgress1",
                     "Starting Analysis",
@@ -834,18 +829,35 @@ shinyServer(function(input, output, session) {
   })
   
   
+  output$dzip <- downloadHandler(
+    filename = paste0(report$runId, ".zip"),
+    content = function(file) file.copy(file.path(outdir_base, paste0(report$runId, ".zip")), file, overwrite = TRUE)
+  )
+  
+  output$drep <- downloadHandler(
+    filename = paste0(report$runId, ".html"),
+    content = function(file) file.copy(file.path(outdir_base, report$runId, "rhrReport.html"), file, overwrite = TRUE)
+  )
+  
+  
   output$result <- renderUI({
     if (!is.null(report$runId)) {
-      p2 <- if (dozip) {
-         paste0("<p><a href = '/out/", report$runId, ".zip' target='_blank' >Download Results as zip<a></p>")
-      } else {
-        NULL
-      }
-      if (debug) cat(paste0("<p><a href = '/out/", report$runId, "/rhrReport.html' target='_blank' >Display Results<a></p>"))
-    #  HTML(paste0("<p><a href = '/out/", report$runId, "/rhrReport.html' target='_blank' >Display Results<a></p>"), p2)
-      HTML(paste0("<p><a href = '/out/rhrReport.html' target='_blank' >Display Results<a></p>"), p2)
-    } 
-    
+      list( 
+        downloadButton("dzip", "Download Results"),
+        downloadButton("drep", "Download Report")
+      )
+    }
   })
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
 })
