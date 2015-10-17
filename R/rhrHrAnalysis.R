@@ -12,6 +12,7 @@
 ##' @param outDir character; path to the directory where the results are saved.
 ##' @param report logical; indicating if a report should be created. 
 ##' @param zip logical; indicating if a zip archive should be created, note this most likely only works under linux. 
+##' @param repArgs A list with extra arguments for the report.
 ##' @return List
 ##' @export
 ##' @author Johannes Signer
@@ -22,7 +23,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
                           inUnit="ido",
                           outUnit="ius", 
                           report = TRUE, 
-                          zip = FALSE) {
+                          zip = FALSE, 
+                          repArgs = NULL) {
 
 
   ## ------------------------------------------------------------------------------ ##  
@@ -973,7 +975,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
       dat=dat,
       methodLookup=methodLookup, 
       startTime = startTime, 
-      zip = zip
+      zip = zip, 
+      repArgs = repArgs
     ))
 
     knitEnv <- list2env(list(

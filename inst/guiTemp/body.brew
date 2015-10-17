@@ -201,6 +201,19 @@ kable(data.frame(Parameter=names(config$fields$content), value=unlist(config$fie
 ```
 -->
 
+<%# -------------------------- report -%>
+<% if (!is.null(repArgs)) { %>
+<% if (!is.null(repArgs$hraas)) { %>
+# Results
+
+- All results are saved in: "<%=repArgs$outDir %>"
+<% if (!is.null(repArgs$doCp)) { %>
+- All results were copied to: "<%=repArgs$wd %>"
+<% } %>
+
+<% } %>
+<% } %>
+
 # Session info
 For the sake of reproducibility, you should always include your session info. This shows which version of R and different packages you were using. 
 

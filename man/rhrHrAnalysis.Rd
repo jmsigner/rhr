@@ -8,7 +8,7 @@ rhrHrAnalysis(dat, what = c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE",
   "rhrAsymptote", "rhrCoreArea"), args = NULL, verbose = TRUE,
   outDir = file.path(tempdir(), paste0("rhr", format(Sys.time(),
   "\%Y\%m\%d\%H\%M\%S"))), inGUI = FALSE, inUnit = "ido", outUnit = "ius",
-  report = TRUE, zip = FALSE)
+  report = TRUE, zip = FALSE, repArgs = NULL)
 }
 \arguments{
 \item{dat}{RhrMappedData}
@@ -30,6 +30,8 @@ rhrHrAnalysis(dat, what = c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE",
 \item{report}{logical; indicating if a report should be created.}
 
 \item{zip}{logical; indicating if a zip archive should be created, note this most likely only works under linux.}
+
+\item{repArgs}{A list with extra arguments for the report.}
 }
 \value{
 List

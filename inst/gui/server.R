@@ -11,8 +11,13 @@ library(xtable)
 ## clean everything 
 rm(list=ls())
 debug <- FALSE
+hraas <- FALSE
 dozip <- FALSE
 outdir_base <- tempdir()
+
+if (hraas) {
+  dozip <- TRUE
+}
 
 options(shiny.maxRequestSize=30*1024^2)
 addResourcePath("out", outdir_base)
@@ -99,7 +104,7 @@ shinyServer(function(input, output, session) {
       general=list(
         name="General Settings",
         content=list(
-          doCp=input$configOutputCpWd,
+          doCp= if (hraas) FALSE else input$configOutputCpWd,
           wd=normalizePath(getwd(), mustWork=FALSE, winslash="/"), 
           fileName=input$readFileFile$name,
           fieldSeparator=input$readFileFieldSep,
@@ -268,24 +273,6 @@ shinyServer(function(input, output, session) {
       TRUE
     } else {
       FALSE
-    }
-  })
-
-  observe({
-    if (!is(data2(), "RhrTracksST")) {
-      createAlert(session, "generalNoTimeTTSI", title = "No timestamp", 
-                  content = "This method requires date and time of relocations, but it was not provided", 
-                  append = FALSE, dismiss = FALSE)
-      
-      createAlert(session, "generalNoTimeBBMM", "generalNoTimeBBMM1",
-                  "Please provide date and time",
-                  content = "This method requires date and time of relocations, but it was not provided", 
-                  dismiss=FALSE,
-                  append=FALSE)
-    } else {
-      closeAlert(session, "generalNoTimeTTSI1")
-      closeAlert(session, "generalNoTimeBBMM1")
-      
     }
   })
 
@@ -774,7 +761,14 @@ shinyServer(function(input, output, session) {
                                                       inUnit=input$configOutputInUnits, 
                                                       outUnit=input$configOutputOutUnits, 
                                                       inGUI=TRUE, zip = dozip, 
-                                                      report = TRUE), gcFirst=TRUE)
+                                                      report = TRUE, 
+                                                      repArgs = list(
+                                                        doCp = if(configInter()$general$content$doCp) TRUE else NULL,
+                                                        outDir = outDir,
+                                                        wd = configInter()$general$content$wd,
+                                                        hraas = hraas)
+                                                      ), gcFirst=TRUE)
+          
           ## ------------------------------------------------------------------------------ ##  
           ## Brew html
 
@@ -848,16 +842,4 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-    
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 })
