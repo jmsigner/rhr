@@ -10,7 +10,7 @@ library(xtable)
 
 ## clean everything 
 rm(list=ls())
-debug <- FALSE
+debug <- TRUE
 hraas <- FALSE
 dozip <- FALSE
 outdir_base <- tempdir()
@@ -216,18 +216,24 @@ shinyServer(function(input, output, session) {
         
         if (debug) cat("dat2.3 \n")
         ## Epsg can be used later, only thing that is missing are 
-        dat2 <- rhrMapFields(data()$data,
+        dat2 <- tryCatch(rhrMapFields(data()$data,
                              fields=list(lon=lon, lat=lat, id=id, date=date, time=time), 
                              projString=inCRS, 
                              projStringOut = outCRS, dateFormat=dateFormat,
-                             timeFormat=timeFormat)
+                             timeFormat=timeFormat), error = function(e) e)
         
-        r <- if (dat2$hasTS) {
-          rhrTracks(dat2$dat, ts = dat2$dat$timestamp, id = dat2$dat$id)
+        if (is(dat2, "error")) {
+          return(dat2)
+          
         } else {
-          rhrTracks(dat2$dat, id = dat2$dat$id)
+          
+          r <- if (dat2$hasTS) {
+            rhrTracks(dat2$dat, ts = dat2$dat$timestamp, id = dat2$dat$id)
+          } else {
+            rhrTracks(dat2$dat, id = dat2$dat$id)
+          }
+          r
         }
-        r
       } else {
         return(NULL)
       }
@@ -247,14 +253,26 @@ shinyServer(function(input, output, session) {
   })
   
   output$mapDataPlot <- renderPlot(
-    if(!is.null(data2())) {
+    if(is(data2(), "RhrTracks")) {
       plot(data2())
+    } else {
+      NULL
     }
+  )
+  
+  output$mapDataMSG <- renderUI(
+    if(is(data2(), "error")) {
+      verbatimTextOutput(data2()$message)
+    } 
   )
   
   succesfullyFinishedS2 <- reactive({
     if (!is.null(data2())) {
-      TRUE
+      if (!is(data2(), "error")) {
+        TRUE
+      } else {
+        FALSE
+      }
     } else {
       FALSE
     }
@@ -282,8 +300,7 @@ shinyServer(function(input, output, session) {
   
   output$subsetUI <- renderUI({
     if (succesfullyFinishedS2()) {
-      if (debug) cat("dat3.1 \n")
-      bbx <- rhrBBX(data2())
+      bbx <- rhrBBX(data2(), f = 0.02)
       uis <- list(
         h2("Subset settings"),
         sliderInput("subsetXSlider", "X-Range", bbx[1, 1], bbx[1, 2], value=bbx[1, ]), 

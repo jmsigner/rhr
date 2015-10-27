@@ -78,7 +78,8 @@ rhrKDE <- function(xy,
   r1
 }
 
-##' @export
+#' @export
+#' @method print RhrKDE
 print.RhrKDE <- function(x, as_md = FALSE, ...) {
   if (!as_md) {
     cat("* RhrKDE \n")
@@ -130,7 +131,8 @@ rhrUD.RhrKDE <- function(x, ...) {
   x$res$hr
 }
 
-##' @export
+#' @export
+# @param levels Numeric vector between 1 and 100, the level(s) at which the home range area is evaluated for probabilistic home-range estimators.
 rhrArea.RhrKDE <- function(x, ...) {
   tmp <- rhrIsopleths(x, ...)
   data.frame(tmp)
@@ -152,6 +154,7 @@ rhrHasUD.RhrKDE <- function(x, ...) {
 }
 
 #' @export
+#' @method plot RhrKDE
 plot.RhrKDE <- function(x, levels = NULL, addIsopleths=TRUE, ...) {
   
   if (is.null(levels)) {

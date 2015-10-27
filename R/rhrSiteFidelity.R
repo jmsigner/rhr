@@ -99,7 +99,8 @@ li <- function(x, y) {
 
 
 ########### Round digits
-##' @export
+#' @export
+#' @method print RhrSiteFidelity
 ## FIXME: round values
 print.RhrSiteFidelity <- function(x, ...) {
   cat("* rhrSiteFidelity \n")
@@ -112,6 +113,7 @@ print.RhrSiteFidelity <- function(x, ...) {
 }
 
 #' @export
+#' @method plot RhrSiteFidelity
 plot.RhrSiteFidelity <- function(x, plotit=TRUE, ...) {
   p1 <- ggplot2::ggplot(data.frame(x=x$msdSim), ggplot2::aes(x=x)) + ggplot2::geom_histogram() +
     ggplot2::expand_limits(x=range(c(x$msdSim, x$msdDat))) +

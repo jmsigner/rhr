@@ -321,6 +321,7 @@ rhrData.RhrParamEst <- function(x, spatial=FALSE, ...) {
 }
 
 #' @export
+#' @method plot RhrParamEst
 plot.RhrParamEst <- function(x, levels=95, ...) {
   ud <- rhrUD(x)
   iso <- rhrIsopleths(x, levels)
@@ -328,20 +329,6 @@ plot.RhrParamEst <- function(x, levels=95, ...) {
   sp::plot(iso, add=TRUE)
 }
 
-#' Obtain the AIC of a home-range
-#' 
-#' Function to obtain the AIC of a home range. This is currently only possible for parametric home-ranges.
-#' @param x The home-range estimate.
-#' @param AICc Logical value, indicating if the AICc should be returned instead of the AIC.
-#' @export
-
-AIC.RhrParamEst <- function(x, AICc = FALSE) {
-  if (AICc) {
-    x$AICc
-  } else {
-    x$AIC
-  }
-}
 
 ##' @export
 rhrArgs.RhrParamEst <- function(x, ...) {

@@ -1,29 +1,35 @@
 #' @export
+#' @method head RhrTrack
 head.RhrTrack <- function(x, n = 6, ...) {
-  base::head(x$track@data, n)
+  utils::head(x$track@data, n)
 }
 
 #' @export
+#' @method tail RhrTrack
 tail.RhrTrack <- function(x, n = 6, ...) {
   tail(x$track@data, n)
 }
 
 #' @export
+#' @method length RhrTrack
 length.RhrTrack <- function(x) {
   nrow(x$track@data)
 }
 
 #' @export
+#' @method nrow RhrTrack
 nrow.RhrTrack <- function(x) {
   nrow(x$track@data)
 }
 
 #' @export
+#' @method ncol RhrTrack
 ncol.RhrTrack <- function(x) {
   ncol(x$track@data)
 }
 
 #' @export
+#' @method dim RhrTrack
 dim.RhrTrack <- function(x) {
   dim(x$track@data)
 }
@@ -173,10 +179,7 @@ rhrSegments.RhrTrackST <- function(x, spatial = FALSE, ...) {
 }
 
 
-#' Prints RhrTrack object.
-#' 
-#' @param x RhrTrack object.
-#' @template dots
+#' @method plot RhrTrack 
 #' @export
 plot.RhrTrack <- function(x, ...) {
   x <- sp::coordinates(rhrPoints(x))
@@ -186,11 +189,8 @@ plot.RhrTrack <- function(x, ...) {
   legend("topleft", pch = c(19, 15), col = "red", legend = c("start", "end"))
 }
 
-#' Prints RhrTracks object.
-#' 
-#' @param x RhrTracks object.
-#' @template dots
 #' @export
+#' @method plot RhrTracks
 plot.RhrTracks <- function(x, ...) {
   x <- rhrPoints(x)
   ids <- x$id
@@ -374,6 +374,7 @@ rhrTrackData.RhrTrack <- function(x, ...) {
 
 
 #' @export
+#' @method print RhrTrack
 print.RhrTrack <- function(x, ...) {
   
   attr <- rhrTrackData(x)
@@ -470,7 +471,7 @@ rhrBBX.RhrTrack <- function(x, f = 0, ...) {
 #' @export
 rhrBBX.RhrTracks <- function(x, f = 0, ...) {
   if (length(x) == 1) {
-    rhrBBX(x[[1]])
+    rhrBBX(x[[1]], f)
   } else {
     abbx <- simplify2array(lapply(x, function(y) sp::bbox(rhrPoints(y))))
     rhrExtBBX(cbind(apply(abbx[, 1, ], 1, min), apply(abbx[, 2, ], 1, max)), f)

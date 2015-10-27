@@ -845,7 +845,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           res <-  rhrRes(est, animal, thisEst, outDirs, msgs)
           pArea <- rhrPArea(est, thisEst, animal, args, outDirs, inUnit, outUnit)
           pAsymptote <- rhrPAsymptote(est, thisEst, animal, args, outDirs, what)
-          pCA <- rhrPCA(kde, thisEst, animal, args, outDirs, what)
+          pCA <- rhrPCA(est, thisEst, animal, args, outDirs, what)
           
           return(list(est = res, properties = list(area = pArea,
                                                    asymptote = pAsymptote,
@@ -895,7 +895,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           res <-  rhrRes(est, animal, thisEst, outDirs, msgs)
           pArea <- rhrPArea(est, thisEst, animal, args, outDirs, inUnit, outUnit)
           pAsymptote <- rhrPAsymptote(est, thisEst, animal, args, outDirs, what)
-          pCA <- rhrPCA(kde, thisEst, animal, args, outDirs, what)
+          pCA <- rhrPCA(est, thisEst, animal, args, outDirs, what)
           
           return(list(est = res, properties = list(area = pArea,
                                                    asymptote = pAsymptote,
@@ -1007,7 +1007,7 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
     
     if (zip) {
       ow <- setwd(outDir)
-      zip(paste0(outDir, ".zip"), list.files(recursive=TRUE, full=TRUE))
+      zip(paste0(outDir, ".zip"), list.files(recursive=TRUE, full.names=TRUE))
       setwd(ow)
     }
     

@@ -149,6 +149,7 @@ rhrAsymptote <- function(x, ns=seq(nrow(rhrData(x)) / 10, nrow(rhrData(x)), leng
 
 
 #' @export
+#' @method  print RhrHRAsymptote
 print.RhrHRAsymptote <- function(x, ...) {
 
   cat(paste0("class                    : ", class(x)),
@@ -159,6 +160,7 @@ print.RhrHRAsymptote <- function(x, ...) {
 }
 
 #' @export
+#' @method  plot RhrHRAsymptote
 plot.RhrHRAsymptote <- function(x, ...) {
 
   ## Input checks

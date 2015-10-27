@@ -75,6 +75,7 @@ rhrBBMM <- function(track,
 
 
 #' @export
+#' @method print RhrBBMM
 print.RhrBBMM <- function(x, ...) {
   cat("* rhrHREstimatorBBMM \n")
   cat("* ----------------- \n")
@@ -118,6 +119,7 @@ rhrHasUD.RhrBBMM <- function(x, ...) {
 }
 
 #' @export
+#' @method plot RhrBBMM
 plot.RhrBBMM <- function(x, addIsopleths=TRUE, levels=95, ...) {
   if (addIsopleths) {
     tempol <- rhrIsopleths(x, levels, ...)
@@ -134,7 +136,7 @@ rhrArgs.RhrBBMM <- function(x, ...) {
 }
 
 ##' @export
-rhrData.RhrBBMM <- function(x, as.data.frame=FALSE, ...) {
+rhrData.RhrBBMM <- function(x, spatial = FALSE, as.data.frame=FALSE, ...) {
   if (as.data.frame) {
     xx <- rhrCheckData(x$args$track, returnSP=spatial)
   } else {

@@ -63,6 +63,7 @@ rhrMCP <- function(xy, levels=95) {
 
 
 #' @export
+#' @method print RhrMCP
 print.RhrMCP <- function(x, as_md = FALSE, ...) {
   cat("* RhrMCP \n")
   cat("* ------ \n")
@@ -97,6 +98,7 @@ rhrArgs.RhrMCP <- function(x, ...) {
 }
 
 #' @export
+#' @method plot RhrMCP
 plot.RhrMCP <- function(x, ...) {
 
   long <- lat <- group <- level <- lon <- NULL

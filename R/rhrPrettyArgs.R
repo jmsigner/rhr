@@ -4,6 +4,7 @@
 #' @param x Object of class \code{Rhr*}.
 #' @param as.rmd Logical value, indicating if result should be coerced to \code{rmd}. 
 #' @param includeName Logical value indicating if the estimator name should be included or not.
+#' @template dots
 #' @export
 rhrPrettyArgs <- function(x, as.rmd = TRUE, includeName = FALSE, ...) {
   UseMethod ("rhrPrettyArgs", x)

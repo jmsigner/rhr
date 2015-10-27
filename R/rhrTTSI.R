@@ -87,6 +87,7 @@ rhrTTSI <- function(track, interval=min(diff(as.numeric(rhrTimes(track)))), ntim
 }
 
 #' @export
+#' @method print RhrTTSI
 #' @import grid
 
 plot.RhrTTSI <- function(x, ...) {
@@ -143,7 +144,8 @@ plot.RhrTTSI <- function(x, ...) {
 
 }
 
-##' @export
+#' @export
+#' @method print RhrTTSI
 print.RhrTTSI <- function(x, ...) {
 
   cat(paste0("class           : ", class(x)),

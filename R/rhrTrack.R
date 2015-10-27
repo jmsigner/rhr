@@ -66,7 +66,8 @@ rhrTrack <- function(sp, time, duplicates = "remove", meta) {
   
   if (trackType[1] == "RhrTrackS") {
     
-    track <- sp[matDup(sp::coordinates(sp)), ]
+    # track <- sp[matDup(sp::coordinates(sp)), ]
+    track <- sp
     
     ## adapted from: https://github.com/edzer/trajectories/blob/master/R/Class-Tracks.R#L48
     cc <- sp::coordinates(track)

@@ -48,7 +48,8 @@ shinyUI(
                           bsAlert("alert_data_in_transformcrs"),
                           hr(),
                           bsAlert("alertMapFields"),
-                          plotOutput("mapDataPlot"))
+                          verbatimTextOutput("mapDataMSG"), 
+                          plotOutput("mapDataPlot")) 
                           #uiOutput("mapTable"))
                       )),
              

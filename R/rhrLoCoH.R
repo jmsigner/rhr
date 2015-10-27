@@ -183,6 +183,7 @@ rhrArgs.RhrLoCoH <- function(x, ...) {
 
 
 ##' @export
+##' @method print RhrLoCoH
 print.RhrLoCoH <- function(x, ...) {
   cat("* RhrLoCoH \n")
   cat("* -------- \n")
@@ -224,6 +225,7 @@ rhrData.RhrLoCoH <- function(x, spatial=FALSE, ...) {
 }
 
 #' @export
+#' @method plot RhrLoCoH
 plot.RhrLoCoH <- function(x, title=NULL, ...) {
 
   long <- lat <- group <- level <- lon <- NULL
