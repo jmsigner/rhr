@@ -250,13 +250,32 @@ is.regular.RhrTrack <- function(x, ...) {
   }
 }
 
-#' Checks if the track has time stamps
+#' Checks if the track has a time stamp.
 #'
-#' Retunrs \code{TRUE} if the track has time stamps.
+#' Retunrs \code{TRUE} if the track has time stamps and \code{FALSE} otherwise.
 #'
-#' @param x Object of class \code{RhrTrack*}
-#' @param ... none implemented.
+#' @template trackx
+#' @template dots
+#' 
 #' @export
+#' @examples 
+#' 
+#' data(datSH)
+#' 
+#' ## Create a SpatialPoints objects with the relocation
+#' sp <- sp::SpatialPoints(datSH[, 2:3])
+#' 
+#' ## Parse time
+#' time <- lubridate::ymd_hms(paste(datSH$day, datSH$time))
+#' 
+#' ## Create an object of RhrTrackS (only space)
+#' trackS <- rhrTrack(sp)
+#' 
+#' ## Create an object of RhrTrackST (only space)
+#' trackST <- rhrTrack(sp, time)
+#' 
+#' rhrHasTS(trackS)
+#' rhrHasTS(trackST)
 
 rhrHasTS <- function(x, ...) {
   UseMethod("rhrHasTS")
@@ -457,9 +476,25 @@ rhrSplit.RhrTrackST <- function(x, f, minN = 3, ...) {
 #' @param x Object of class \code{RhrTrack*}.
 #' @param f Numeric value, fraction by which the bounding box is extended.
 #' @return A matrix with the bounding box.
-#' @param ... none implemented.
+#' @template dots
 #' @export
-rhrBBX <- function(x, f, ...) {
+#' @examples 
+#' 
+#' data(trackS)
+#' rhrBBX(trackS)
+#' 
+#' # Extends the range by 5% to each side
+#' rhrBBX(trackS, 0.05)
+#' 
+#' 
+#' # Check that is actually works
+#' bbx <- rhrBBX(trackS)
+#' ext <- apply(bbx, 1, diff)
+#' 
+#' ext * 1.1
+#' apply(rhrBBX(trackS, 0.05), 1, diff)  
+
+  rhrBBX <- function(x, f, ...) {
   UseMethod("rhrBBX")
 }
 
@@ -580,6 +615,8 @@ rhrWithinTime.RhrTracksST <- function(x, y, ...) {
   x
 }
 
+#' @export
+#' @method summary RhrTracksS
 summary.RhrTracksS <- function(x, ...) {
   m <- data.frame(
     id = names(x), 
@@ -589,6 +626,8 @@ summary.RhrTracksS <- function(x, ...) {
   m
 }
 
+#' @export
+#' @method summary RhrTracksST
 summary.RhrTracksST <- function(x, ...) {
   m <-  data.frame(
     id = names(x), 
@@ -601,7 +640,112 @@ summary.RhrTracksST <- function(x, ...) {
 }
 
 
-# could be nicer methods --------------------------------------------------
+#' Burstify a track
+#'
+#' Burstifying assumes, that the track has been regularized before. The smallest time interval is choosen as a reference interval.
+#'
+#' @param x Object of class \code{RhrTrack*}
+#' @param minN Integer, the minimum number of relocations required for a birst. 
+#' @template dots
+#' @export
+rhrBurstify <- function(x, minN = 3, ...) {
+  UseMethod("rhrBurstify")
+}
+
+#' @export
+rhrBurstify.RhrTrackST <- function(x, minN = 3, ...) {
+  
+  difft <- diff(rhrTimes(x))
+  mint <- as.numeric(min(difft))
+  
+  w <- data.frame(
+    x = 1:(nrow(x) - 1), 
+    y = 2:nrow(x), 
+    tdiff = difft == mint
+  )
+  
+  
+  rr <- rle(w$tdiff)
+  rr$values <- 1:length(rr$values)
+  w$group <- inverse.rle(rr)
+  w <- w[w$tdiff, ]
+  w <- split(w, w$group)
+  
+  ## check sufficient points
+  w <- w[sapply(w, nrow) >= minN]
+  w <- lapply(w, function(xx) unique(unlist(xx[, 1:2])))
+  
+  w <- lapply(w, function(i) x[i, ])
+  names(w) <- 1:length(w)
+  class(w) <- c("RhrTracks", "list")
+  
+  return(w)
+}
+
+#' Interpolate missing points
+#'
+#' Interpolating assumes, that the track has been regularized before. It picks the smallest time interval, an interpolates for all gaps that are larger than the minimum time interval. It is assumed, that all gaps are a multiplie of the smallest time gap. 
+#' 
+#' Currently, rhrInterpolages loses all attributes and creates a new track.
+#'
+#' @param x Object of class \code{RhrTrack*}
+#' @template dots
+#' @export
+rhrInterpolate <- function(x, ...) {
+  UseMethod("rhrInterpolate")
+}
+
+#' @export
+rhrInterpolate.RhrTrackST <- function(x, ...) {
+  
+  times <- rhrTimes(x)
+  n <- length(times)
+  difft <- as.numeric(diff(times))
+  mint <- min(difft)
+  
+  w <- data.frame(
+    x = 1:(nrow(x) - 1), 
+    y = 2:nrow(x), 
+    diff = difft,
+    interpolate = difft != mint, 
+    howMany = difft / mint,
+    start = times[-n], 
+    end = times[-1]
+  )
+  
+  if (all(!w$interpolate)) {
+    stop("Nohting to interpolate, all time diffs are equal")
+  }
+  
+  w <- w[w$interpolate, ]
+  w <- split(w, 1:nrow(w))
+  
+  pts <- coordinates(rhrPoints(x))
+  
+  w <- lapply(w, function(ww) {
+    cc <- pts[c(ww$x, ww$y), ]
+    cc <- approx(cc[, 1], cc[, 2], n = ww$howMany + 1)
+    ww <- data.frame(x = cc$x, y = cc$y, time = seq(ww$start, ww$end, length.out = ww$howMany + 1))
+    ww[-c(1, nrow(ww)), ]
+  })
+  
+  ## check sufficient points
+  w <- do.call(rbind, w)
+  
+  xx <- data.frame(
+    sp::coordinates(rhrPoints(x)), 
+    time = rhrTimes(x)
+  )
+  
+  names(xx)[1:2] <- c("x", "y")
+  xx <- rbind(xx, w)
+  sp::coordinates(xx) <- ~x+y
+  xx <- xx[order(xx$time), ]
+  rhr::rhrTrack(xx, time = xx$time)
+  
+}
+
+# could be nicer methods -------------------------^-----------------------
 
 rhrAnimalById <- function(x, ids) {
   sel <- which(names(x) %in% ids)

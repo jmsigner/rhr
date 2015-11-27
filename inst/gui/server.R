@@ -10,7 +10,7 @@ library(xtable)
 
 ## clean everything 
 rm(list=ls())
-debug <- TRUE
+debug <- FALSE
 hraas <- FALSE
 dozip <- FALSE
 outdir_base <- tempdir()
@@ -224,7 +224,6 @@ shinyServer(function(input, output, session) {
         
         if (is(dat2, "error")) {
           return(dat2)
-          
         } else {
           
           r <- if (dat2$hasTS) {
@@ -232,7 +231,7 @@ shinyServer(function(input, output, session) {
           } else {
             rhrTracks(dat2$dat, id = dat2$dat$id)
           }
-          r
+          return(r)
         }
       } else {
         return(NULL)

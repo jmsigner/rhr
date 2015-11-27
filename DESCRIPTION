@@ -1,7 +1,7 @@
 Package: rhr
 Type: Package
 Title: Reproducible Home Ranges with R
-Version: 1.2.902
+Version: 1.2.903
 Date: 2015-10-27
 Author: Johannes Signer
 Maintainer: Johannes Signer<jsigner@gwdg.de>

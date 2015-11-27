@@ -39,7 +39,7 @@ rhrTrack <- function(sp, time, duplicates = "remove", meta) {
     stop("time should be of class POSIXct")
   }
   
-  if (is(sp, "SpatialPoints")) {
+  if (class(sp) == "SpatialPoints") {
     sp <- sp::SpatialPointsDataFrame(sp, data.frame(ones = rep(1L, length(sp))))
   }
   
@@ -78,7 +78,7 @@ rhrTrack <- function(sp, time, duplicates = "remove", meta) {
       distance = distance * 1000.0
     }
     
-    direction <- directions_ll(cc, ll)
+    direction <- directions_ll(cc)
     trackConnections <- data.frame(distance = distance, direction = direction)
     
   } else if (any(trackType == "RhrTrackST")) {
@@ -166,8 +166,34 @@ rhrTracks <- function(sp, ts, id, metas) {
   }
   
   names(tracks) <- names(dd)
+  class(tracks) <- tracksClass(tracks)
+  tracks
+}
+
+# this is take from trjaectories:::directions_ll 
+
+directions <- function(x, y) {
+  n <- length(x)
+  dX <- x[-1] - x[-n]
+  dY <- y[-1] - y[-n]
+  absa <- diff(atan2(dY, dX))
+  rela <- diff(absa)
   
-  cl1 <- sapply(lapply(tracks, class ), "[[", 1)
+  list(rela = rela, absa = absa)
+}
+
+directions_ll <- function (cc) #, ll)  {
+{
+  
+  n <- nrow(cc)
+  dd <- cc[-1, ] - cc[-n, ]
+  
+  bear <- atan2(dd[, 2], dd[, 1])
+  c(NA, diff(bear))
+}
+
+tracksClass <- function(x) {
+  cl1 <- sapply(lapply(x, class ), "[[", 1)
   cl1 <- if (all(cl1 == cl1[1]) && cl1[1] == "RhrTrackS") {
     "RhrTracksS"
   } else if (all(cl1 == cl1[1]) && cl1[1] == "RhrTrackST") {
@@ -178,26 +204,5 @@ rhrTracks <- function(sp, ts, id, metas) {
     NULL
   }
     
-  class(tracks) <- c(rev(cl1), "RhrTracks", "list")
-  tracks
-}
-
-# this is take from trjaectories:::directions_ll 
-directions_ll <- function (cc, ll) 
-{
-  if (!ll) {
-    dcc = matrix(apply(cc, 2, diff), ncol = ncol(cc))
-    ((atan2(dcc[, 1], dcc[, 2])/pi * 180) + 360)%%360
-  }
-  else {
-    cc = cc * pi/180
-    lat1 = head(cc[, 2], -1)
-    lat2 = tail(cc[, 2], -1)
-    lon1 = head(cc[, 1], -1)
-    lon2 = tail(cc[, 1], -1)
-    dlon = lon2 - lon1
-    az = atan2(sin(dlon) * cos(lat2), cos(lat1) * sin(lat2) - 
-                 sin(lat1) * cos(lat2) * cos(dlon))
-    ((az/pi * 180) + 360)%%360
-  }
+  c(rev(cl1), "RhrTracks", "list")
 }

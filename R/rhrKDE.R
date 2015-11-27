@@ -1,17 +1,17 @@
-##' Kernel Density Estimation (KDE)
-##'
-##' Function to estimate home ranges with kernel density estimation. 
-##'
-##' Kernels densities are estimated with \code{KernSmooth::bkde2d}. This is a binned approximation of 2D kernel density estimates (see \code{?KernSmooth::bkde2d} for more details. 
-##'
-##' @template xy
-##' @template levels
-##' @param h Numeric \code{vector} with the bandwidth of the kernel. A scalar value will be applied to both dimensions.
-##' @template trast
-##' @seealso \code{KernSmooth::bkde2d}, \code{rhr::rhrHref}, \code{rhr::rhrHlscv}, \code{rhr::rhrHpi}
-##' @return Object of class \code{RhrKDE}
-##' @export
-##' 
+#' Kernel Density Estimation (KDE)
+#'
+#' Function to estimate home ranges with kernel density estimation. 
+#'
+#' Kernels densities are estimated with \code{KernSmooth::bkde2d}. This is a binned approximation of 2D kernel density estimates (see \code{?KernSmooth::bkde2d} for more details.) 
+#'
+#' @template xy
+#' @template levels
+#' @param h Numeric \code{vector} with the bandwidth of the kernel. A scalar value will be applied to both dimensions.
+#' @template trast
+#' @seealso \code{KernSmooth::bkde2d}, \code{rhr::rhrHref}, \code{rhr::rhrHlscv}, \code{rhr::rhrHpi}
+#' @return Object of class \code{RhrKDE}
+#' @export
+#' 
 
 rhrKDE <- function(xy,
                    h=rhrHref(xy)$h, levels = 95, 
@@ -27,8 +27,8 @@ rhrKDE <- function(xy,
   xy <- rhrCheckData(xy, returnSP=FALSE)
   levels <- rhrCheckLevels(levels)
 
-  ## ---------------------------------------------------------------------------- #
-  ## Check bandwidth
+  # ---------------------------------------------------------------------------- #
+  # Check bandwidth
   if (!is.numeric(h)) {
     stop("rhrKDE: bandwidth should be numeric")
   } else if (length(h) > 2) {
@@ -39,8 +39,8 @@ rhrKDE <- function(xy,
     args$h <- h <- rep(h, 2)
   }
 
-  ## ---------------------------------------------------------------------------- #
-  ## Estimate kernels
+  # ---------------------------------------------------------------------------- #
+  # Estimate kernels
   res <- tryCatch(
     expr=list(msg=NULL, exitStatus=0, res=.rhrKDE(xy, h, trast)),
     error=function(e) list(msg=e, exitStatus=1))
@@ -61,7 +61,7 @@ rhrKDE <- function(xy,
 }
 
 
-##' @export
+#' @export
 .rhrKDE <- function(xy, h, trast) {
   ## prep kde
   xrange <- c(raster::xmin(trast), raster::xmax(trast))
@@ -70,10 +70,10 @@ rhrKDE <- function(xy,
   rnrow <- raster::nrow(trast)
 
 
-  ## Create Raster
+  # Create Raster
   kde <- KernSmooth::bkde2D(xy, bandwidth=h, range.x=list(xrange, yrange), gridsize=c(rncol, rnrow))
 
-  ## Finish output
+  # Finish output
   r1 <- raster::raster(t(kde$fhat)[nrow(trast):1,], xmn=xrange[1], xmx=xrange[2], ymn=yrange[1], ymx=yrange[2])
   r1
 }
