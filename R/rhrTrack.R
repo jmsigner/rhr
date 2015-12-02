@@ -86,7 +86,18 @@ rhrTrack <- function(sp, time, duplicates = "remove", meta) {
     sp <- sp[whichToUse, ]
     time <- time[whichToUse]
     track <- trajectories::Track(spacetime::STIDF(as(sp, "SpatialPoints"), time, sp@data))
-    trackConnections <- track@connections
+    
+    cc <- sp::coordinates(track)
+    ll <- identical(sp::is.projected(track), FALSE)
+    distance <- sp::LineLength(cc, ll, FALSE)
+    
+    if (ll) { # distance is in km, transform to m:
+      distance = distance * 1000.0
+    }
+    
+    direction <- directions_ll(cc)
+    trackConnections <- data.frame(distance = distance, direction = direction) 
+    
   } else {
     stop("something went wrong")
   }
