@@ -150,8 +150,7 @@ shinyUI(
                                                 tabPanel("Kernel Density Estimation",
                                                          h2("Kernel Density Estimation"),
                                                          selectInput("configKDEbandwidth", "Bandwidth", choices=config$homeRange$kde$bandwidthOptions,
-                                                                     multiple=TRUE, selectize=FALSE),
-                                                         helpText("Use CTRL to select several options"), 
+                                                                     multiple=FALSE, selectize=FALSE),
                                                          uiOutput("configKDEbandwidthUserInput")
                                                 ),
                                                 tabPanel("Local Convex Polygon",
