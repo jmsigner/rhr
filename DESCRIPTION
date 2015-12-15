@@ -1,8 +1,8 @@
 Package: rhr
 Type: Package
 Title: Reproducible Home Ranges with R
-Version: 1.2.903
-Date: 2015-10-27
+Version: 1.2.904
+Date: 2015-12-15
 Author: Johannes Signer
 Maintainer: Johannes Signer<jsigner@gwdg.de>
 Description: Functions and a graphical user interface (GUI) to analyze animal

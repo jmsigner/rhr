@@ -1,21 +1,21 @@
-##' Function to run perform analyses and save results to temporary file
-##'
-##' This functions wraps many rhr* methods. The purpose of this function to run a series of
-##' of estimates given data, a vector of desired results and a list with arguments.
-##' @param dat RhrMappedData
-##' @param what character vector; indicating which steps should be performed, order does not matter
-##' @param args list; with arguments for the different steps
-##' @param verbose logical; whether or not progress should be given on the command line
-##' @param inGUI logical; indicating whether or not the call was made from a GUI
-##' @param inUnit character; units of the input
-##' @param outUnit character; units of the output
-##' @param outDir character; path to the directory where the results are saved.
-##' @param report logical; indicating if a report should be created. 
-##' @param zip logical; indicating if a zip archive should be created, note this most likely only works under linux. 
-##' @param repArgs A list with extra arguments for the report.
-##' @return List
-##' @export
-##' @author Johannes Signer
+#' Function to run perform analyses and save results to temporary file
+#'
+#' This functions wraps many rhr* methods. The purpose of this function to run a series of
+#' of estimates given data, a vector of desired results and a list with arguments.
+#' @param dat RhrMappedData
+#' @param what character vector; indicating which steps should be performed, order does not matter
+#' @param args list; with arguments for the different steps
+#' @param verbose logical; whether or not progress should be given on the command line
+#' @param inGUI logical; indicating whether or not the call was made from a GUI
+#' @param inUnit character; units of the input
+#' @param outUnit character; units of the output
+#' @param outDir character; path to the directory where the results are saved.
+#' @param report logical; indicating if a report should be created. 
+#' @param zip logical; indicating if a zip archive should be created, note this most likely only works under linux. 
+#' @param repArgs A list with extra arguments for the report.
+#' @return List
+#' @export
+#' @author Johannes Signer
 rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "rhrKDE", "rhrAsymptote", "rhrCoreArea"),
                           args=NULL, verbose=TRUE, 
                           outDir=file.path(tempdir(), paste0("rhr", format(Sys.time(), "%Y%m%d%H%M%S"))),
@@ -629,6 +629,8 @@ rhrHrAnalysis <- function(dat, what=c("rhrSiteFidelity", "rhrTTSI", "rhrMCP", "r
           hres <- rhrHlscv(dat[[animal]], trast=args[[thisEst]]$trast)
         } else if (args[[thisEst]]$h == "hpi") {
           hres <- rhrHpi(dat[[animal]])
+        } else if (args[[thisEst]]$h == "hrefscaled") {
+          hres <- rhrHrefScaled(dat[[animal]])
         } else {
           hres$msg <- "sorry, h input not understood, this calculation will be skipped"
         }

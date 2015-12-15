@@ -4,22 +4,43 @@
 #' @param y RhrEst
 #' @template dots
 #' @return \code{data.frame} with the isopleth level and area in units of the coordinate system. 
-#' @export
-#' @examples 
 #' @name overlaps
-#' @export
 NULL
 
-
 #' @rdname overlaps
-#' export
-rhrOverlap <- function(x, y, levels = 95) {
+#' @export
+rhrOverlap <- function (x, ...) {
+  UseMethod("rhrOverlap", x )
+}
+
+#' @export
+rhrOverlap.RhrProbEst <- function(x, y, levels = 95) {
+  if (length(levels) > 1) {
+    levels <- levels[1]
+    warning("Only first elements is used")
+  }
+  levels = 95
+  x <- rhrIsopleths(x, levels = levels)
+  y <- rhrIsopleths(y, levels = levels)
+  rhrOverlapBase(x, y)
+}
+
+#' @export
+rhrOverlap.RhrGeoEst <- function(x, y, levels = 95) {
   if (length(levels) > 1) {
     levels <- levels[1]
     warning("Only first elements is used")
   }
   x <- rhrIsopleths(x, levels = levels)
   y <- rhrIsopleths(y, levels = levels)
+  if (levels %in% x$level & levels %in% y$level) {
+    rhrOverlapBase(x[x$level == levels, ], y[y$level == levels, ])
+  } else {
+    stop("level not estimated, rerun est")
+  }
+}
+
+rhrOverlapBase <- function(x, y) {
   if (rgeos::gIntersects(x, y)) {
     ol <- rgeos::gIntersection(x, y)
     return(rgeos::gArea(ol) / rgeos::gArea(x))

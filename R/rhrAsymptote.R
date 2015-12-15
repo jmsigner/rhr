@@ -170,14 +170,15 @@ rhrAsymptote <- function(x, ns=seq(nrow(rhrData(x)) / 10, nrow(rhrData(x)), leng
 
   asymReached <- data.frame(level=as.numeric(names(confints)),
                             ns=asymReached)
-
+  
   out <- list(args = args, 
               call = call, 
-    asymptote=asymReached, confints=do.call("rbind", confints), hrAreas=bb, call=match.call(),
-              params=list(ns=ns, tolTotArea=tolTotArea), totalA=totalA, hrEstimator=x)
+              asymptote=asymReached, confints=do.call("rbind", confints), hrAreas=bb, call=match.call(),
+              params=list(ns=ns, tolTotArea=tolTotArea, nrep = nrep), 
+              totalA=totalA, hrEstimator=x)
   class(out) <- c("RhrHRAsymptote", "list")
   out
-
+  
 }
 
 

@@ -4,7 +4,7 @@
 \alias{rhrRegularize}
 \title{Regularizes a trajectory}
 \usage{
-rhrRegularize(x, newTraj, side, windw, interpolate, ...)
+rhrRegularize(x, newTraj, side, windw, ...)
 }
 \arguments{
 \item{x}{Object of class \code{RhrTrajS*}}

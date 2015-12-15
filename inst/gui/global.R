@@ -21,8 +21,8 @@ config <- list(
       bandwidthOptions=c("Reference Bandwidth" = "href",
         "Least Square Cross Validation" = "hlscv",
         "Plugin the equation" = "hpi",
+        "Reference Scaled" = "hrefscaled", 
         "User defined" = "user"), 
-        ## "Scaling" = "hscale",
       bandwidth="href",
       buffer=50,
       resolution=50
