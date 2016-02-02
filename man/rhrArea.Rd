@@ -24,6 +24,7 @@ an additional argument, \code{levels}, that determines at which isopleth level
 of the UD the area is evaluated.
 }
 \examples{
+
 data(datSH)
 
 # Geometric estimator
@@ -33,7 +34,7 @@ rhrArea(mcp)
 mcp <- rhrMCP(datSH[, 2:3], levels = seq(50, 95, 5))
 rhrArea(mcp)
 
-# Note the levels argument does not change anything for geometric
+# Note the levels argument does not change anything for geometric 
 # estimators such mcp
 rhrArea(mcp, levels = 44)
 

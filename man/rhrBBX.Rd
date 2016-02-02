@@ -20,6 +20,7 @@ A matrix with the bounding box.
 Returns the bounding box of a \code{RhrTrack*}
 }
 \examples{
+
 data(trackS)
 rhrBBX(trackS)
 
@@ -32,6 +33,6 @@ bbx <- rhrBBX(trackS)
 ext <- apply(bbx, 1, diff)
 
 ext * 1.1
-apply(rhrBBX(trackS, 0.05), 1, diff)
+apply(rhrBBX(trackS, 0.05), 1, diff)  
 }
 

@@ -19,7 +19,7 @@ Generic function to obtain Akaike's Information Criterion (AIC) for parametric h
 \examples{
 # Simulated data
 set.seed(123)
-dat <- data.frame(x = c(rnorm(100), rnorm(100, 20)),
+dat <- data.frame(x = c(rnorm(100), rnorm(100, 20)), 
 y = c(rnorm(100), rnorm(100, 20)))
 uniCir <- rhrUniCirc(dat)
 AIC(uniCir)

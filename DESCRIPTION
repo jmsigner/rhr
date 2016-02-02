@@ -1,7 +1,7 @@
 Package: rhr
 Type: Package
 Title: Reproducible Home Ranges with R
-Version: 1.2.904
+Version: 1.2.905
 Date: 2015-12-15
 Author: Johannes Signer
 Maintainer: Johannes Signer<jsigner@gwdg.de>
@@ -39,4 +39,4 @@ Suggests:
     brew,
     xtable
 NeedsCompilation: no
-RoxygenNote: 4.1.1.9000
+RoxygenNote: 5.0.1

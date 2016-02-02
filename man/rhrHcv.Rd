@@ -16,7 +16,7 @@ rhrHcv(xy)
 Likelihood Cross Validation
 }
 \author{
-Johannes Signer
+Johannes Signer 
 data(datSH)
 rhrHpi(datSH[, 2:3])
 }

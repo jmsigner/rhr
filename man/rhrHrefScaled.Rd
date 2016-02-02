@@ -30,7 +30,7 @@ is a \code{data.frame}, then the first two columns are assumed to be the
 \code{list} with the calculated bandwidth, exit status and the number of iteration.
 }
 \description{
-Use two dimensional reference bandwidth to select a bandwidth for kernel density estimation.
+Use two dimensional reference bandwidth to select a bandwidth for kernel density estimation. 
 Find the smallest value for bandwidth (h) that results in n polygons
 (usually n=1) contiguous polygons at a given level.
 }

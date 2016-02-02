@@ -18,7 +18,7 @@ rhrSchoener(dat, interval, alpha = 0.25, minM = 10, consec = TRUE)
 \item{consec}{Locagical scalar, indicates whether or not the observations are consecutive (i.e., equally spaced in time) or not.}
 }
 \value{
-\code{vector} vector of length six.
+\code{vector} vector of length six. 
 \itemize{
  \item{"V"}{Schoeners V}
  \item{"m"}{Number of pairs used}

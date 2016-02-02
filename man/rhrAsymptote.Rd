@@ -40,6 +40,7 @@ sampling for discontinuous radio tracking data and sequential sampling for
 continuous radio tracking data.
 }
 \examples{
+
 data(datSH)
 
 ## With MCP

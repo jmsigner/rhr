@@ -15,6 +15,7 @@ rhrHasTS(x, ...)
 Retunrs \code{TRUE} if the track has time stamps and \code{FALSE} otherwise.
 }
 \examples{
+
 data(datSH)
 
 ## Create a SpatialPoints objects with the relocation

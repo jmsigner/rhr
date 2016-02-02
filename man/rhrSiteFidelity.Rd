@@ -30,7 +30,7 @@ plot(a)
 # Calcualte site fidelity
 sf <- rhrSiteFidelity(a, n = 200)
 
-# For MSD and LI the observed data do not differ significantely from random permutations.
+# For MSD and LI the observed data do not differ significantely from random permutations. 
 \dontrun{
 plot(sf)
 }
@@ -40,7 +40,7 @@ a <- rhrOU(n = 10000, A = matrix(c(0.1, 0, 0, 0.1), 2))
 plot(a)
 sf <- rhrSiteFidelity(a, n = 200)
 
-# For MSD and LI the observed data differ significantely from random permutations.
+# For MSD and LI the observed data differ significantely from random permutations. 
 \dontrun{plot(sf)}
 
 ## real data

@@ -50,21 +50,20 @@ rhrOverlapBase <- function(x, y) {
 }
 
 #' @rdname overlaps
+#' @export
 rhrBA <- function (x, ...) {
   UseMethod ("rhrBA", x )
 }
 
 
-
-#' @export
-rhrBA.default <- function (x, ...) {
-  paste0 ("rhrBA is not defined for object of class ", class(x))
-}
-
 #' @export
 rhrBA.RhrProbEst <- function(x, y) {
   x <- rhrUD(x)
   y <- rhrUD(y)
+  
+  if (!identical(raster::extent(x), raster::extent(y))) {
+    stop("x and y do not have an identical extent")
+  }
   r1 <- x[]
   r2 <- y[]
   r1 <- r1 / sum(r1)
@@ -72,3 +71,24 @@ rhrBA.RhrProbEst <- function(x, y) {
   ## bhattacharyya's afinity
   sum(sqrt(r1 * r2))
 }
+
+rhrBA.list <- function(x) {
+  
+  if (!all(sapply(x, inherits, "RhrProbEst"))) {
+    stop("list can only include obj of RhrProbEst")
+  }
+  
+  res <- diag(length(x)) 
+  
+  for (i in 1:length(x)) {
+    for (j in 1:length(x)) {
+      if (j > i) {
+        res[i, j] <- res[j, i] <- rhrBA(x[[i]], x[[j]])
+      }
+    }
+  }
+  colnames(res) <- rownames(res) <- names(x)
+  res
+}
+
+
