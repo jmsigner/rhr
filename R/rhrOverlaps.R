@@ -56,8 +56,6 @@ rhrBA <- function (x, ...) {
 }
 
 #' @export
-<<<<<<< HEAD
-=======
 rhrBA.RhrProbEst <- function(x, y) {
   x <- rhrUD(x)
   y <- rhrUD(y)
