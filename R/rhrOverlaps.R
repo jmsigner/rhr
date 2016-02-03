@@ -55,23 +55,7 @@ rhrBA <- function (x, ...) {
   UseMethod ("rhrBA", x )
 }
 
-
 #' @export
-rhrBA.RhrProbEst <- function(x, y) {
-  x <- rhrUD(x)
-  y <- rhrUD(y)
-  
-  if (!identical(raster::extent(x), raster::extent(y))) {
-    stop("x and y do not have an identical extent")
-  }
-  r1 <- x[]
-  r2 <- y[]
-  r1 <- r1 / sum(r1)
-  r2 <- r2 / sum(r2)
-  ## bhattacharyya's afinity
-  sum(sqrt(r1 * r2))
-}
-
 rhrBA.list <- function(x) {
   
   if (!all(sapply(x, inherits, "RhrProbEst"))) {
@@ -90,5 +74,22 @@ rhrBA.list <- function(x) {
   colnames(res) <- rownames(res) <- names(x)
   res
 }
+
+#' @export
+rhrBA.RhrProbEst <- function(x, y) {
+  x <- rhrUD(x)
+  y <- rhrUD(y)
+  
+  if (!identical(raster::extent(x), raster::extent(y))) {
+    stop("x and y do not have an identical extent")
+  }
+  r1 <- x[]
+  r2 <- y[]
+  r1 <- r1 / sum(r1)
+  r2 <- r2 / sum(r2)
+  ## bhattacharyya's afinity
+  sum(sqrt(r1 * r2))
+}
+
 
 
