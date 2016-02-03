@@ -72,6 +72,7 @@ rhrBA.RhrProbEst <- function(x, y) {
   sum(sqrt(r1 * r2))
 }
 
+#' @export
 rhrBA.list <- function(x) {
   
   if (!all(sapply(x, inherits, "RhrProbEst"))) {
