@@ -209,6 +209,21 @@ plot.RhrTracks <- function(x, ...) {
   legend("topleft", pch = c(19, 15), legend = c("start", "end"))
 }
 
+
+
+# Time plot ---------------------------------------------------------------
+
+#' Plot time
+#' 
+#' Plot a histogram of times when relocations where recorded
+#' @param x Object of class `RhrTrack*`.
+#' @param ... none implemented.
+#' @export
+plotTime <- function(x, ...) {
+  UseMethod("plotTime", x)
+}
+
+
 ## print
 prepLine <- function(field, val) {
   field <- if (stringr::str_length(field) > 30) {
@@ -326,7 +341,7 @@ rhrTrackSpan <- function(x) {
 
 #' @export
 rhrTrackSpan.RhrTrackST <- function(x) {
-  lubridate::new_interval(rhrTrackStart(x), rhrTrackEnd(x))
+  lubridate::interval(rhrTrackStart(x), rhrTrackEnd(x))
 }
 
 
@@ -360,7 +375,7 @@ rhrTracksSpan <- function(x) {
 
 #' @export
 rhrTracksSpan.RhrTracksST <- function(x) {
-  lubridate::new_interval(rhrTracksStart(x), rhrTracksEnd(x))
+  lubridate::interval(rhrTracksStart(x), rhrTracksEnd(x))
 }
 
 #' @rdname rhrTrackTime
@@ -585,7 +600,7 @@ bbx2sp <- function(x) {
 #'
 #' Performs a subset of a track based on a provided time interval. Only relocations that are within the time interval are selected and (a) new track(s) is created. 
 #' @param x Object of class \code{RhrTrackST*} or code \code{RhrTracksST}.
-#' @param y Object of class \code{lubridate::Interval}
+#' @param y Object of class \code{lubridate::Interval}, also a vector of intervals is possible
 #' @template dots
 #' @return Object of class \code{rhrTrack*}. 
 #' @export
@@ -596,7 +611,8 @@ rhrWithinTime <- function(x, y, ...) {
 
 #' @export
 rhrWithinTime.RhrTrackST <- function(x, y, ...) {
-  wp <- which(lubridate::`%within%`(rhrTimes(x), y)) 
+  xt <- rhrTimes(x)
+  wp <- which(apply(sapply(y, function(i) lubridate::`%within%`(xt, i)), 1, any))
   if (length(wp) > 1) {
     x[wp, ]
   }
