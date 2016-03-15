@@ -9,7 +9,7 @@ rhr2md <- function(x) {
   UseMethod("rhr2md")
 }
 
-##' @export
+#' @export
 rhr2md.RhrTrackS <- function(x) {
   
   xx <- summary(rhrSegments(x)$dist)

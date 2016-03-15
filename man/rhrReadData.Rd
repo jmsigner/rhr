@@ -2,13 +2,13 @@
 % Please edit documentation in R/rhrReadData.R
 \name{rhrReadData}
 \alias{rhrReadData}
-\title{read separator delimited text files}
+\title{read separator; delimited text files}
 \usage{
 rhrReadData(file, sep = ",", skip = 0, hasHeader = TRUE, sepDec = ".",
-  stringsAsFactors = FALSE, ...)
+  stringsAsFactors = FALSE, filename = NULL, ...)
 }
 \arguments{
-\item{file}{character; the file name}
+\item{file}{A character; the file name}
 
 \item{sep}{character; the separator}
 
@@ -20,18 +20,26 @@ rhrReadData(file, sep = ",", skip = 0, hasHeader = TRUE, sepDec = ".",
 
 \item{stringsAsFactors}{logical; indicating whether or not strings should be read as factors.}
 
+\item{filename}{character: if file and filename differ (e.g., when called through shiny)}
+
 \item{...}{passed to scan}
 }
 \value{
-object of class \code{rhrDat}
+object of class \code{data.frame}
 }
 \description{
-Wrapper around \code{readLines} to read data with different field separator and to do some checking, mainly used for the GUI
+Wrapper around \code{readLines} to read data with different field separators and run some checks, mainly used for the GUI
 }
 \details{
 ...
 }
-\author{
-Johannes Signer
+\examples{
+\dontrun{
+data(datSH)
+write.csv(datSH, file.path(tempdir(), "file1.csv"), sep = ",", dec = ".")
+dat <- rhrReadData(file.path(tempdir(), "file1.csv"), sep = ",", sepDec = ",")
+head(dat)
+rhr2md(dat)
+}
 }
 

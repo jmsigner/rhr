@@ -168,11 +168,13 @@ rhrSegments.RhrTrackST <- function(x, spatial = FALSE, ...) {
                   x1 = tail(cc[, 1], -1), 
                   y0 = head(cc[, 2], -1), 
                   y1 = tail(cc[, 2], -1), 
+                  start = rhrTimes(x)[-1], 
+                  end = rhrTimes(x)[-rhrN(x)],  
                   x$trackConnections)
   if (spatial) {
     ## todo: carry forward epsg
     l <- sp::SpatialLines(lapply(1:nrow(a), function(i) with(a[i, ], Lines(list(Line(cbind(c(x0, x1), c(y0, y1)))), as.character(i)))))
-    sp::SpatialLinesDataFrame(l, a[, c("distance", "direction", "duration", "speed")])
+    sp::SpatialLinesDataFrame(l, a[, c("distance", "direction", "start", "end", "duration", "speed")])
   } else {
     a
   }
@@ -183,7 +185,7 @@ rhrSegments.RhrTrackST <- function(x, spatial = FALSE, ...) {
 #' @export
 plot.RhrTrack <- function(x, ...) {
   x <- sp::coordinates(rhrPoints(x))
-  plot(x[, 1], x[, 2], xlab  = "", ylab = "", asp = 1, type = "l", las = 1, ...)
+  plot(x[, 1], x[, 2], xlab  = "x", ylab = "y", asp = 1, type = "l", las = 1, ...)
   points(x[1, 1], x[1, 2], pch = 19, col = "red", cex = 1.5)
   points(x[nrow(x), 1], x[nrow(x), 2], pch = 15, col = "red", cex = 1.5)
   legend("topleft", pch = c(19, 15), col = "red", legend = c("start", "end"))

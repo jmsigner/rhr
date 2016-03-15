@@ -9,7 +9,7 @@ rhrWithinTime(x, y, ...)
 \arguments{
 \item{x}{Object of class \code{RhrTrackST*} or code \code{RhrTracksST}.}
 
-\item{y}{Object of class \code{lubridate::Interval}}
+\item{y}{Object of class \code{lubridate::Interval}, also a vector of intervals is possible}
 
 \item{...}{None implemented.}
 }

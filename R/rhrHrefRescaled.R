@@ -22,7 +22,7 @@
 ##' 
 
 rhrHrefScaled <- function(xy,
-                          range=rhrHref(xy)$h * c(0.01, 2), 
+                          range=rhrHref(xy)$h * c(0.01, 1), 
                           trast=rhrRasterFromExt(rhrExtFromPoints(xy, extendRange=0.2), nrow=100, res=NULL),
                           numOfParts=1, levels=95,
                           tol=0.1,

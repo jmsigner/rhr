@@ -40,6 +40,23 @@ rhrOverlap.RhrGeoEst <- function(x, y, levels = 95) {
   }
 }
 
+
+#' @export
+rhrOverlap.list <- function(x) {
+  
+  res <- diag(length(x)) 
+  
+  for (i in 1:length(x)) {
+    for (j in 1:length(x)) {
+      if (j > i) {
+        res[i, j] <- res[j, i] <- rhrOverlap(x[[i]], x[[j]])
+      }
+    }
+  }
+  colnames(res) <- rownames(res) <- names(x)
+  res
+}
+
 rhrOverlapBase <- function(x, y) {
   if (rgeos::gIntersects(x, y)) {
     ol <- rgeos::gIntersection(x, y)
