@@ -50,6 +50,7 @@ shinyServer(function(input, output, session) {
       
       dat <- tryCatch(rhrReadData(input$readFileFile$datapath,
                                   sep=sep,
+                                  sepDec = speDec,
                                   skip=input$readFileSkipLines,
                                   hasHeader=input$readFileHasHeader),
                       error=function(e) e)

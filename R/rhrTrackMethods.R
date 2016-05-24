@@ -99,6 +99,34 @@ rhrTimes.RhrTrackST <- function(x, ...) {
 }
 
 
+
+# rhrCRS ------------------------------------------------------------------
+
+#' Coordinate Reference System (CRS) of a track
+#'
+#' Returns the proj4string.
+#'
+#' @param x Object of class \code{RhrTrack*}
+#' @param ... none implemented.
+#' @export
+
+rhrCRS <- function(x, ...) {
+  UseMethod("rhrCRS")
+}
+
+#' @export
+rhrCRS.default <- function(x, ...) {
+  paste0 ("rhrCRS is not defined for object of class", class(x))
+}
+
+##' @export
+rhrCRS.RhrTrack <- function(x, ...) {
+  sp::proj4string(x$track)
+}
+
+
+# rhrN --------------------------------------------------------------------
+
 #' Number of relocations in a track.
 #'
 #' Returns the number of relocations in a track.
@@ -125,6 +153,9 @@ rhrN.RhrTrack <- function(x, ...) {
 rhrN.RhrTracks <- function(x, ...) {
   sapply(x, rhrN)
 }
+
+
+# Segments ----------------------------------------------------------------
 
 #' Extract segments from a track.
 #' 
@@ -163,6 +194,7 @@ rhrSegments.RhrTrackS <- function(x, spatial = FALSE, ...) {
 rhrSegments.RhrTrackST <- function(x, spatial = FALSE, ...) {
   
   cc <- sp::coordinates(rhrPoints(x))
+  cons <- x$trackConnections
   
   a <- data.frame(x0 = head(cc[, 1], -1), 
                   x1 = tail(cc[, 1], -1), 
@@ -170,11 +202,12 @@ rhrSegments.RhrTrackST <- function(x, spatial = FALSE, ...) {
                   y1 = tail(cc[, 2], -1), 
                   start = rhrTimes(x)[-1], 
                   end = rhrTimes(x)[-rhrN(x)],  
-                  x$trackConnections)
+                  distance = cons$distance,
+                  direction = cons$direction)
   if (spatial) {
     ## todo: carry forward epsg
     l <- sp::SpatialLines(lapply(1:nrow(a), function(i) with(a[i, ], Lines(list(Line(cbind(c(x0, x1), c(y0, y1)))), as.character(i)))))
-    sp::SpatialLinesDataFrame(l, a[, c("distance", "direction", "start", "end", "duration", "speed")])
+    sp::SpatialLinesDataFrame(l, a[, c("distance", "direction", "start", "end")])
   } else {
     a
   }
@@ -213,7 +246,6 @@ plot.RhrTracks <- function(x, ...) {
 
 
 
-# Time plot ---------------------------------------------------------------
 
 #' Plot time
 #' 
@@ -488,9 +520,15 @@ rhrSplit.RhrTrackST <- function(x, f, minN = 3, ...) {
   
 }
 
+
+# rhrBBX ------------------------------------------------------------------
+
+
+
 #' Returns the bounding box of a \code{RhrTrack*}
 #'
 #' @param x Object of class \code{RhrTrack*}.
+#' @param spatial Logical value, if \code{TRUE} a \code{SpatialPolygons} object is returned.
 #' @param f Numeric value, fraction by which the bounding box is extended.
 #' @return A matrix with the bounding box.
 #' @template dots
@@ -511,17 +549,25 @@ rhrSplit.RhrTrackST <- function(x, f, minN = 3, ...) {
 #' ext * 1.1
 #' apply(rhrBBX(trackS, 0.05), 1, diff)  
 
-  rhrBBX <- function(x, f, ...) {
+rhrBBX <- function(x, f, spatial, ...) {
   UseMethod("rhrBBX")
 }
 
 #' @export
-rhrBBX.RhrTrack <- function(x, f = 0, ...) {
-  rhrExtBBX(sp::bbox(rhrPoints(x)), f)
+rhrBBX.RhrTrack <- function(x, f = 0, spatial = FALSE, ...) {
+  b <- rhrExtBBX(sp::bbox(rhrPoints(x)), f)
+  if (spatial) {
+    b <- rgeos::gEnvelope(sp::SpatialPoints(base::t(b)))
+    sp::proj4string(b) <- rhrCRS(x) 
+  }
+  b
 }
 
 #' @export
-rhrBBX.RhrTracks <- function(x, f = 0, ...) {
+rhrBBX.RhrTracks <- function(x, spatial = FALSE, f = 0, ...) {
+  if (spatial) {
+    stop("spatial = TRUE, is not yet implemented for rhrTracks")
+  }
   if (length(x) == 1) {
     rhrBBX(x[[1]], f)
   } else {
@@ -658,6 +704,7 @@ summary.RhrTracksST <- function(x, ...) {
 }
 
 
+# Burstify ----------------------------------------------------------------
 #' Burstify a track
 #'
 #' Burstifying assumes, that the track has been regularized before. The smallest time interval is choosen as a reference interval.
@@ -667,7 +714,7 @@ summary.RhrTracksST <- function(x, ...) {
 #' @template dots
 #' @export
 rhrBurstify <- function(x, minN = 3, ...) {
-  UseMethod("rhrBurstify")
+ UseMethod("rhrBurstify")
 }
 
 #' @export

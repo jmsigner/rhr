@@ -4,12 +4,14 @@
 \alias{rhrBBX}
 \title{Returns the bounding box of a \code{RhrTrack*}}
 \usage{
-rhrBBX(x, f, ...)
+rhrBBX(x, f, spatial, ...)
 }
 \arguments{
 \item{x}{Object of class \code{RhrTrack*}.}
 
 \item{f}{Numeric value, fraction by which the bounding box is extended.}
+
+\item{spatial}{Logical value, if \code{TRUE} a \code{SpatialPolygons} object is returned.}
 
 \item{...}{None implemented.}
 }
