@@ -70,7 +70,7 @@ rhrTrack <- function(sp, time, duplicates = "remove", meta) {
     track <- sp
     
     ## adapted from: https://github.com/edzer/trajectories/blob/master/R/Class-Tracks.R#L48
-    cc <- sp::coordinates(track)
+    cc <- as.matrix(sp::coordinates(track))
     ll <- identical(sp::is.projected(track), FALSE)
     distance <- sp::LineLength(cc, ll, FALSE)
     
@@ -87,7 +87,7 @@ rhrTrack <- function(sp, time, duplicates = "remove", meta) {
     time <- time[whichToUse]
     track <- trajectories::Track(spacetime::STIDF(as(sp, "SpatialPoints"), time, sp@data))
     
-    cc <- sp::coordinates(track)
+    cc <- as.matrix(sp::coordinates(track))
     ll <- identical(sp::is.projected(track), FALSE)
     distance <- sp::LineLength(cc, ll, FALSE)
     
