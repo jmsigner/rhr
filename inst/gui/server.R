@@ -37,23 +37,14 @@ shinyServer(function(input, output, session) {
     dat <- NULL
     exitStatus <- 1
     
+    
     if (!is.null(input$readFileFile)) {
-      sep <- switch(input$readFileFieldSep,
-                    comma=",",
-                    tab="\t",
-                    semi=";")
-      
-      ## asign decimal separator
-      sepDec <- switch(input$readFileSepDec,
-                       comma=",",
-                       point=".")
-      
-      dat <- tryCatch(rhrReadData(input$readFileFile$datapath,
-                                  sep=sep,
-                                  sepDec = speDec,
-                                  skip=input$readFileSkipLines,
-                                  hasHeader=input$readFileHasHeader),
-                      error=function(e) e)
+      dat <- tryCatch(
+        read.csv(file = input$readFileFile$datapath, 
+                 header = input$readFileHasHeader, 
+                 sep = input$readFileFieldSep, 
+                 dec = input$readFileSepDec)
+      )
       
       if (!is(dat, "error")) {
         res <- "Data successfully read"

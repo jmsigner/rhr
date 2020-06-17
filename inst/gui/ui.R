@@ -10,10 +10,9 @@ shinyUI(
                         sidebarPanel(  
                           h2("Relocations"), 
                           selectInput("readFileFieldSep", "Field separator",
-                                      choices = c("Comma (,)" = "comma", "Semicolon (;)" = "semi", "Tab (\t)" = "tab")), 
+                                      choices = c("Comma (,)" = ",", "Semicolon (;)" = ";", "Tab (\t)" = "\t")), 
                           selectInput("readFileSepDec", "Decimal Separator",
-                                      choices = c("Point (.)" = "point", "Comma (,)" = "comma")), 
-                          numericInput("readFileSkipLines", "Skip Lines", value=0, min=0, max=NA),
+                                      choices = c("Point (.)" = ".", "Comma (,)" = ",")), 
                           checkboxInput("readFileHasHeader", "First line is a header", value=TRUE), 
                           fileInput("readFileFile", "Relocations", multiple = FALSE,
                                     accept = NULL), 
@@ -66,109 +65,112 @@ shinyUI(
              
              ## ============================================================================== ##  
              ## Configure
-             navbarMenu("Configure",
-                        tabPanel("General", 
-                                 fluidPage(
-                                   navlistPanel("General",
-                                                tabPanel("Output",
-                                                         h2("Set output options"), 
-                                                         hr(), 
-                                                         checkboxInput("configOutputCpWd", "Copy all results to the current working directory",
-                                                                       value=FALSE),
-                                                         helpText("All files will be copied into a new directory in current working directory")
-                                                ), 
-                                                tabPanel("Units",
-                                                         selectInput("configOutputInUnits", "Input units are:",
-                                                                     choices=c("I don't know" = "ido", "meters" = "m", "kilometers" = "km"), selectize=FALSE),
-                                                         selectInput("configOutputOutUnits", "Desired output units are:",
-                                                                     choices=c("square meters" = "sqm", "hectars" = "ha", "square km" = "sqkm"), selectize=FALSE)
-                                                ), 
-                                                ## Output Grid
-                                                tabPanel("Output Grid",
-                                                         h2("Specify a grid"), 
-                                                         helpText("Some estimators (e.g. Kernel Density Estimation) require a grid for the results. Here you can specify this grid. The same grid will be used for all animals in the analysis."), 
-                                                         h2("Buffer"),
-                                                         h3("Specify a buffer"),
-                                                         uiOutput("bufferUI"), 
-                                                         helpText("The buffer is in output units"), 
-                                                         h3("Currently used buffer"), 
-                                                         plotOutput("configOuputGridBufferPlot"), 
-                                                         h2("Specify resolution and number of rows/columns"),
-                                                         helpText("A grid can be created based on either number of rows and number of columns, or based on a provided resolution. Note, at the moment only quadratic pixels are supported, this means that the actual number of rows/columns, maybe slightly different to the one provided."),
-                                                         selectInput("configOutputGridGrid", "Create output grid based on:", choices=c("number of rows and columns" = "pixel", "resolution" = "res"), 
-                                                                     selectize=FALSE),
-                                                         conditionalPanel(
-                                                           condition="input.configOutputGridGrid == 'pixel'",
-                                                           sliderInput("gridNColSlider", "Number of columns", 10, 500, 100), 
-                                                           sliderInput("gridNRowSlider", "Number of rows", 10, 500, 100)
-                                                         ), 
-                                                         conditionalPanel(
-                                                           condition="input.configOutputGridGrid == 'res'",
-                                                           uiOutput("gridResUi")
-                                                         ), 
-                                                         h3("Currently used grid"),
-                                                         verbatimTextOutput("printGrid")
-                                                ), 
-                                                tabPanel("Levels",
-                                                         h2("Specify levels"), 
-                                                         helpText("Some estimators (e.g. Kernel Density Estimation) require a grid for the results. Here you can specify this grid. The same grid will be used for all animals in the analysis."), 
-                                                         helpText("Levels can be specified either as single number or comma seperated lists (e.g., '10,50,95'). Range from 1 to 100 is permitted, all other values will default back to 95"),
-                                                         textInput("configGlobalLevel", "Levels:", "50,95")
-                                                ), 
-                                                well=FALSE)
-                                 )), 
-                        tabPanel("Exploratory analysis", 
-                                 fluidPage(
-                                   navlistPanel("Configure exploratory analysis",
-                                                tabPanel("Site Fidelity",
-                                                         h2("Site Fidelity"), 
-                                                         numericInput("configSiteFidelityN", "Number of bootstrap replicates", value=config$pointLevel$sf$n, min=1), 
-                                                         sliderInput("configSiteFidelityAlpha", "Alpha", min=0, max=1, step=0.01, value=config$pointLevel$sf$alpha)), 
-                                                tabPanel("Time to statistical independence",
-                                                         h2("Time to statistical independence"),
-                                                         bsAlert("generalNoTimeTTSI"), 
-                                                         numericInput("configTTSIInterval", "Initial time difference", value=config$pointLevel$ttsi$interval),
-                                                         helpText("Initial time difference in seconds"), 
-                                                         selectInput("configTTSISampling", "Sampling regime", choices=config$pointLevel$ttsi$sampling), 
-                                                         numericInput("configTTSINTimes", "Number of time above critical value", value=config$pointLevel$ttsi$ntimes), 
-                                                         a("More help", href = "http://jmsigner.github.io/rhrman/methodsTTSI.html", target = "_blank")
-                                                ), 
-                                                well=FALSE)
-                                 )), 
-                        tabPanel("Home Ranges", 
-                                 fluidPage(
-                                   navlistPanel("Configure Home Ranges",
-                                                tabPanel("Unimodal Bivariate Normal",
-                                                         h2("Estimate unimodal bivariate normal home ranges")
-                                                ), 
-                                                tabPanel("Bimodal Bivariate Normal",
-                                                         h2("Estimate bimodal bivariate normal home ranges")
-                                                ), 
-                                                tabPanel("Minimum Convex Polygon",
-                                                         h2("Configure Minimum Convex Polygon")
-                                                ),
-                                                tabPanel("Kernel Density Estimation",
-                                                         h2("Kernel Density Estimation"),
-                                                         selectInput("configKDEbandwidth", "Bandwidth", choices=config$homeRange$kde$bandwidthOptions,
-                                                                     multiple=FALSE, selectize=FALSE),
-                                                         uiOutput("configKDEbandwidthUserInput")
-                                                ),
-                                                tabPanel("Local Convex Polygon",
-                                                         h2("Local Convex Polygon"),
-                                                         hr(),
-                                                         helpText("'n' is determined automatically, see documentation for more information"), 
-                                                         
-                                                         selectInput("configLOCOHtypeK", "Type k",
-                                                                     choices=c("Include (automatic)" = "incla",
-                                                                               "Include (manual)" = "inclm", 
-                                                                               "Do not include" = "not"),
-                                                                     selected="incla", selectize=FALSE),
-                                                         uiOutput("configLOCOHtypeKField"),
-                                                         selectInput("configLOCOHtypeA", "Type a",
-                                                                     choices=c(
-                                                                       "Include (automatic)" = "incla",
-                                                                       "Include (manual)" = "inclm", 
-                                                                       "Do not include" = "not"),
+             navbarMenu(
+               "Configure",
+               tabPanel(
+                 "General", 
+                 fluidPage(
+                   navlistPanel(
+                     "General",
+                     tabPanel("Output",
+                              h2("Set output options"), 
+                              hr(), 
+                              checkboxInput("configOutputCpWd", "Copy all results to the current working directory",
+                                            value=FALSE),
+                              helpText("All files will be copied into a new directory in current working directory")
+                     ), 
+                     tabPanel("Units",
+                              selectInput("configOutputInUnits", "Input units are:",
+                                          choices=c("I don't know" = "ido", "meters" = "m", "kilometers" = "km"), selectize=FALSE),
+                              selectInput("configOutputOutUnits", "Desired output units are:",
+                                          choices=c("square meters" = "sqm", "hectars" = "ha", "square km" = "sqkm"), selectize=FALSE)
+                     ), 
+                     ## Output Grid
+                     tabPanel("Output Grid",
+                              h2("Specify a grid"), 
+                              helpText("Some estimators (e.g. Kernel Density Estimation) require a grid for the results. Here you can specify this grid. The same grid will be used for all animals in the analysis."), 
+                              h2("Buffer"),
+                              h3("Specify a buffer"),
+                              uiOutput("bufferUI"), 
+                              helpText("The buffer is in output units"), 
+                              h3("Currently used buffer"), 
+                              plotOutput("configOuputGridBufferPlot"), 
+                              h2("Specify resolution and number of rows/columns"),
+                              helpText("A grid can be created based on either number of rows and number of columns, or based on a provided resolution. Note, at the moment only quadratic pixels are supported, this means that the actual number of rows/columns, maybe slightly different to the one provided."),
+                              selectInput("configOutputGridGrid", "Create output grid based on:", choices=c("number of rows and columns" = "pixel", "resolution" = "res"), 
+                                          selectize=FALSE),
+                              conditionalPanel(
+                                condition="input.configOutputGridGrid == 'pixel'",
+                                sliderInput("gridNColSlider", "Number of columns", 10, 500, 100), 
+                                sliderInput("gridNRowSlider", "Number of rows", 10, 500, 100)
+                              ), 
+                              conditionalPanel(
+                                condition="input.configOutputGridGrid == 'res'",
+                                uiOutput("gridResUi")
+                              ), 
+                              h3("Currently used grid"),
+                              verbatimTextOutput("printGrid")
+                     ), 
+                     tabPanel("Levels",
+                              h2("Specify levels"), 
+                              helpText("Some estimators (e.g. Kernel Density Estimation) require a grid for the results. Here you can specify this grid. The same grid will be used for all animals in the analysis."), 
+                              helpText("Levels can be specified either as single number or comma seperated lists (e.g., '10,50,95'). Range from 1 to 100 is permitted, all other values will default back to 95"),
+                              textInput("configGlobalLevel", "Levels:", "50,95")
+                     ), 
+                     well=FALSE)
+                 )), 
+               tabPanel("Exploratory analysis", 
+                        fluidPage(
+                          navlistPanel("Configure exploratory analysis",
+                                       tabPanel("Site Fidelity",
+                                                h2("Site Fidelity"), 
+                                                numericInput("configSiteFidelityN", "Number of bootstrap replicates", value=config$pointLevel$sf$n, min=1), 
+                                                sliderInput("configSiteFidelityAlpha", "Alpha", min=0, max=1, step=0.01, value=config$pointLevel$sf$alpha)), 
+                                       tabPanel("Time to statistical independence",
+                                                h2("Time to statistical independence"),
+                                                bsAlert("generalNoTimeTTSI"), 
+                                                numericInput("configTTSIInterval", "Initial time difference", value=config$pointLevel$ttsi$interval),
+                                                helpText("Initial time difference in seconds"), 
+                                                selectInput("configTTSISampling", "Sampling regime", choices=config$pointLevel$ttsi$sampling), 
+                                                numericInput("configTTSINTimes", "Number of time above critical value", value=config$pointLevel$ttsi$ntimes), 
+                                                a("More help", href = "http://jmsigner.github.io/rhrman/methodsTTSI.html", target = "_blank")
+                                       ), 
+                                       well=FALSE)
+                        )), 
+               tabPanel("Home Ranges", 
+                        fluidPage(
+                          navlistPanel("Configure Home Ranges",
+                                       tabPanel("Unimodal Bivariate Normal",
+                                                h2("Estimate unimodal bivariate normal home ranges")
+                                       ), 
+                                       tabPanel("Bimodal Bivariate Normal",
+                                                h2("Estimate bimodal bivariate normal home ranges")
+                                       ), 
+                                       tabPanel("Minimum Convex Polygon",
+                                                h2("Configure Minimum Convex Polygon")
+                                       ),
+                                       tabPanel("Kernel Density Estimation",
+                                                h2("Kernel Density Estimation"),
+                                                selectInput("configKDEbandwidth", "Bandwidth", choices=config$homeRange$kde$bandwidthOptions,
+                                                            multiple=FALSE, selectize=FALSE),
+                                                uiOutput("configKDEbandwidthUserInput")
+                                       ),
+                                       tabPanel("Local Convex Polygon",
+                                                h2("Local Convex Polygon"),
+                                                hr(),
+                                                helpText("'n' is determined automatically, see documentation for more information"), 
+                                                
+                                                selectInput("configLOCOHtypeK", "Type k",
+                                                            choices=c("Include (automatic)" = "incla",
+                                                                      "Include (manual)" = "inclm", 
+                                                                      "Do not include" = "not"),
+                                                            selected="incla", selectize=FALSE),
+                                                uiOutput("configLOCOHtypeKField"),
+                                                selectInput("configLOCOHtypeA", "Type a",
+                                                            choices=c(
+                                                              "Include (automatic)" = "incla",
+                                                              "Include (manual)" = "inclm", 
+                                                              "Do not include" = "not"),
                                                                      selected="not", selectize=FALSE), 
                                                          uiOutput("configLOCOHtypeAField"),
                                                          
