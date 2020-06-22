@@ -23,17 +23,16 @@ shinyUI(
                           bsAlert("alertLoadData"),
                           uiOutput("readFileTable")
                         ))),
-             
-             ## ============================================================================== ##  
-             ## Remap fields
-             tabPanel("Map and Project Data", 
-                      sidebarLayout(
-                        sidebarPanel(
-                          h2("Select Fields"), 
-                          selectInput("mfId", "Id", choices=NA), 
-                          selectInput("mfX", "Longitude (X)", choices=NA), 
-                          selectInput("mfY", "Latitude (Y)", choices=NA), 
-                          selectInput("mfDate", "Date", choices=NULL), 
+
+# Remap fields ------------------------------------------------------------
+tabPanel("Map and Project Data", 
+         sidebarLayout(
+           sidebarPanel(
+             h2("Select Fields"), 
+             selectInput("mfId", "Id", choices=NA), 
+             selectInput("mfX", "Longitude (X)", choices=NA), 
+             selectInput("mfY", "Latitude (Y)", choices=NA), 
+             selectInput("mfDate", "Date", choices=NULL), 
                           selectInput("mfTime", "Time", choices=NULL), 
                           hr(), 
                           selectInput("mfDateFormat", "Date format", choices=NULL), 
@@ -52,8 +51,8 @@ shinyUI(
                           #uiOutput("mapTable"))
                       )),
              
-             ## ============================================================================== ##  
-             ## Subset Data
+
+# Subset Data -------------------------------------------------------------
              tabPanel("Subset Data",
                       sidebarLayout(
                         sidebarPanel(
@@ -63,16 +62,16 @@ shinyUI(
                           dataTableOutput("subsetTable")
                         ))), 
              
-             ## ============================================================================== ##  
-             ## Configure
-             navbarMenu(
-               "Configure",
-               tabPanel(
-                 "General", 
-                 fluidPage(
-                   navlistPanel(
-                     "General",
-                     tabPanel("Output",
+
+# Configure data ----------------------------------------------------------
+navbarMenu(
+  "Configure",
+  tabPanel(
+    "General", 
+    fluidPage(
+      navlistPanel(
+        "General",
+        tabPanel("Output",
                               h2("Set output options"), 
                               hr(), 
                               checkboxInput("configOutputCpWd", "Copy all results to the current working directory",

@@ -79,7 +79,7 @@ shinyServer(function(input, output, session) {
   })
 
 
-  ## We can only proceed if this is true
+  # We can only proceed if this is true
   succesfullyFinishedS1 <- reactive({
     if (debug) cat("\n Entered successfullyFinishedS1 \n")
     if (debug) cat(str(data()$data))
@@ -90,7 +90,7 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  ## All Settings
+  # All Settings
   configInter <- reactive({
     list(
       general=list(
@@ -118,9 +118,8 @@ shinyServer(function(input, output, session) {
     )
   })
 
-  ## ============================================================================= ##
-  ## Remap fields
-
+# Remap -------------------------------------------------------------------
+  
   observe({
     if (!succesfullyFinishedS1()) {
       createAlert(session, "alertMapFields", "remapFieldsA1",
@@ -131,8 +130,7 @@ shinyServer(function(input, output, session) {
                   append=FALSE)
     } else {
       closeAlert(session, "remapFieldsA1")
-
-      ## update map fields selectors
+      # update map fields selectors
       mfChoices <- c(NA, names(data()$data))
       updateSelectInput(session, "mfId", choices = mfChoices)
       updateSelectInput(session, "mfX", choices = mfChoices)
@@ -147,10 +145,7 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  ## ------------------------------------------------------------------------------ ##  
-  ## check for EPSG codes
-
-
+  # check for EPSG codes
   output$reproject <- renderUI({
     if (rhrValidEpsg(input$configInEpsg)) {
       return(list(
@@ -165,7 +160,7 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  ## Remapping of the fields happens here
+  # Remapping of the fields happens here
   data2 <- reactive({
     if (debug) cat("\n Entered data2 \n\n")
     if (succesfullyFinishedS1()) {
@@ -178,7 +173,6 @@ shinyServer(function(input, output, session) {
       timeFormat <- input$mfTimeFormat
 
       if (!is.na(lon) & !is.na(lat)) {
-        
         inCRS <-  if (input$configInEpsg %in% rhrEPSGs) {
           createAlert(session, "alert_data_in_setcrs", title = "CRS set", content = paste0("CRS set to ", input$configInEpsg), append = FALSE)
           input$configInEpsg
@@ -200,24 +194,19 @@ shinyServer(function(input, output, session) {
           createAlert(session, "alert_data_in_transformcrs", title = "Invalid EPSG", content = "CRS not transformed", append = FALSE)
           NULL
         }
-
         if (debug) cat("dat2.2 \n")
-        
         inCRS <- if(!is.null(inCRS)) CRS(paste0("+init=epsg:", inCRS)) else NULL
         outCRS <- if(!is.null(outCRS)) CRS(paste0("+init=epsg:", outCRS)) else NULL
-        
         if (debug) cat("dat2.3 \n")
-        ## Epsg can be used later, only thing that is missing are 
+        # Epsg can be used later, only thing that is missing are 
         dat2 <- tryCatch(rhrMapFields(data()$data,
                              fields=list(lon=lon, lat=lat, id=id, date=date, time=time), 
                              projString=inCRS, 
                              projStringOut = outCRS, dateFormat=dateFormat,
                              timeFormat=timeFormat), error = function(e) e)
-        
         if (is(dat2, "error")) {
           return(dat2)
         } else {
-          
           r <- if (dat2$hasTS) {
             rhrTracks(dat2$dat, ts = dat2$dat$timestamp, id = dat2$dat$id)
           } else {
@@ -285,10 +274,8 @@ shinyServer(function(input, output, session) {
     }
   })
 
+# subset ------------------------------------------------------------------
 
-  ## ============================================================================== ##  
-  ## Subset data
-  
   output$subsetUI <- renderUI({
     if (succesfullyFinishedS2()) {
       bbx <- rhrBBX(data2(), f = 0.02)
@@ -326,17 +313,13 @@ shinyServer(function(input, output, session) {
   }) 
 
   subsetYSliderValues <- reactive({
-    input$subsetYSlider
-  }) 
+    input$subsetYSlider}) 
 
   subsetDatePicker <- reactive({
-    as.character(input$subsetDatePicker)
-  })
+    as.character(input$subsetDatePicker)})
 
   subsetSelectedIds <- reactive({
-    input$subsetSelectedIds
-  })
-  
+    input$subsetSelectedIds})
   
   data_checked <- reactive({
     if(!is.null(data2())) {
@@ -371,7 +354,6 @@ shinyServer(function(input, output, session) {
       if (is(data2(), "RhrTracksST")) {
         int <- lubridate::`%--%`(subsetDatePicker()[1], subsetDatePicker()[2])
         dat <- rhr::rhrWithinTime(dat, int)
-        
       }
       dat
       
@@ -390,9 +372,6 @@ shinyServer(function(input, output, session) {
       axis(2)
       abline(v=subsetXSliderValues(), col="blue", lty=2)
       abline(h=subsetYSliderValues(), col="blue", lty=2)
-      
-      
-      
     } else {
       plot(0,0, type="n")
     }
@@ -407,7 +386,6 @@ shinyServer(function(input, output, session) {
                           n = rhrN(data3()))
       dat <- merge(dataa, datbb, by="id", all.x=TRUE)
       dat$n.y <- ifelse(is.na(dat$n.y), 0, dat$n.y)
-
       names(dat) <- c("Id", "Total number of Points", "Currently selected")
       dat
     } else {
@@ -423,13 +401,11 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  output$subsetTable <- renderDataTable({
+  output$subsetTable <- renderTable({
     subsetTable()
   })
 
-
-  ## ============================================================================== ##  
-  ## Configure & Analysis
+# Configure and analysis --------------------------------------------------
   
   data4 <- reactive({
     if (succesfullyFinishedS3()) {
